@@ -1,10 +1,36 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import (
     UserProfile, SavingsPlan, Transaction, Loan,
     LoanPayment, Penalty, InterestDistribution, Notification
 )
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        username = attrs.get('username')
+        password = attrs.get('password')
+
+        # Try to authenticate with username or email
+        user = None
+        if '@' in username:
+            try:
+                user = User.objects.get(email=username)
+            except User.DoesNotExist:
+                pass
+        else:
+            try:
+                user = User.objects.get(username=username)
+            except User.DoesNotExist:
+                pass
+
+        if user and user.check_password(password):
+            attrs['user'] = user
+            return super().validate(attrs)
+        else:
+            raise serializers.ValidationError('Invalid credentials')
 
 
 class RegisterSerializer(serializers.ModelSerializer):
