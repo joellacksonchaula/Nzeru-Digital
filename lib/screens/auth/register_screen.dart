@@ -162,6 +162,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   width: double.infinity,
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
+                      final navigator = Navigator.of(context);
                       final success = await auth.register(
                         _nameController.text,
                         _emailController.text,
@@ -169,8 +170,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         _passwordController.text,
                       );
                       if (success && mounted) {
-                        Navigator.pushReplacementNamed(
-                            context, AppRoutes.mainShell);
+                        navigator.pushReplacementNamed(AppRoutes.mainShell);
                       }
                     }
                   },

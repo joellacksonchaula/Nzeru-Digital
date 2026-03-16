@@ -17,25 +17,34 @@ class Penalty {
     this.isApplied = true,
   });
 
+  // ─── Internal helpers ──────────────────────────────────────────
+
+  static double _parseDouble(dynamic value) {
+    if (value == null) return 0.0;
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value) ?? 0.0;
+    return 0.0;
+  }
+
+  // ─── Serialization ─────────────────────────────────────────────
+
   factory Penalty.fromJson(Map<String, dynamic> json) {
     return Penalty(
-      id: json['id'] as String,
-      userId: json['user_id'] as String,
-      planId: json['plan_id'] as String?,
-      amount: (json['amount'] as num).toDouble(),
-      reason: json['reason'] as String,
-      date: DateTime.parse(json['date'] as String),
+      id: json['id'].toString(),
+      userId: (json['user_id'] ?? json['user'] ?? '').toString(),
+      planId: json['plan_id']?.toString() ?? json['plan']?.toString(),
+      amount: _parseDouble(json['amount']),
+      reason: json['reason'] as String? ?? 'Penalty applied',
+      date: DateTime.parse(json['date'] as String? ?? DateTime.now().toIso8601String()),
       isApplied: json['is_applied'] as bool? ?? true,
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'user_id': userId,
-        'plan_id': planId,
         'amount': amount,
         'reason': reason,
         'date': date.toIso8601String(),
         'is_applied': isApplied,
+        'plan': planId,
       };
 }

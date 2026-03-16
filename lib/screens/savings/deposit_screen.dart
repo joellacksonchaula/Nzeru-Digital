@@ -174,6 +174,8 @@ class _DepositScreenState extends State<DepositScreen> {
 
                   final auth = context.read<AuthProvider>();
                   setState(() => _isProcessing = true);
+                  final navigator = Navigator.of(context);
+                  final messenger = ScaffoldMessenger.of(context);
 
                   final success = await savings.addDeposit(SavingsTransaction(
                     id: '',
@@ -188,14 +190,14 @@ class _DepositScreenState extends State<DepositScreen> {
                   if (mounted) {
                     setState(() => _isProcessing = false);
                     if (success) {
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      navigator.pop();
+                      messenger.showSnackBar(
                         SnackBar(
                             content: Text(
                                 'Deposited \$${amount.toStringAsFixed(0)} successfully!')),
                       );
                     } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      messenger.showSnackBar(
                         const SnackBar(content: Text('Failed to record deposit.')),
                       );
                     }

@@ -187,6 +187,8 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
                 width: double.infinity,
                 onPressed: () async {
                   setState(() => _isProcessing = true);
+                  final navigator = Navigator.of(context);
+                  final messenger = ScaffoldMessenger.of(context);
 
                   final success = await loans.requestLoan(Loan(
                     id: '',
@@ -202,13 +204,13 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
                   if (mounted) {
                     setState(() => _isProcessing = false);
                     if (success) {
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      navigator.pop();
+                      messenger.showSnackBar(
                         const SnackBar(
                             content: Text('Loan request submitted!')),
                       );
                     } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      messenger.showSnackBar(
                         const SnackBar(
                             content: Text('Failed to submit loan request.')),
                       );

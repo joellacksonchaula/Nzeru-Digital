@@ -29,6 +29,7 @@ class SavingsProvider with ChangeNotifier {
   double get totalPenalties =>
       _penalties.where((p) => p.isApplied).fold(0.0, (sum, p) => sum + p.amount);
 
+  /// ─── Load all data ─────────────────────────────
   Future<void> loadData() async {
     _isLoading = true;
     _error = null;
@@ -36,22 +37,21 @@ class SavingsProvider with ChangeNotifier {
 
     try {
       final plansData = await _api.getSavingsPlans();
-      _plans = plansData.map((json) => SavingsPlan.fromJson(
-        _normalizeKeys(json as Map<String, dynamic>),
-      )).toList();
+      _plans = plansData
+          .map((json) => SavingsPlan.fromJson(_normalizeKeys(json as Map<String, dynamic>)))
+          .toList();
 
       final txnData = await _api.getTransactions();
-      _transactions = txnData.map((json) => SavingsTransaction.fromJson(
-        _normalizeKeys(json as Map<String, dynamic>),
-      )).toList();
+      _transactions = txnData
+          .map((json) => SavingsTransaction.fromJson(_normalizeKeys(json as Map<String, dynamic>)))
+          .toList();
 
       final penData = await _api.getPenalties();
-      _penalties = penData.map((json) => Penalty.fromJson(
-        _normalizeKeys(json as Map<String, dynamic>),
-      )).toList();
+      _penalties = penData
+          .map((json) => Penalty.fromJson(_normalizeKeys(json as Map<String, dynamic>)))
+          .toList();
     } catch (e) {
       _error = 'Failed to load savings data';
-      // Fall back to empty lists — the UI will still render
       _plans = [];
       _transactions = [];
       _penalties = [];
@@ -61,18 +61,22 @@ class SavingsProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  /// ─── Add a new savings plan ────────────────────
   Future<bool> addPlan(SavingsPlan plan) async {
     try {
-      await _api.createSavingsPlan(plan.toJson());
-      await loadData(); // Refresh
+      // toJson() already returns the correct string codes for the backend
+      final data = plan.toJson();
+      await _api.createSavingsPlan(data);
+      await loadData();
       return true;
     } catch (e) {
-      _error = 'Failed to create savings plan';
+      _error = 'Failed to create savings plan: $e';
       notifyListeners();
       return false;
     }
   }
 
+  /// ─── Add a deposit to a savings plan ─────────
   Future<bool> addDeposit(SavingsTransaction transaction) async {
     try {
       await _api.createDeposit({
@@ -82,7 +86,7 @@ class SavingsProvider with ChangeNotifier {
         'plan': transaction.planId,
         'description': transaction.description ?? 'Savings deposit',
       });
-      await loadData(); // Refresh
+      await loadData(); // Refresh data
       return true;
     } catch (e) {
       _error = 'Failed to record deposit';
@@ -91,24 +95,17 @@ class SavingsProvider with ChangeNotifier {
     }
   }
 
-  /// Normalize API keys to match model expectations
+  /// ─── Normalize API keys to match model expectations ─────────
   Map<String, dynamic> _normalizeKeys(Map<String, dynamic> json) {
-    // Map Django field names to Flutter model expected names
     final normalized = Map<String, dynamic>.from(json);
-    // Ensure 'id' is a String
-    if (normalized['id'] != null) {
-      normalized['id'] = normalized['id'].toString();
-    }
-    if (normalized['user'] != null) {
-      normalized['user_id'] = normalized['user'].toString();
-    }
-    if (normalized['plan'] != null) {
-      normalized['plan_id'] = normalized['plan'].toString();
-    }
-    // Map timestamp → date for SavingsTransaction
+
+    if (normalized['id'] != null) normalized['id'] = normalized['id'].toString();
+    if (normalized['user'] != null) normalized['user_id'] = normalized['user'].toString();
+    if (normalized['plan'] != null) normalized['plan_id'] = normalized['plan'].toString();
     if (normalized.containsKey('timestamp') && !normalized.containsKey('date')) {
       normalized['date'] = normalized['timestamp'];
     }
+
     return normalized;
   }
 }

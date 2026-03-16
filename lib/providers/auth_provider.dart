@@ -48,7 +48,7 @@ class AuthProvider with ChangeNotifier {
 
     try {
       await _api.register(
-        username: email.split('@').first,
+        username: email,  // Use full email as username
         email: email,
         password: password,
         password2: password,
@@ -58,7 +58,7 @@ class AuthProvider with ChangeNotifier {
       );
       // Auto-login after registration
       await _api.login(
-        username: email.split('@').first,
+        username: email,  // Login with email as username
         password: password,
       );
       await _fetchCurrentUser();

@@ -30,14 +30,32 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
     super.dispose();
   }
 
+  // Helper method for section labels
+  Widget _sectionLabel(String text) {
+    return Text(
+      text.toUpperCase(),
+      style: GoogleFonts.orbitron(
+        fontSize: 11,
+        fontWeight: FontWeight.w600,
+        color: AppColors.textMuted,
+        letterSpacing: 2,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text('CREATE PLAN',
-            style: GoogleFonts.orbitron(
-                fontSize: 16, letterSpacing: 2, color: AppColors.gold)),
+        title: Text(
+          'CREATE PLAN',
+          style: GoogleFonts.orbitron(
+            fontSize: 16,
+            letterSpacing: 2,
+            color: AppColors.gold,
+          ),
+        ),
         backgroundColor: Colors.transparent,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: AppColors.gold),
@@ -52,6 +70,7 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Savings Amount
                 _sectionLabel('Savings Amount'),
                 const SizedBox(height: 10),
                 TextFormField(
@@ -83,6 +102,7 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
                 ).animate().fadeIn(delay: 100.ms),
 
                 const SizedBox(height: 28),
+                // Frequency
                 _sectionLabel('Frequency'),
                 const SizedBox(height: 10),
                 Row(
@@ -107,9 +127,8 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
                                 : AppColors.cardBg,
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
-                              color: isSelected
-                                  ? AppColors.gold
-                                  : AppColors.border,
+                              color:
+                                  isSelected ? AppColors.gold : AppColors.border,
                               width: isSelected ? 1.5 : 1,
                             ),
                           ),
@@ -121,9 +140,8 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
                                 fontWeight: isSelected
                                     ? FontWeight.w600
                                     : FontWeight.w400,
-                                color: isSelected
-                                    ? AppColors.gold
-                                    : AppColors.textMuted,
+                                color:
+                                    isSelected ? AppColors.gold : AppColors.textMuted,
                               ),
                             ),
                           ),
@@ -134,6 +152,7 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
                 ).animate().fadeIn(delay: 200.ms),
 
                 const SizedBox(height: 28),
+                // Duration
                 _sectionLabel('Duration (months)'),
                 const SizedBox(height: 10),
                 SliderTheme(
@@ -168,13 +187,12 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
                 ),
 
                 const SizedBox(height: 28),
+                // Penalty Policy
                 _sectionLabel('Penalty Policy'),
                 const SizedBox(height: 10),
                 ...[
-                  (PenaltyPolicy.monetaryDeduction, 'Monetary Deduction',
-                      Icons.money_off),
-                  (PenaltyPolicy.appRestriction, 'App Restriction',
-                      Icons.lock_outline),
+                  (PenaltyPolicy.monetaryDeduction, 'Monetary Deduction', Icons.money_off),
+                  (PenaltyPolicy.appRestriction, 'App Restriction', Icons.lock_outline),
                   (PenaltyPolicy.both, 'Both', Icons.shield_outlined),
                 ].map((item) {
                   final isSelected = _penaltyPolicy == item.$1;
@@ -190,35 +208,27 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
                             : AppColors.cardBg,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color:
-                              isSelected ? AppColors.gold : AppColors.border,
+                          color: isSelected ? AppColors.gold : AppColors.border,
                           width: isSelected ? 1.5 : 1,
                         ),
                       ),
                       child: Row(
                         children: [
                           Icon(item.$3,
-                              color: isSelected
-                                  ? AppColors.gold
-                                  : AppColors.textMuted,
+                              color: isSelected ? AppColors.gold : AppColors.textMuted,
                               size: 20),
                           const SizedBox(width: 14),
                           Text(
                             item.$2,
                             style: GoogleFonts.inter(
                               fontSize: 14,
-                              color: isSelected
-                                  ? AppColors.gold
-                                  : AppColors.textSecondary,
-                              fontWeight: isSelected
-                                  ? FontWeight.w600
-                                  : FontWeight.w400,
+                              color: isSelected ? AppColors.gold : AppColors.textSecondary,
+                              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                             ),
                           ),
                           const Spacer(),
                           if (isSelected)
-                            const Icon(Icons.check_circle,
-                                color: AppColors.gold, size: 20),
+                            const Icon(Icons.check_circle, color: AppColors.gold, size: 20),
                         ],
                       ),
                     ),
@@ -226,6 +236,7 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
                 }).toList().animate().fadeIn(delay: 400.ms),
 
                 const SizedBox(height: 40),
+                // CREATE PLAN Button
                 GoldButton(
                   label: 'CREATE SAVINGS PLAN',
                   icon: Icons.rocket_launch_rounded,
@@ -233,50 +244,61 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
                   width: double.infinity,
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
+                      setState(() => _isProcessing = true);
+
+                      // Capture all context-dependent objects BEFORE any await
                       final auth = context.read<AuthProvider>();
+                      final savings = context.read<SavingsProvider>();
+                      final navigator = Navigator.of(context);
+                      final messenger = ScaffoldMessenger.of(context);
                       final amount = double.parse(_amountController.text);
+
                       int periods;
                       switch (_frequency) {
                         case PlanFrequency.daily:
                           periods = _durationMonths * 30;
+                          break;
                         case PlanFrequency.weekly:
                           periods = _durationMonths * 4;
+                          break;
                         case PlanFrequency.biweekly:
                           periods = _durationMonths * 2;
+                          break;
                         case PlanFrequency.monthly:
                           periods = _durationMonths;
+                          break;
                       }
-                      final endDate =
-                          _startDate.add(Duration(days: _durationMonths * 30));
 
-                      setState(() => _isProcessing = true);
+                      final endDate = _startDate.add(Duration(days: _durationMonths * 30));
 
-                      final success = await context.read<SavingsProvider>().addPlan(
-                            SavingsPlan(
-                              id: '',
-                              userId: auth.user?.id ?? '',
-                              amountPerPeriod: amount,
-                              frequency: _frequency,
-                              durationMonths: _durationMonths,
-                              startDate: _startDate,
-                              endDate: endDate,
-                              penaltyPolicy: _penaltyPolicy,
-                              goalAmount: amount * periods,
-                            ),
-                          );
+                      final success = await savings.addPlan(
+                        SavingsPlan(
+                          id: '',
+                          userId: auth.user?.id ?? '',
+                          amountPerPeriod: amount,
+                          frequency: _frequency,
+                          durationMonths: _durationMonths,
+                          startDate: _startDate,
+                          endDate: endDate,
+                          penaltyPolicy: _penaltyPolicy,
+                          goalAmount: amount * periods,
+                        ),
+                      );
 
                       if (mounted) {
                         setState(() => _isProcessing = false);
                         if (success) {
-                          Navigator.pop(context);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Savings plan created!')),
+                          navigator.pop();
+                          messenger.showSnackBar(
+                            const SnackBar(content: Text('Savings plan created!')),
                           );
                         } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Failed to create savings plan.')),
+                          messenger.showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                savings.error ?? 'Failed to create savings plan.',
+                              ),
+                            ),
                           );
                         }
                       }
@@ -288,18 +310,6 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _sectionLabel(String text) {
-    return Text(
-      text.toUpperCase(),
-      style: GoogleFonts.orbitron(
-        fontSize: 11,
-        fontWeight: FontWeight.w600,
-        color: AppColors.textMuted,
-        letterSpacing: 2,
       ),
     );
   }

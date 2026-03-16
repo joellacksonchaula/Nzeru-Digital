@@ -15,14 +15,14 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _emailController = TextEditingController();
+  final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
   final _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -84,13 +84,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ).animate().fadeIn(delay: 300.ms, duration: 500.ms),
                 const SizedBox(height: 50),
-                // Email
+                // Username
                 TextFormField(
-                  controller: _emailController,
+                  controller: _usernameController,
                   keyboardType: TextInputType.emailAddress,
                   style: GoogleFonts.inter(color: AppColors.textPrimary),
                   decoration: const InputDecoration(
-                    hintText: 'Email Address',
+                    hintText: 'Email',
                     prefixIcon: Icon(Icons.email_outlined),
                   ),
                   validator: (v) =>
@@ -144,13 +144,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     width: double.infinity,
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
+                        final navigator = Navigator.of(context);
                         final success = await auth.login(
-                          _emailController.text,
+                          _usernameController.text.trim(),
                           _passwordController.text,
                         );
                         if (success && mounted) {
-                          Navigator.pushReplacementNamed(
-                              context, AppRoutes.mainShell);
+                          navigator.pushReplacementNamed(AppRoutes.mainShell);
                         }
                       }
                     },

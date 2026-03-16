@@ -12,9 +12,26 @@ import '../../providers/loan_provider.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/glow_text.dart';
 import '../../widgets/stat_tile.dart';
+import '../../widgets/crypto_chart.dart';
+import '../../widgets/crypto_market_card.dart';
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
+
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Load savings and loans data when dashboard opens
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<SavingsProvider>().loadData();
+      context.read<LoanProvider>().loadData();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,101 +117,104 @@ class DashboardScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-              ).animate().fadeIn(duration: 400.ms),
+              ),
 
               // Total Savings Card
-              GlassCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'TOTAL SAVINGS',
-                          style: GoogleFonts.orbitron(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.textMuted,
-                            letterSpacing: 2,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: GlassCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'TOTAL SAVINGS',
+                            style: GoogleFonts.orbitron(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.textMuted,
+                              letterSpacing: 2,
+                            ),
                           ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: AppColors.success.withAlpha(20),
-                            borderRadius: BorderRadius.circular(20),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: AppColors.success.withAlpha(20),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.trending_up,
+                                    color: AppColors.success, size: 14),
+                                const SizedBox(width: 4),
+                                Text(
+                                  '+12.5%',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11,
+                                    color: AppColors.success,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.trending_up,
-                                  color: AppColors.success, size: 14),
-                              const SizedBox(width: 4),
-                              Text(
-                                '+12.5%',
-                                style: GoogleFonts.inter(
-                                  fontSize: 11,
-                                  color: AppColors.success,
-                                  fontWeight: FontWeight.w600,
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      GlowText(
+                        text: currencyFormat.format(user?.savingsBalance ?? 0),
+                        fontSize: 34,
+                      ),
+                      const SizedBox(height: 20),
+                      // Mini chart
+                      SizedBox(
+                        height: 60,
+                        child: LineChart(
+                          LineChartData(
+                            gridData: const FlGridData(show: false),
+                            titlesData: const FlTitlesData(show: false),
+                            borderData: FlBorderData(show: false),
+                            lineTouchData: const LineTouchData(enabled: false),
+                            lineBarsData: [
+                              LineChartBarData(
+                                spots: [
+                                  FlSpot(0, 500),
+                                  FlSpot(1, 800),
+                                  FlSpot(2, 1200),
+                                  FlSpot(3, 1100),
+                                  FlSpot(4, 1800),
+                                  FlSpot(5, 2400),
+                                  FlSpot(6, 3200),
+                                ],
+                                isCurved: true,
+                                color: AppColors.gold,
+                                barWidth: 2.5,
+                                isStrokeCapRound: true,
+                                dotData: const FlDotData(show: false),
+                                belowBarData: BarAreaData(
+                                  show: true,
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      AppColors.gold.withAlpha(40),
+                                      AppColors.gold.withAlpha(10),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ],
                           ),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    GlowText(
-                      text: currencyFormat.format(user?.savingsBalance ?? 0),
-                      fontSize: 34,
-                    ),
-                    const SizedBox(height: 20),
-                    // Mini chart
-                    SizedBox(
-                      height: 60,
-                      child: LineChart(
-                        LineChartData(
-                          gridData: const FlGridData(show: false),
-                          titlesData: const FlTitlesData(show: false),
-                          borderData: FlBorderData(show: false),
-                          lineTouchData: const LineTouchData(enabled: false),
-                          lineBarsData: [
-                            LineChartBarData(
-                              spots: const [
-                                FlSpot(0, 500),
-                                FlSpot(1, 800),
-                                FlSpot(2, 1200),
-                                FlSpot(3, 1100),
-                                FlSpot(4, 1800),
-                                FlSpot(5, 2400),
-                                FlSpot(6, 3200),
-                              ],
-                              isCurved: true,
-                              color: AppColors.gold,
-                              barWidth: 2.5,
-                              isStrokeCapRound: true,
-                              dotData: const FlDotData(show: false),
-                              belowBarData: BarAreaData(
-                                show: true,
-                                gradient: LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [
-                                    AppColors.gold.withAlpha(40),
-                                    AppColors.gold.withAlpha(5),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.1),
+              ),
 
               const SizedBox(height: 8),
 
@@ -338,74 +358,75 @@ class DashboardScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              ...savings.transactions.take(5).map(
-                    (txn) => Container(
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 4),
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: AppColors.cardBg,
-                        borderRadius: BorderRadius.circular(12),
-                        border:
-                            Border.all(color: AppColors.border, width: 0.5),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: txn.isCredit
-                                  ? AppColors.success.withAlpha(20)
-                                  : AppColors.actionRed.withAlpha(20),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Icon(
-                              txn.isCredit
-                                  ? Icons.arrow_downward_rounded
-                                  : Icons.arrow_upward_rounded,
-                              color: txn.isCredit
-                                  ? AppColors.success
-                                  : AppColors.actionRed,
-                              size: 18,
-                            ),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  txn.typeLabel,
-                                  style: GoogleFonts.inter(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.textPrimary,
-                                  ),
-                                ),
-                                Text(
-                                  DateFormat('dd MMM yyyy').format(txn.date),
-                                  style: GoogleFonts.inter(
-                                    fontSize: 11,
-                                    color: AppColors.textMuted,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Text(
-                            '${txn.isCredit ? '+' : '-'} ${currencyFormat.format(txn.amount)}',
-                            style: GoogleFonts.orbitron(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: txn.isCredit
-                                  ? AppColors.success
-                                  : AppColors.actionRed,
-                            ),
-                          ),
-                        ],
-                      ),
+              ...[
+                for (final txn in savings.transactions.take(5))
+                  Container(
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 4),
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: AppColors.cardBg,
+                      borderRadius: BorderRadius.circular(12),
+                      border:
+                          Border.all(color: AppColors.border, width: 0.5),
                     ),
-                  ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: txn.isCredit
+                                ? AppColors.success.withAlpha(20)
+                                : AppColors.actionRed.withAlpha(20),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Icon(
+                            txn.isCredit
+                                ? Icons.arrow_downward_rounded
+                                : Icons.arrow_upward_rounded,
+                            color: txn.isCredit
+                                ? AppColors.success
+                                : AppColors.actionRed,
+                            size: 18,
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                txn.typeLabel,
+                                style: GoogleFonts.inter(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.textPrimary,
+                                ),
+                              ),
+                              Text(
+                                DateFormat('dd MMM yyyy').format(txn.date),
+                                style: GoogleFonts.inter(
+                                  fontSize: 11,
+                                  color: AppColors.textMuted,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Text(
+                          '${txn.isCredit ? '+' : '-'} ${currencyFormat.format(txn.amount)}',
+                          style: GoogleFonts.orbitron(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: txn.isCredit
+                                ? AppColors.success
+                                : AppColors.actionRed,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+              ],
             ],
           ),
         ),
