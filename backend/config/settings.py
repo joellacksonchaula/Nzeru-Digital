@@ -175,6 +175,7 @@ if not DEBUG:
     CORS_ALLOW_ALL_ORIGINS = False
     CORS_ALLOWED_ORIGINS = [
         "https://savingsutl-production.up.railway.app",
+        "https://glittering-cobbler-1d32f6.netlify.app",
     ]
 else:
     CORS_ALLOW_ALL_ORIGINS = True
