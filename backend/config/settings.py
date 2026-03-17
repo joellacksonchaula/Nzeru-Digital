@@ -2,6 +2,8 @@ import os
 from pathlib import Path
 from datetime import timedelta
 
+import dj_database_url
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Security
@@ -93,20 +95,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/stable/ref/settings/#databases
 
-import os
-import dj_database_url
-
 DATABASES = {
     "default": dj_database_url.config(
-        default=os.environ.get("DATABASE_URL")
+        default=os.environ.get("DATABASE_URL"),
+        conn_max_age=600,
     )
 }
-
-# Use DATABASE_URL if available (common in Railway/Heroku)
-import dj_database_url
-db_from_env = dj_database_url.config(conn_max_age=600)
-if db_from_env:
-    DATABASES['default'].update(db_from_env)
 
 
 
@@ -175,17 +169,26 @@ SIMPLE_JWT = {
 
 
 # CORS
-CORS_ALLOW_ALL_ORIGINS = DEBUG
-
+# Native Flutter mobile apps don't send CORS preflight headers, but
+# Flutter Web builds do. Keep restricted in production.
 if not DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = False
     CORS_ALLOWED_ORIGINS = [
         "https://savingsutl-production.up.railway.app",
     ]
 else:
+    CORS_ALLOW_ALL_ORIGINS = True
     CORS_ALLOWED_ORIGINS = []
-CORS_ALLOW_ALL_ORIGINS = True
- 
+
 CORS_ALLOW_HEADERS = [
-    "content-type",
+    "accept",
+    "accept-encoding",
+    "accept-language",
     "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
 ]

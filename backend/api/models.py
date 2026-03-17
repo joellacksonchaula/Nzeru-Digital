@@ -14,6 +14,9 @@ class UserProfile(models.Model):
     def __str__(self):
         return self.user.username
 
+    class Meta:
+        ordering = ['user__username']
+
     def recalculate_savings_balance(self):
         """Balance = Deposits + Interest Rewards - Penalties - Withdrawals"""
         deposits = self.user.transactions.filter(
@@ -127,6 +130,9 @@ class SavingsPlan(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.get_frequency_display()} plan"
 
+    class Meta:
+        ordering = ['-start_date']
+
     @property
     def progress_percent(self):
         if self.goal_amount > 0:
@@ -185,6 +191,9 @@ class Transaction(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.type} - {self.amount}"
 
+    class Meta:
+        ordering = ['-timestamp']
+
 
 class Penalty(models.Model):
     PENALTY_TYPE_CHOICES = [
@@ -201,6 +210,9 @@ class Penalty(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - Penalty: {self.amount}"
+
+    class Meta:
+        ordering = ['-date']
 
 
 class Loan(models.Model):
@@ -224,6 +236,9 @@ class Loan(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - Loan: {self.amount} ({self.status})"
+
+    class Meta:
+        ordering = ['-created_at']
 
     @property
     def total_with_interest(self):
@@ -253,6 +268,9 @@ class LoanPayment(models.Model):
     def __str__(self):
         return f"Payment: {self.amount_paid} for Loan #{self.loan.id}"
 
+    class Meta:
+        ordering = ['-payment_date']
+
 
 class InterestDistribution(models.Model):
     loan = models.OneToOneField(Loan, on_delete=models.CASCADE, related_name='interest_distribution')
@@ -263,6 +281,9 @@ class InterestDistribution(models.Model):
 
     def __str__(self):
         return f"Interest for Loan #{self.loan.id}: User={self.user_savings_share}, Platform={self.platform_share}"
+
+    class Meta:
+        ordering = ['-distributed_at']
 
 
 class Notification(models.Model):

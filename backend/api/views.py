@@ -207,7 +207,7 @@ class LoanPaymentViewSet(viewsets.ModelViewSet):
         Notification.objects.create(
             user=loan.user,
             title='Loan Fully Repaid!',
-            message=f'You earned ${user_share} in interest rewards from your loan.',
+            message=f'You earned MK{user_share} in interest rewards from your loan.',
             type='INTEREST_REWARD',
         )
 
@@ -220,7 +220,7 @@ class InterestDistributionViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return self.queryset.filter(loan__user=self.request.user)
+        return self.queryset.filter(loan__user=self.request.user).order_by('-distributed_at')
 
 
 # ─── Notifications ─────────────────────────────────────
@@ -231,7 +231,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return self.queryset.filter(user=self.request.user)
+        return self.queryset.filter(user=self.request.user).order_by('-created_at')
 
     @action(detail=True, methods=['post'])
     def mark_read(self, request, pk=None):

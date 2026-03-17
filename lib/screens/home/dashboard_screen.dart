@@ -39,14 +39,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final savings = context.watch<SavingsProvider>();
     final loans = context.watch<LoanProvider>();
     final user = auth.user;
-    final currencyFormat = NumberFormat.currency(symbol: '\$ ', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      locale: 'en_US',
+      symbol: 'MK ',
+      decimalDigits: 2,
+    );
 
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.only(bottom: 20),
-          child: Column(
+        child: RefreshIndicator(
+          color: AppColors.gold,
+          backgroundColor: AppColors.cardBg,
+          onRefresh: () async {
+            await Future.wait([
+              context.read<AuthProvider>().refreshProfile(),
+              context.read<SavingsProvider>().loadData(),
+              context.read<LoanProvider>().loadData(),
+            ]);
+          },
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.only(bottom: 20),
+            child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Header
@@ -170,47 +185,58 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         fontSize: 34,
                       ),
                       const SizedBox(height: 20),
-                      // Mini chart
-                      SizedBox(
-                        height: 60,
-                        child: LineChart(
-                          LineChartData(
-                            gridData: const FlGridData(show: false),
-                            titlesData: const FlTitlesData(show: false),
-                            borderData: FlBorderData(show: false),
-                            lineTouchData: const LineTouchData(enabled: false),
-                            lineBarsData: [
-                              LineChartBarData(
-                                spots: [
-                                  FlSpot(0, 500),
-                                  FlSpot(1, 800),
-                                  FlSpot(2, 1200),
-                                  FlSpot(3, 1100),
-                                  FlSpot(4, 1800),
-                                  FlSpot(5, 2400),
-                                  FlSpot(6, 3200),
-                                ],
-                                isCurved: true,
-                                color: AppColors.gold,
-                                barWidth: 2.5,
-                                isStrokeCapRound: true,
-                                dotData: const FlDotData(show: false),
-                                belowBarData: BarAreaData(
-                                  show: true,
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    colors: [
-                                      AppColors.gold.withAlpha(40),
-                                      AppColors.gold.withAlpha(10),
-                                    ],
+                      // Mini chart — real deposit data (last 7 credits, oldest→newest)
+                      Builder(builder: (context) {
+                        final creditTxns = savings.transactions
+                            .where((t) => t.isCredit)
+                            .take(7)
+                            .toList()
+                            .reversed
+                            .toList();
+                        final spots = creditTxns.isEmpty
+                            ? [const FlSpot(0, 0), const FlSpot(1, 0)]
+                            : creditTxns
+                                .asMap()
+                                .entries
+                                .map((e) => FlSpot(
+                                      e.key.toDouble(),
+                                      e.value.amount.toDouble(),
+                                    ))
+                                .toList();
+                        return SizedBox(
+                          height: 60,
+                          child: LineChart(
+                            LineChartData(
+                              gridData: const FlGridData(show: false),
+                              titlesData: const FlTitlesData(show: false),
+                              borderData: FlBorderData(show: false),
+                              lineTouchData:
+                                  const LineTouchData(enabled: false),
+                              lineBarsData: [
+                                LineChartBarData(
+                                  spots: spots,
+                                  isCurved: true,
+                                  color: AppColors.gold,
+                                  barWidth: 2.5,
+                                  isStrokeCapRound: true,
+                                  dotData: const FlDotData(show: false),
+                                  belowBarData: BarAreaData(
+                                    show: true,
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                      colors: [
+                                        AppColors.gold.withAlpha(40),
+                                        AppColors.gold.withAlpha(10),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ),
+                        );
+                      }),
                     ],
                   ),
                 ),
@@ -429,6 +455,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ],
             ],
           ),
+        ),
         ),
       ),
     );
