@@ -13,14 +13,14 @@ class NotificationsScreen extends StatelessWidget {
       _NotifData(
         icon: Icons.savings_rounded,
         title: 'Savings Due Tomorrow',
-        message: 'Your weekly deposit of \$100 is due tomorrow. Stay on track!',
+        message: 'Your weekly deposit of MK 100 is due tomorrow. Stay on track!',
         time: '2h ago',
         color: AppColors.gold,
       ),
       _NotifData(
         icon: Icons.payment_rounded,
         title: 'Loan Repayment Reminder',
-        message: 'Monthly loan payment of \$100 is due on March 15th.',
+        message: 'Monthly loan payment of MK 100 is due on March 15th.',
         time: '5h ago',
         color: AppColors.info,
       ),
@@ -34,7 +34,7 @@ class NotificationsScreen extends StatelessWidget {
       _NotifData(
         icon: Icons.emoji_events_rounded,
         title: 'Loan Eligibility Unlocked!',
-        message: 'Congratulations! You are now eligible for a loan up to \$1,600.',
+        message: 'Congratulations! You are now eligible for a loan up to MK 1,600.',
         time: '2d ago',
         color: AppColors.success,
       ),
@@ -48,7 +48,7 @@ class NotificationsScreen extends StatelessWidget {
       _NotifData(
         icon: Icons.check_circle_rounded,
         title: 'Deposit Confirmed',
-        message: 'Your deposit of \$100 to Weekly Plan has been processed.',
+        message: 'Your deposit of MK 100 to Weekly Plan has been processed.',
         time: '4d ago',
         color: AppColors.success,
       ),

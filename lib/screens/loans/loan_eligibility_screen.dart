@@ -22,7 +22,11 @@ class LoanEligibilityScreen extends StatelessWidget {
     final user = auth.user;
     final savingsBalance = user?.savingsBalance ?? 0;
     final maxLoan = loans.getLoanEligibility(savingsBalance);
-    final currencyFormat = NumberFormat.currency(symbol: '\$ ', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      locale: 'en_US',
+      symbol: 'MK ',
+      decimalDigits: 2,
+    );
     final activeLoan = loans.activeLoan;
 
     return Scaffold(

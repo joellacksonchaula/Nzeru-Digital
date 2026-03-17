@@ -30,7 +30,11 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
         loans.getLoanEligibility(auth.user?.savingsBalance ?? 0);
     final totalWithInterest = _loanAmount * (1 + _interestRate / 100);
     final monthlyPayment = totalWithInterest / _durationMonths;
-    final currencyFormat = NumberFormat.currency(symbol: '\$ ', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      locale: 'en_US',
+      symbol: 'MK ',
+      decimalDigits: 2,
+    );
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -87,7 +91,7 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('\$100',
+                  Text('MK 100',
                       style: GoogleFonts.inter(
                           fontSize: 11, color: AppColors.textMuted)),
                   Text(currencyFormat.format(maxLoan),

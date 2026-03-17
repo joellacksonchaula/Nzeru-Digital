@@ -15,7 +15,11 @@ class PlanDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final savings = context.watch<SavingsProvider>();
     final plan = savings.plans.isNotEmpty ? savings.plans[0] : null;
-    final currencyFormat = NumberFormat.currency(symbol: '\$ ', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      locale: 'en_US',
+      symbol: 'MK ',
+      decimalDigits: 2,
+    );
     final planTransactions = savings.transactions
         .where((t) => t.planId == plan?.id)
         .toList();

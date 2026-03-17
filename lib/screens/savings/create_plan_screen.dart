@@ -87,7 +87,7 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
                       color: AppColors.textMuted,
                       fontSize: 24,
                     ),
-                    prefixText: '\$ ',
+                    prefixText: 'MK ',
                     prefixStyle: GoogleFonts.orbitron(
                       fontSize: 24,
                       color: AppColors.gold,

@@ -108,7 +108,7 @@ class CryptoMarketCard extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              '\$${price.toStringAsFixed(2)}',
+              'MK ${price.toStringAsFixed(2)}',
               style: GoogleFonts.orbitron(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
@@ -121,11 +121,11 @@ class CryptoMarketCard extends StatelessWidget {
               children: [
                 _InfoPill(
                   label: 'Vol 24h',
-                  value: '\$${(volume24h / 1e9).toStringAsFixed(1)}B',
+                  value: 'MK ${(volume24h / 1e9).toStringAsFixed(1)}B',
                 ),
                 _InfoPill(
                   label: 'Market Cap',
-                  value: '\$${(marketCap / 1e9).toStringAsFixed(1)}B',
+                  value: 'MK ${(marketCap / 1e9).toStringAsFixed(1)}B',
                 ),
               ],
             ),

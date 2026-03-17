@@ -8,21 +8,21 @@ class AppColors {
   static const Color backgroundLight = Color(0xFFFAFAFA);
 
   // Black (20%)
-  static const Color black = Color(0xFF0A0E27);
-  static const Color blackSecondary = Color(0xFF1A1F3A);
-  static const Color blackTertiary = Color(0xFF2D3153);
+  static const Color black = Color(0xFF000000);
+  static const Color blackSecondary = Color(0xFF111111);
+  static const Color blackTertiary = Color(0xFF222222);
 
   // Premium Gold (5%)
   static const Color gold = Color(0xFFD4AF37);
-  static const Color goldLight = Color(0xFFE8D48B);
-  static const Color goldDark = Color(0xFFB8960F);
+  static const Color goldLight = Color(0xFFF3E5AB);
+  static const Color goldDark = Color(0xFF996515);
   static const Color goldGlow = Color(0xFFFFD700);
 
   // Action Red (10%)
-  static const Color actionRed = Color(0xFFC1121F);
-  static const Color actionRedLight = Color(0xFFE05260);
-  static const Color redAccent = Color(0xFFFF6B6B);
-  static const Color redBright = Color(0xFFFF4444);
+  static const Color actionRed = Color(0xFFFF0000);
+  static const Color actionRedLight = Color(0xFFFF4D4D);
+  static const Color redAccent = Color(0xFFFF3333);
+  static const Color redBright = Color(0xFFFF0000);
 
   // Secondary Light Gray — cards & panels
   static const Color cardBg = Color(0xFFFDFDFD);

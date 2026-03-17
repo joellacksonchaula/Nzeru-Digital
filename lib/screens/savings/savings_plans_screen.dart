@@ -15,7 +15,11 @@ class SavingsPlansScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final savings = context.watch<SavingsProvider>();
-    final currencyFormat = NumberFormat.currency(symbol: '\$ ', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      locale: 'en_US',
+      symbol: 'MK ',
+      decimalDigits: 2,
+    );
 
     return Scaffold(
       backgroundColor: AppColors.background,

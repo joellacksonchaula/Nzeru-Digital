@@ -90,7 +90,7 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
                                       color: AppColors.textMuted)),
                               const SizedBox(height: 4),
                               Text(
-                                  '\$ ${activeLoan.remainingBalance.toStringAsFixed(0)}',
+                                  'MK ${activeLoan.remainingBalance.toStringAsFixed(2)}',
                                   style: GoogleFonts.orbitron(
                                       fontSize: 20,
                                       fontWeight: FontWeight.w700,
@@ -106,7 +106,7 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
                                       color: AppColors.textMuted)),
                               const SizedBox(height: 4),
                               Text(
-                                  '\$ ${activeLoan.monthlyPayment.toStringAsFixed(0)}',
+                                  'MK ${activeLoan.monthlyPayment.toStringAsFixed(2)}',
                                   style: GoogleFonts.orbitron(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
@@ -139,7 +139,7 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
                           color: AppColors.textMuted,
                           fontSize: 32,
                         ),
-                        prefixText: '\$ ',
+                        prefixText: 'MK ',
                         prefixStyle: GoogleFonts.orbitron(
                           fontSize: 32,
                           color: AppColors.gold,
@@ -193,7 +193,7 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
                             messenger.showSnackBar(
                               SnackBar(
                                   content: Text(
-                                      'Payment of \$${amount.toStringAsFixed(0)} successful!')),
+                                      'Payment of MK${amount.toStringAsFixed(2)} successful!')),
                             );
                           } else {
                             messenger.showSnackBar(

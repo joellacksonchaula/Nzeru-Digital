@@ -16,7 +16,11 @@ class ReportsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final savings = context.watch<SavingsProvider>();
     final loans = context.watch<LoanProvider>();
-    final currencyFormat = NumberFormat.currency(symbol: '\$ ', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      locale: 'en_US',
+      symbol: 'MK ',
+      decimalDigits: 2,
+    );
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -77,7 +81,7 @@ class ReportsScreen extends StatelessWidget {
                                 reservedSize: 50,
                                 interval: 1000,
                                 getTitlesWidget: (value, meta) => Text(
-                                  '\$${value.toInt()}',
+                                  'MK ${value.toInt()}',
                                   style: GoogleFonts.inter(
                                       fontSize: 10,
                                       color: AppColors.textMuted),

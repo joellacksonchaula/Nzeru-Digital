@@ -102,7 +102,7 @@ class _DepositScreenState extends State<DepositScreen> {
                             size: 20),
                         const SizedBox(width: 12),
                         Text(
-                          '${plan.frequencyLabel} Plan — \$${plan.amountPerPeriod.toStringAsFixed(0)}/period',
+                          '${plan.frequencyLabel} Plan — MK${plan.amountPerPeriod.toStringAsFixed(2)}/period',
                           style: GoogleFonts.inter(
                             fontSize: 14,
                             color: isSelected
@@ -141,7 +141,7 @@ class _DepositScreenState extends State<DepositScreen> {
                     color: AppColors.textMuted,
                     fontSize: 32,
                   ),
-                  prefixText: '\$ ',
+                  prefixText: 'MK ',
                   prefixStyle: GoogleFonts.orbitron(
                     fontSize: 32,
                     color: AppColors.gold,
@@ -194,7 +194,7 @@ class _DepositScreenState extends State<DepositScreen> {
                       messenger.showSnackBar(
                         SnackBar(
                             content: Text(
-                                'Deposited \$${amount.toStringAsFixed(0)} successfully!')),
+                                'Deposited MK${amount.toStringAsFixed(2)} successfully!')),
                       );
                     } else {
                       messenger.showSnackBar(

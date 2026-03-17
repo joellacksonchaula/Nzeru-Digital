@@ -15,7 +15,11 @@ class LoanDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final loans = context.watch<LoanProvider>();
     final loan = loans.activeLoan;
-    final currencyFormat = NumberFormat.currency(symbol: '\$ ', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      locale: 'en_US',
+      symbol: 'MK ',
+      decimalDigits: 2,
+    );
     final loanPayments =
         loans.payments.where((p) => p.loanId == loan?.id).toList();
     final distribution =
