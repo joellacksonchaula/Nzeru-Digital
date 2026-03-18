@@ -4,10 +4,11 @@ from pathlib import Path
 from datetime import timedelta
 
 import dj_database_url
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except:
+    pass
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 logger = logging.getLogger(__name__)
