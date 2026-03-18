@@ -1,4 +1,5 @@
 import os
+import logging
 from pathlib import Path
 from datetime import timedelta
 
@@ -6,15 +7,26 @@ import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Security
-# Security
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'unsafe-secret-key')
+logger = logging.getLogger(__name__)
+
+# ── Security ────────────────────────────────────────────────────────────────
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '')
+if not SECRET_KEY:
+    import warnings
+    warnings.warn(
+        "DJANGO_SECRET_KEY is not set! Using an unsafe fallback. "
+        "Set this env var on Railway immediately.",
+        stacklevel=2,
+    )
+    SECRET_KEY = 'unsafe-secret-key-change-me-in-production'
 
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() == 'true'
 
 ALLOWED_HOSTS = [
     "savingsutl-production.up.railway.app",
     ".railway.app",
+    "localhost",
+    "127.0.0.1",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -23,14 +35,13 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-# If in production and no specific hosts, be more permissive for internal health checks
+
+# In production allow all hosts so Railway health checks work
 if not DEBUG and '*' not in ALLOWED_HOSTS:
     ALLOWED_HOSTS.append('*')
 
 
-
-
-# Applications
+# ── Applications ─────────────────────────────────────────────────────────────
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -41,36 +52,29 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',
-    
-
+    'rest_framework_simplejwt.token_blacklist',
     'api',
 ]
 
 
-# Middleware
+# ── Middleware ────────────────────────────────────────────────────────────────
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
-    
-    
 ]
 
 
 ROOT_URLCONF = 'config.urls'
 
 
-# Templates
+# ── Templates ─────────────────────────────────────────────────────────────────
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -80,7 +84,6 @@ TEMPLATES = [
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
-
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
@@ -92,107 +95,84 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/stable/ref/settings/#databases
-
+# ── Database ──────────────────────────────────────────────────────────────────
 DATABASES = {
     "default": dj_database_url.config(
-        default=os.environ.get("DATABASE_URL"),
+        default=os.environ.get("DATABASE_URL", f"sqlite:///{BASE_DIR}/db.sqlite3"),
         conn_max_age=600,
+        conn_health_checks=True,
     )
 }
 
 
-
-# Password Validation
+# ── Password Validation ───────────────────────────────────────────────────────
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
-
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
-
     {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
-
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
 
-# Internationalization
+# ── Internationalisation ──────────────────────────────────────────────────────
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/stable/howto/static-files/
-
+# ── Static files ──────────────────────────────────────────────────────────────
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / "staticfiles"
-
-# Enable WhiteNoise compression and caching
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-
-# Django REST Framework
+# ── Django REST Framework ─────────────────────────────────────────────────────
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
     ],
-
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
-
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-
     'PAGE_SIZE': 20,
 }
 
 
-# JWT Configuration
+# ── JWT Configuration ─────────────────────────────────────────────────────────
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=2),
-
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-
     'ROTATE_REFRESH_TOKENS': True,
-
+    'BLACKLIST_AFTER_ROTATION': True,   # <-- SECURITY FIX: invalidate old refresh tokens
+    'UPDATE_LAST_LOGIN': True,
     'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
 }
 
 
-# CORS
-# Native Flutter mobile apps don't send CORS preflight headers, but
-# Flutter Web builds do. Keep restricted in production.
-if not DEBUG:
-    CORS_ALLOW_ALL_ORIGINS = False
-    CORS_ALLOWED_ORIGINS = [
-        "https://savingsutl-production.up.railway.app",
-        "https://glittering-cobbler-1d32f6.netlify.app",
-        "http://localhost:3000",  # For testing
-        "http://localhost:8081",  # Flutter web dev
-    ]
-else:
-    CORS_ALLOW_ALL_ORIGINS = True
-    CORS_ALLOWED_ORIGINS = []
-
-CORS_ALLOW_CREDENTIALS = True  # Allow cookies/credentials in CORS requests
-CORS_ALLOW_METHODS = [
-    'DELETE',
-    'GET',
-    'OPTIONS',
-    'PATCH',
-    'POST',
-    'PUT',
+# ── CORS ──────────────────────────────────────────────────────────────────────
+# Flutter mobile apps don't send CORS preflight, but Flutter Web does.
+CORS_ALLOWED_ORIGINS = [
+    "https://savingsutl-production.up.railway.app",
+    "https://glittering-cobbler-1d32f6.netlify.app",
+    "http://localhost:3000",
+    "http://localhost:8080",
+    "http://localhost:8081",
+    "http://127.0.0.1:8080",
+    "http://127.0.0.1:8081",
 ]
 
+if DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True
+else:
+    CORS_ALLOW_ALL_ORIGINS = False
+
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_METHODS = ['DELETE', 'GET', 'OPTIONS', 'PATCH', 'POST', 'PUT']
 CORS_ALLOW_HEADERS = [
     "accept",
     "accept-encoding",
@@ -207,3 +187,17 @@ CORS_ALLOW_HEADERS = [
     "x-forwarded-for",
     "x-forwarded-proto",
 ]
+
+
+# ── Logging ───────────────────────────────────────────────────────────────────
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {'class': 'logging.StreamHandler'},
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+}

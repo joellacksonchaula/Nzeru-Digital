@@ -14,6 +14,30 @@ class AuthProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
+  /// Call this at startup (from SplashScreen) to restore a saved session.
+  Future<bool> tryRestoreSession() async {
+    await _api.loadTokens();
+    if (!_api.isAuthenticated) return false;
+    try {
+      await _fetchCurrentUser();
+      _isAuthenticated = _user != null;
+      notifyListeners();
+      return _isAuthenticated;
+    } catch (_) {
+      // Token may be expired; try refresh
+      final refreshed = await _api.refreshToken();
+      if (refreshed) {
+        try {
+          await _fetchCurrentUser();
+          _isAuthenticated = _user != null;
+          notifyListeners();
+          return _isAuthenticated;
+        } catch (_) {}
+      }
+      return false;
+    }
+  }
+
   Future<bool> login(String username, String password) async {
     _isLoading = true;
     _error = null;
@@ -27,57 +51,62 @@ class AuthProvider with ChangeNotifier {
       notifyListeners();
       return _isAuthenticated;
     } on ApiException catch (e) {
+      _isLoading = false;
       if (e.statusCode == 401) {
-        _error = 'Invalid username or password';
-      } else if (e.statusCode == 404) {
-        _error = 'User not found or profile missing';
+        _error = 'Invalid email or password';
+      } else if (e.statusCode == 400) {
+        // Parse validation error from body if possible
+        _error = 'Login failed: please check your credentials.';
       } else {
         _error = 'Login failed (${e.statusCode}). Please try again.';
       }
-      _isLoading = false;
       notifyListeners();
       return false;
     } catch (e) {
-      _error = 'Network error. Please check your connection.';
       _isLoading = false;
+      _error = 'Network error. Please check your connection.';
       notifyListeners();
       return false;
     }
   }
 
-  Future<bool> register(String name, String email, String phone, String password) async {
+  Future<bool> register(
+    String name,
+    String email,
+    String phone,
+    String password,
+  ) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
+      // Use email as username so login also works with email
       await _api.register(
         username: email,
         email: email,
         password: password,
         password2: password,
         firstName: name.split(' ').first,
-        lastName: name.split(' ').length > 1 ? name.split(' ').sublist(1).join(' ') : '',
+        lastName:
+            name.split(' ').length > 1 ? name.split(' ').sublist(1).join(' ') : '',
         phone: phone,
       );
       // Auto-login after registration
-      await _api.login(
-        username: email,
-        password: password,
-      );
+      await _api.login(username: email, password: password);
       await _fetchCurrentUser();
       _isAuthenticated = _user != null;
       _isLoading = false;
       notifyListeners();
       return _isAuthenticated;
-    } catch (e) {
-      _error = 'Registration failed: $e';
+    } on ApiException catch (e) {
       _isLoading = false;
+      _error = 'Registration failed (${e.statusCode}): ${e.body}';
       notifyListeners();
       return false;
     } catch (e) {
-      _error = 'Network error. Please check your connection.';
       _isLoading = false;
+      _error = 'Network error. Please check your connection.';
       notifyListeners();
       return false;
     }
@@ -86,15 +115,23 @@ class AuthProvider with ChangeNotifier {
   Future<void> _fetchCurrentUser() async {
     try {
       final data = await _api.getCurrentUser();
+      // /auth/me/ returns the UserProfile which contains nested user object
       final userData = data['user'] ?? data;
       _user = User(
         id: userData['id']?.toString() ?? '',
-        name: '${userData['first_name'] ?? ''} ${userData['last_name'] ?? ''}'.trim(),
+        name: '${userData['first_name'] ?? ''} ${userData['last_name'] ?? ''}'
+            .trim()
+            .isNotEmpty
+            ? '${userData['first_name'] ?? ''} ${userData['last_name'] ?? ''}'.trim()
+            : (userData['username'] ?? 'User'),
         email: userData['email'] ?? '',
         phone: data['phone'] ?? '',
-        savingsBalance: double.tryParse(data['savings_balance']?.toString() ?? '') ?? 0.0,
-        loanBalance: double.tryParse(data['loan_balance']?.toString() ?? '') ?? 0.0,
-        financialScore: int.tryParse(data['financial_score']?.toString() ?? '') ?? 0,
+        savingsBalance:
+            double.tryParse(data['savings_balance']?.toString() ?? '') ?? 0.0,
+        loanBalance:
+            double.tryParse(data['loan_balance']?.toString() ?? '') ?? 0.0,
+        financialScore:
+            int.tryParse(data['financial_score']?.toString() ?? '') ?? 0,
       );
     } catch (e) {
       debugPrint('Error fetching current user: $e');
@@ -102,26 +139,54 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  /// Refresh user profile data from the single-call dashboard endpoint.
   Future<void> refreshProfile() async {
     try {
-      final data = await _api.recalculateProfile();
-      if (_user != null) {
-        _user = _user!.copyWith(
-          name: '${data['user']?['first_name'] ?? ''} ${data['user']?['last_name'] ?? ''}'.trim(),
-          savingsBalance: double.tryParse(data['savings_balance']?.toString() ?? ''),
-          loanBalance: double.tryParse(data['loan_balance']?.toString() ?? ''),
-          financialScore: int.tryParse(data['financial_score']?.toString() ?? ''),
-        );
-        notifyListeners();
-      } else {
-        await _fetchCurrentUser();
-        notifyListeners();
-      }
-    } catch (_) {}
+      final data = await _api.getDashboard();
+      final userData = data['user'] ?? {};
+      final name =
+          '${userData['first_name'] ?? ''} ${userData['last_name'] ?? ''}'.trim();
+      _user = User(
+        id: userData['id']?.toString() ?? _user?.id ?? '',
+        name: name.isNotEmpty ? name : (userData['username'] ?? _user?.name ?? 'User'),
+        email: userData['email'] ?? _user?.email ?? '',
+        phone: _user?.phone ?? '',
+        savingsBalance:
+            double.tryParse(data['savings_balance']?.toString() ?? '') ??
+                _user?.savingsBalance ??
+                0.0,
+        loanBalance:
+            double.tryParse(data['loan_balance']?.toString() ?? '') ??
+                _user?.loanBalance ??
+                0.0,
+        financialScore:
+            int.tryParse(data['financial_score']?.toString() ?? '') ??
+                _user?.financialScore ??
+                0,
+      );
+      notifyListeners();
+    } catch (_) {
+      // Fallback to the profile recalculate endpoint
+      try {
+        final data = await _api.recalculateProfile();
+        if (_user != null) {
+          final userData = data['user'] ?? {};
+          _user = _user!.copyWith(
+            savingsBalance:
+                double.tryParse(data['savings_balance']?.toString() ?? ''),
+            loanBalance:
+                double.tryParse(data['loan_balance']?.toString() ?? ''),
+            financialScore:
+                int.tryParse(data['financial_score']?.toString() ?? ''),
+          );
+          notifyListeners();
+        }
+      } catch (_) {}
+    }
   }
 
-  void logout() {
-    _api.logout();
+  Future<void> logout() async {
+    await _api.logout();
     _user = null;
     _isAuthenticated = false;
     _error = null;

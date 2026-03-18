@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:provider/provider.dart';
 import '../config/app_colors.dart';
 import '../config/app_routes.dart';
+import '../providers/auth_provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -15,11 +17,26 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
-        Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
-      }
-    });
+    _checkAuthAndNavigate();
+  }
+
+  Future<void> _checkAuthAndNavigate() async {
+    // Show splash for at least 2 seconds while checking auth
+    final futures = await Future.wait([
+      context.read<AuthProvider>().tryRestoreSession(),
+      Future.delayed(const Duration(seconds: 2)),
+    ]);
+
+    if (!mounted) return;
+
+    final isAuthenticated = futures[0] as bool;
+    if (isAuthenticated) {
+      // ✅ User has a valid saved session — go straight to the main dashboard
+      Navigator.pushReplacementNamed(context, AppRoutes.mainShell);
+    } else {
+      // ❌ No session — show onboarding / login
+      Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
+    }
   }
 
   @override

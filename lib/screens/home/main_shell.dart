@@ -5,7 +5,7 @@ import '../../providers/savings_provider.dart';
 import '../../providers/loan_provider.dart';
 import '../../providers/auth_provider.dart' as auth;
 import '../../widgets/bottom_nav_bar.dart';
-import 'dashboard_screen.dart';
+import 'dashboard_screen_v2.dart';
 import '../savings/savings_plans_screen.dart';
 import '../loans/loan_eligibility_screen.dart';
 import '../reports/reports_screen.dart';
@@ -22,7 +22,7 @@ class _MainShellState extends State<MainShell> {
   int _currentIndex = 0;
 
   final _screens = const [
-    DashboardScreen(),
+    DashboardScreenV2(),
     SavingsPlansScreen(),
     LoanEligibilityScreen(),
     ReportsScreen(),

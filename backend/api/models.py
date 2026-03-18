@@ -126,6 +126,8 @@ class SavingsPlan(models.Model):
     current_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     grace_period_days = models.IntegerField(default=3)
     is_active = models.BooleanField(default=True)
+    is_secret = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
     def __str__(self):
         return f"{self.user.username} - {self.get_frequency_display()} plan"

@@ -18,7 +18,7 @@ from .serializers import (
 )
 
 
-# ─── Auth ───────────────────────────────────────────────
+# ─── Auth ───────────────────────────────────────────
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -35,7 +35,63 @@ def current_user(request):
     return Response(serializer.data)
 
 
-# ─── User Profile ──────────────────────────────────────
+# ─── Dashboard Summary (single-call endpoint) ───────
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def dashboard_summary(request):
+    """
+    Returns all data needed for the dashboard in one API call.
+    Reduces round-trips and keeps the UI in sync.
+    """
+    user = request.user
+    profile, _ = UserProfile.objects.get_or_create(user=user)
+
+    # Ensure balances are up to date
+    profile.recalculate_savings_balance()
+    profile.recalculate_loan_balance()
+    profile.calculate_financial_score()
+
+    # Active plans summary
+    active_plans = SavingsPlan.objects.filter(user=user, is_active=True)
+    secret_plans = active_plans.filter(is_secret=True)
+    normal_plans = active_plans.filter(is_secret=False)
+
+    # Active loans
+    active_loans = Loan.objects.filter(
+        user=user, status__in=['APPROVED', 'ACTIVE']
+    )
+    active_loan_balance = sum(l.remaining_balance for l in active_loans)
+
+    # Recent transactions (last 5)
+    recent_txns = Transaction.objects.filter(user=user).order_by('-timestamp')[:5]
+
+    # Unread notifications count
+    unread_count = Notification.objects.filter(user=user, is_read=False).count()
+
+    return Response({
+        'user': {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+        },
+        'savings_balance': float(profile.savings_balance),
+        'loan_balance': float(profile.loan_balance),
+        'financial_score': profile.financial_score,
+        'active_loan_balance': float(active_loan_balance),
+        'active_plans_count': normal_plans.count(),
+        'secret_savings_count': secret_plans.count(),
+        'secret_savings_balance': float(
+            sum(p.current_amount for p in secret_plans)
+        ),
+        'recent_transactions': TransactionSerializer(recent_txns, many=True).data,
+        'unread_notifications': unread_count,
+    })
+
+
+# ─── User Profile ──────────────────────────────────
 
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
@@ -55,7 +111,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         return Response(UserProfileSerializer(profile).data)
 
 
-# ─── Savings Plans ─────────────────────────────────────
+# ─── Savings Plans ─────────────────────────────────
 
 class SavingsPlanViewSet(viewsets.ModelViewSet):
     queryset = SavingsPlan.objects.all()
@@ -63,13 +119,18 @@ class SavingsPlanViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return self.queryset.filter(user=self.request.user).order_by('-created_at')
+        qs = self.queryset.filter(user=self.request.user).order_by('-start_date')
+        # Allow ?secret=true / ?secret=false filtering
+        secret = self.request.query_params.get('secret')
+        if secret is not None:
+            qs = qs.filter(is_secret=secret.lower() == 'true')
+        return qs
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
 
-# ─── Transactions (Deposits) ──────────────────────────
+# ─── Transactions (Deposits) ──────────────────────
 
 class TransactionViewSet(viewsets.ModelViewSet):
     queryset = Transaction.objects.all()
@@ -91,7 +152,7 @@ class TransactionViewSet(viewsets.ModelViewSet):
         profile.recalculate_savings_balance()
 
 
-# ─── Penalties ─────────────────────────────────────────
+# ─── Penalties ─────────────────────────────────────
 
 class PenaltyViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Penalty.objects.all()
@@ -102,7 +163,7 @@ class PenaltyViewSet(viewsets.ReadOnlyModelViewSet):
         return self.queryset.filter(user=self.request.user).order_by('-date')
 
 
-# ─── Loans ─────────────────────────────────────────────
+# ─── Loans ─────────────────────────────────────────
 
 class LoanViewSet(viewsets.ModelViewSet):
     queryset = Loan.objects.all()
@@ -124,7 +185,7 @@ class LoanViewSet(viewsets.ModelViewSet):
         )
 
 
-# ─── Loan Eligibility ─────────────────────────────────
+# ─── Loan Eligibility ─────────────────────────────
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -134,8 +195,9 @@ def loan_eligibility(request):
     profile.recalculate_savings_balance()
     savings = float(profile.savings_balance)
     max_loan = savings * 0.5
-    # Check if user already has an active loan
-    has_active_loan = request.user.loans.filter(status__in=['PENDING', 'APPROVED', 'ACTIVE']).exists()
+    has_active_loan = request.user.loans.filter(
+        status__in=['PENDING', 'APPROVED', 'ACTIVE']
+    ).exists()
     return Response({
         'savings_balance': savings,
         'max_loan_amount': max_loan,
@@ -145,7 +207,7 @@ def loan_eligibility(request):
     })
 
 
-# ─── Loan Payments ─────────────────────────────────────
+# ─── Loan Payments ─────────────────────────────────
 
 class LoanPaymentViewSet(viewsets.ModelViewSet):
     queryset = LoanPayment.objects.all()
@@ -158,7 +220,10 @@ class LoanPaymentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         loan_id = self.request.data.get('loan')
         try:
-            loan = Loan.objects.get(id=loan_id, user=self.request.user, status__in=['APPROVED', 'ACTIVE'])
+            loan = Loan.objects.get(
+                id=loan_id, user=self.request.user,
+                status__in=['APPROVED', 'ACTIVE']
+            )
         except Loan.DoesNotExist:
             return
 
@@ -166,17 +231,14 @@ class LoanPaymentViewSet(viewsets.ModelViewSet):
         new_remaining = max(Decimal('0'), loan.remaining_balance - amount)
         serializer.save(remaining_balance=new_remaining)
 
-        # Update the loan
         loan.remaining_balance = new_remaining
         if new_remaining <= 0:
             loan.status = 'PAID'
-            # Distribute interest when loan is fully paid
             self._distribute_interest(loan)
         else:
             loan.status = 'ACTIVE'
         loan.save()
 
-        # Recalculate user balances
         profile, _ = UserProfile.objects.get_or_create(user=loan.user)
         profile.recalculate_loan_balance()
 
@@ -192,7 +254,6 @@ class LoanPaymentViewSet(viewsets.ModelViewSet):
             user_savings_share=user_share,
             platform_share=platform_share,
         )
-        # Credit user savings with their share
         Transaction.objects.create(
             user=loan.user,
             amount=user_share,
@@ -203,16 +264,15 @@ class LoanPaymentViewSet(viewsets.ModelViewSet):
         profile, _ = UserProfile.objects.get_or_create(user=loan.user)
         profile.recalculate_savings_balance()
 
-        # Create notification
         Notification.objects.create(
             user=loan.user,
             title='Loan Fully Repaid!',
-            message=f'You earned MK{user_share} in interest rewards from your loan.',
+            message=f'You earned MK {user_share} in interest rewards from your loan.',
             type='INTEREST_REWARD',
         )
 
 
-# ─── Interest Distributions ───────────────────────────
+# ─── Interest Distributions ───────────────────────
 
 class InterestDistributionViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = InterestDistribution.objects.all()
@@ -223,7 +283,7 @@ class InterestDistributionViewSet(viewsets.ReadOnlyModelViewSet):
         return self.queryset.filter(loan__user=self.request.user).order_by('-distributed_at')
 
 
-# ─── Notifications ─────────────────────────────────────
+# ─── Notifications ─────────────────────────────────
 
 class NotificationViewSet(viewsets.ModelViewSet):
     queryset = Notification.objects.all()
@@ -246,7 +306,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
         return Response({'status': 'all marked as read'})
 
 
-# ─── Reports ───────────────────────────────────────────
+# ─── Reports ───────────────────────────────────────
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -258,7 +318,6 @@ def financial_report(request):
     profile.recalculate_loan_balance()
     profile.calculate_financial_score()
 
-    # Monthly savings breakdown
     from django.db.models import Sum
     from django.db.models.functions import TruncMonth
 
@@ -270,7 +329,6 @@ def financial_report(request):
         .order_by('month')
     )
 
-    # Loan repayment summary
     loans = Loan.objects.filter(user=user)
     total_loans_taken = loans.count()
     total_borrowed = loans.aggregate(total=Sum('amount'))['total'] or 0
@@ -278,7 +336,6 @@ def financial_report(request):
         total=Sum('amount_paid')
     )['total'] or 0
 
-    # Penalty summary
     total_penalties = Penalty.objects.filter(user=user).aggregate(
         total=Sum('amount')
     )['total'] or 0

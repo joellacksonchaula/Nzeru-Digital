@@ -14,6 +14,7 @@ class SavingsPlan {
   final double goalAmount;
   final double currentAmount;
   final bool isActive;
+  final bool isSecret;
 
   SavingsPlan({
     required this.id,
@@ -27,6 +28,7 @@ class SavingsPlan {
     this.goalAmount = 0,
     this.currentAmount = 0,
     this.isActive = true,
+    this.isSecret = false,
   });
 
   double get progressPercent =>
@@ -132,6 +134,7 @@ class SavingsPlan {
       goalAmount: _parseDouble(json['goal_amount']),
       currentAmount: _parseDouble(json['current_amount']),
       isActive: json['is_active'] as bool? ?? true,
+      isSecret: json['is_secret'] as bool? ?? false,
     );
   }
 
@@ -143,5 +146,6 @@ class SavingsPlan {
         'end_date': endDate.toIso8601String(),
         'penalty_policy': penaltyToApiString(penaltyPolicy),
         'goal_amount': goalAmount,
+        'is_secret': isSecret,
       };
 }

@@ -81,7 +81,7 @@ class SavingsPlanSerializer(serializers.ModelSerializer):
     class Meta:
         model = SavingsPlan
         fields = '__all__'
-        read_only_fields = ['user', 'current_amount']
+        read_only_fields = ['user', 'current_amount', 'created_at']
 
 
 class TransactionSerializer(serializers.ModelSerializer):
