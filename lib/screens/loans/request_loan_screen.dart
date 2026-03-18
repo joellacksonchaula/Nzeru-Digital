@@ -8,6 +8,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/loan_provider.dart';
 import '../../models/loan.dart';
 import '../../widgets/gold_button.dart';
+import '../../utils/currency_util.dart';
 
 class RequestLoanScreen extends StatefulWidget {
   const RequestLoanScreen({super.key});
@@ -30,11 +31,6 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
         loans.getLoanEligibility(auth.user?.savingsBalance ?? 0);
     final totalWithInterest = _loanAmount * (1 + _interestRate / 100);
     final monthlyPayment = totalWithInterest / _durationMonths;
-    final currencyFormat = NumberFormat.currency(
-      locale: 'en_US',
-      symbol: 'MK ',
-      decimalDigits: 2,
-    );
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -63,9 +59,9 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
               const SizedBox(height: 20),
               Center(
                 child: Text(
-                  currencyFormat.format(_loanAmount),
+                  CurrencyUtil.format(_loanAmount),
                   style: GoogleFonts.orbitron(
-                    fontSize: 40,
+                    fontSize: 34,
                     fontWeight: FontWeight.w700,
                     color: AppColors.gold,
                   ),
@@ -82,7 +78,7 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
                 child: Slider(
                   value: _loanAmount,
                   min: 100,
-                  max: maxLoan > 0 ? maxLoan : 100,
+                  max: maxLoan > 100 ? maxLoan : 101,
                   divisions: maxLoan > 100 ? ((maxLoan - 100) / 50).round() : 1,
                   onChanged: (v) =>
                       setState(() => _loanAmount = (v / 50).round() * 50.0),
@@ -94,7 +90,7 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
                   Text('MK 100',
                       style: GoogleFonts.inter(
                           fontSize: 11, color: AppColors.textMuted)),
-                  Text(currencyFormat.format(maxLoan),
+                  Text(CurrencyUtil.formatNoDecimal(maxLoan),
                       style: GoogleFonts.inter(
                           fontSize: 11, color: AppColors.textMuted)),
                 ],
@@ -146,19 +142,19 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
                 ),
                 child: Column(
                   children: [
-                    _summaryRow('Loan Amount', currencyFormat.format(_loanAmount)),
+                    _summaryRow('Loan Amount', CurrencyUtil.format(_loanAmount)),
                     const Divider(color: AppColors.border, height: 24),
                     _summaryRow('Interest Rate', '${_interestRate.toStringAsFixed(0)}%'),
                     const Divider(color: AppColors.border, height: 24),
                     _summaryRow('Total Interest',
-                        currencyFormat.format(_loanAmount * _interestRate / 100)),
+                        CurrencyUtil.format(_loanAmount * _interestRate / 100)),
                     const Divider(color: AppColors.border, height: 24),
                     _summaryRow('Total Repayment',
-                        currencyFormat.format(totalWithInterest)),
+                        CurrencyUtil.format(totalWithInterest)),
                     const Divider(color: AppColors.border, height: 24),
                     _summaryRow(
                       'Monthly Payment',
-                      currencyFormat.format(monthlyPayment),
+                      CurrencyUtil.format(monthlyPayment),
                       valueColor: AppColors.gold,
                     ),
                     const Divider(color: AppColors.border, height: 24),
@@ -170,7 +166,7 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
                             style: GoogleFonts.inter(
                                 fontSize: 12, color: AppColors.textMuted)),
                         Text(
-                            currencyFormat.format(
+                            CurrencyUtil.format(
                                 _loanAmount * _interestRate / 100 / 2),
                             style: GoogleFonts.orbitron(
                                 fontSize: 12,
@@ -210,8 +206,9 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
                     if (success) {
                       navigator.pop();
                       messenger.showSnackBar(
-                        const SnackBar(
-                            content: Text('Loan request submitted!')),
+                        SnackBar(
+                            content: Text(
+                                'Loan request for ${CurrencyUtil.format(_loanAmount)} submitted!')),
                       );
                     } else {
                       messenger.showSnackBar(

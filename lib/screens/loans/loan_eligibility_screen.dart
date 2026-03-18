@@ -11,6 +11,7 @@ import '../../widgets/glass_card.dart';
 import '../../widgets/glow_text.dart';
 import '../../widgets/gold_button.dart';
 import '../../widgets/progress_ring.dart';
+import '../../utils/currency_util.dart';
 
 class LoanEligibilityScreen extends StatelessWidget {
   const LoanEligibilityScreen({super.key});
@@ -22,11 +23,6 @@ class LoanEligibilityScreen extends StatelessWidget {
     final user = auth.user;
     final savingsBalance = user?.savingsBalance ?? 0;
     final maxLoan = loans.getLoanEligibility(savingsBalance);
-    final currencyFormat = NumberFormat.currency(
-      locale: 'en_US',
-      symbol: 'MK ',
-      decimalDigits: 2,
-    );
     final activeLoan = loans.activeLoan;
 
     return Scaffold(
@@ -87,7 +83,7 @@ class LoanEligibilityScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
                     GlowText(
-                      text: currencyFormat.format(maxLoan),
+                      text: CurrencyUtil.format(maxLoan),
                       fontSize: 36,
                     ),
                     const SizedBox(height: 8),
@@ -113,7 +109,7 @@ class LoanEligibilityScreen extends StatelessWidget {
                                       fontSize: 12,
                                       color: AppColors.textMuted)),
                               const SizedBox(height: 4),
-                              Text(currencyFormat.format(savingsBalance),
+                               Text(CurrencyUtil.format(savingsBalance),
                                   style: GoogleFonts.orbitron(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w700,
@@ -130,7 +126,7 @@ class LoanEligibilityScreen extends StatelessWidget {
                                       fontSize: 12,
                                       color: AppColors.textMuted)),
                               const SizedBox(height: 4),
-                              Text(currencyFormat.format(maxLoan),
+                              Text(CurrencyUtil.format(maxLoan),
                                   style: GoogleFonts.orbitron(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w700,
@@ -182,7 +178,7 @@ class LoanEligibilityScreen extends StatelessWidget {
                                         color: AppColors.textMuted)),
                                 const SizedBox(height: 4),
                                 Text(
-                                    currencyFormat
+                                    CurrencyUtil
                                         .format(activeLoan.totalWithInterest),
                                     style: GoogleFonts.orbitron(
                                         fontSize: 18,
@@ -195,7 +191,7 @@ class LoanEligibilityScreen extends StatelessWidget {
                                         color: AppColors.textMuted)),
                                 const SizedBox(height: 4),
                                 Text(
-                                    currencyFormat
+                                    CurrencyUtil
                                         .format(activeLoan.monthlyPayment),
                                     style: GoogleFonts.orbitron(
                                         fontSize: 14,
@@ -228,11 +224,11 @@ class LoanEligibilityScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                              'Repaid: ${currencyFormat.format(activeLoan.totalRepaid)}',
+                              'Repaid: ${CurrencyUtil.format(activeLoan.totalRepaid)}',
                               style: GoogleFonts.inter(
                                   fontSize: 11, color: AppColors.textMuted)),
                           Text(
-                              'Remaining: ${currencyFormat.format(activeLoan.remainingBalance)}',
+                              'Remaining: ${CurrencyUtil.format(activeLoan.remainingBalance)}',
                               style: GoogleFonts.inter(
                                   fontSize: 11, color: AppColors.textMuted)),
                         ],

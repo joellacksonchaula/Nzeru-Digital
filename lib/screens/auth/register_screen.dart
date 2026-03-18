@@ -171,6 +171,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       );
                       if (success && mounted) {
                         navigator.pushReplacementNamed(AppRoutes.mainShell);
+                      } else if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text(auth.error ?? 'Registration failed')),
+                        );
                       }
                     }
                   },

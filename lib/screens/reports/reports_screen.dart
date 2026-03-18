@@ -8,6 +8,7 @@ import '../../config/app_colors.dart';
 import '../../providers/savings_provider.dart';
 import '../../providers/loan_provider.dart';
 import '../../widgets/glass_card.dart';
+import '../../utils/currency_util.dart';
 
 class ReportsScreen extends StatelessWidget {
   const ReportsScreen({super.key});
@@ -16,11 +17,6 @@ class ReportsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final savings = context.watch<SavingsProvider>();
     final loans = context.watch<LoanProvider>();
-    final currencyFormat = NumberFormat.currency(
-      locale: 'en_US',
-      symbol: 'MK ',
-      decimalDigits: 2,
-    );
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -81,7 +77,7 @@ class ReportsScreen extends StatelessWidget {
                                 reservedSize: 50,
                                 interval: 1000,
                                 getTitlesWidget: (value, meta) => Text(
-                                  'MK ${value.toInt()}',
+                                  CurrencyUtil.formatCompact(value),
                                   style: GoogleFonts.inter(
                                       fontSize: 10,
                                       color: AppColors.textMuted),
@@ -314,17 +310,17 @@ class ReportsScreen extends StatelessWidget {
                             color: AppColors.textMuted,
                             letterSpacing: 2)),
                     const SizedBox(height: 16),
-                    _summaryRow('Total Deposits', currencyFormat.format(3200)),
+                    _summaryRow('Total Deposits', CurrencyUtil.format(3200)),
                     const Divider(color: AppColors.border, height: 20),
                     _summaryRow('Total Penalties',
-                        currencyFormat.format(savings.totalPenalties),
+                        CurrencyUtil.format(savings.totalPenalties),
                         color: AppColors.actionRed),
                     const Divider(color: AppColors.border, height: 20),
-                    _summaryRow('Interest Earned', currencyFormat.format(50),
+                    _summaryRow('Interest Earned', CurrencyUtil.format(50),
                         color: AppColors.success),
                     const Divider(color: AppColors.border, height: 20),
                     _summaryRow('Loan Repaid',
-                        currencyFormat.format(loans.totalRepaid),
+                        CurrencyUtil.format(loans.totalRepaid),
                         color: AppColors.info),
                   ],
                 ),

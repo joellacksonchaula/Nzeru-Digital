@@ -7,6 +7,7 @@ import '../../config/app_colors.dart';
 import '../../providers/loan_provider.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/progress_ring.dart';
+import '../../utils/currency_util.dart';
 
 class LoanDetailScreen extends StatelessWidget {
   const LoanDetailScreen({super.key});
@@ -15,11 +16,6 @@ class LoanDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final loans = context.watch<LoanProvider>();
     final loan = loans.activeLoan;
-    final currencyFormat = NumberFormat.currency(
-      locale: 'en_US',
-      symbol: 'MK ',
-      decimalDigits: 2,
-    );
     final loanPayments =
         loans.payments.where((p) => p.loanId == loan?.id).toList();
     final distribution =
@@ -60,23 +56,23 @@ class LoanDetailScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         _row('Loan Amount',
-                            currencyFormat.format(loan.amount)),
+                            CurrencyUtil.format(loan.amount)),
                         const Divider(color: AppColors.border, height: 24),
                         _row('Interest Rate',
                             '${loan.interestRate.toStringAsFixed(0)}%'),
                         const Divider(color: AppColors.border, height: 24),
                         _row('Total with Interest',
-                            currencyFormat.format(loan.totalWithInterest)),
+                            CurrencyUtil.format(loan.totalWithInterest)),
                         const Divider(color: AppColors.border, height: 24),
                         _row('Monthly Payment',
-                            currencyFormat.format(loan.monthlyPayment)),
+                            CurrencyUtil.format(loan.monthlyPayment)),
                         const Divider(color: AppColors.border, height: 24),
                         _row('Total Repaid',
-                            currencyFormat.format(loan.totalRepaid),
+                            CurrencyUtil.format(loan.totalRepaid),
                             valueColor: AppColors.success),
                         const Divider(color: AppColors.border, height: 24),
                         _row('Remaining',
-                            currencyFormat.format(loan.remainingBalance),
+                            CurrencyUtil.format(loan.remainingBalance),
                             valueColor: AppColors.actionRed),
                         const Divider(color: AppColors.border, height: 24),
                         _row('Duration', '${loan.durationMonths} months'),
@@ -104,15 +100,15 @@ class LoanDetailScreen extends StatelessWidget {
                       child: Column(
                         children: [
                           _row('Total Interest',
-                              currencyFormat.format(distribution.totalInterest)),
+                              CurrencyUtil.format(distribution.totalInterest)),
                           const Divider(color: AppColors.border, height: 24),
                           _row('Your Share (50%)',
-                              currencyFormat
+                              CurrencyUtil
                                   .format(distribution.userSavingsShare),
                               valueColor: AppColors.success),
                           const Divider(color: AppColors.border, height: 24),
                           _row('Platform Share (50%)',
-                              currencyFormat
+                              CurrencyUtil
                                   .format(distribution.platformShare),
                               valueColor: AppColors.info),
                         ],
@@ -174,7 +170,7 @@ class LoanDetailScreen extends StatelessWidget {
                               ],
                             ),
                           ),
-                          Text(currencyFormat.format(payment.amountPaid),
+                          Text(CurrencyUtil.format(payment.amountPaid),
                               style: GoogleFonts.orbitron(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,

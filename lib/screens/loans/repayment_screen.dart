@@ -6,6 +6,7 @@ import '../../config/app_colors.dart';
 import '../../models/loan_payment.dart';
 import '../../providers/loan_provider.dart';
 import '../../widgets/gold_button.dart';
+import '../../utils/currency_util.dart';
 
 class RepaymentScreen extends StatefulWidget {
   const RepaymentScreen({super.key});
@@ -90,7 +91,7 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
                                       color: AppColors.textMuted)),
                               const SizedBox(height: 4),
                               Text(
-                                  'MK ${activeLoan.remainingBalance.toStringAsFixed(2)}',
+                                  CurrencyUtil.format(activeLoan.remainingBalance),
                                   style: GoogleFonts.orbitron(
                                       fontSize: 20,
                                       fontWeight: FontWeight.w700,
@@ -106,7 +107,7 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
                                       color: AppColors.textMuted)),
                               const SizedBox(height: 4),
                               Text(
-                                  'MK ${activeLoan.monthlyPayment.toStringAsFixed(2)}',
+                                  CurrencyUtil.format(activeLoan.monthlyPayment),
                                   style: GoogleFonts.orbitron(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
@@ -193,7 +194,7 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
                             messenger.showSnackBar(
                               SnackBar(
                                   content: Text(
-                                      'Payment of MK${amount.toStringAsFixed(2)} successful!')),
+                                      'Payment of ${CurrencyUtil.format(amount)} successful!')),
                             );
                           } else {
                             messenger.showSnackBar(

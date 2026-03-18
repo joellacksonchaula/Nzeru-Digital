@@ -7,6 +7,7 @@ import '../../models/savings_plan.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/savings_provider.dart';
 import '../../widgets/gold_button.dart';
+import '../../utils/currency_util.dart';
 
 class CreatePlanScreen extends StatefulWidget {
   const CreatePlanScreen({super.key});
@@ -290,7 +291,9 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
                         if (success) {
                           navigator.pop();
                           messenger.showSnackBar(
-                            const SnackBar(content: Text('Savings plan created!')),
+                            SnackBar(
+                                content: Text(
+                                    'Savings plan for ${CurrencyUtil.format(amount)} created!')),
                           );
                         } else {
                           messenger.showSnackBar(

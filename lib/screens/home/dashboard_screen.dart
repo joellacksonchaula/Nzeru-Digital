@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
-import 'package:fl_chart/fl_chart.dart';
 import '../../config/app_colors.dart';
 import '../../config/app_routes.dart';
 import '../../providers/auth_provider.dart';
@@ -12,8 +10,7 @@ import '../../providers/loan_provider.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/glow_text.dart';
 import '../../widgets/stat_tile.dart';
-import '../../widgets/crypto_chart.dart';
-import '../../widgets/crypto_market_card.dart';
+import '../../utils/currency_formatter.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -39,11 +36,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final savings = context.watch<SavingsProvider>();
     final loans = context.watch<LoanProvider>();
     final user = auth.user;
-    final currencyFormat = NumberFormat.currency(
-      locale: 'en_US',
-      symbol: 'MK ',
-      decimalDigits: 2,
-    );
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -181,62 +173,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                       const SizedBox(height: 16),
                       GlowText(
-                        text: currencyFormat.format(user?.savingsBalance ?? 0),
+                        text: CurrencyFormatter.formatMK(user?.savingsBalance ?? 0),
                         fontSize: 34,
                       ),
                       const SizedBox(height: 20),
-                      // Mini chart — real deposit data (last 7 credits, oldest→newest)
-                      Builder(builder: (context) {
-                        final creditTxns = savings.transactions
-                            .where((t) => t.isCredit)
-                            .take(7)
-                            .toList()
-                            .reversed
-                            .toList();
-                        final spots = creditTxns.isEmpty
-                            ? [const FlSpot(0, 0), const FlSpot(1, 0)]
-                            : creditTxns
-                                .asMap()
-                                .entries
-                                .map((e) => FlSpot(
-                                      e.key.toDouble(),
-                                      e.value.amount.toDouble(),
-                                    ))
-                                .toList();
-                        return SizedBox(
-                          height: 60,
-                          child: LineChart(
-                            LineChartData(
-                              gridData: const FlGridData(show: false),
-                              titlesData: const FlTitlesData(show: false),
-                              borderData: FlBorderData(show: false),
-                              lineTouchData:
-                                  const LineTouchData(enabled: false),
-                              lineBarsData: [
-                                LineChartBarData(
-                                  spots: spots,
-                                  isCurved: true,
-                                  color: AppColors.gold,
-                                  barWidth: 2.5,
-                                  isStrokeCapRound: true,
-                                  dotData: const FlDotData(show: false),
-                                  belowBarData: BarAreaData(
-                                    show: true,
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topCenter,
-                                      end: Alignment.bottomCenter,
-                                      colors: [
-                                        AppColors.gold.withAlpha(40),
-                                        AppColors.gold.withAlpha(10),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      }),
                     ],
                   ),
                 ),
@@ -253,7 +193,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       child: StatTile(
                         icon: Icons.account_balance_wallet,
                         label: 'LOAN BALANCE',
-                        value: currencyFormat.format(
+                        value: CurrencyFormatter.formatMK(
                             loans.activeLoan?.remainingBalance ?? 0),
                         iconColor: AppColors.info,
                       ),
@@ -270,7 +210,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                   ],
                 ),
-              ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.1),
+              ),
 
               const SizedBox(height: 12),
 
@@ -291,14 +231,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       child: StatTile(
                         icon: Icons.warning_amber_rounded,
                         label: 'PENALTIES',
-                        value: currencyFormat.format(savings.totalPenalties),
+                        value: CurrencyFormatter.formatCompact(savings.totalPenalties),
                         iconColor: AppColors.actionRed,
                         valueColor: AppColors.actionRed,
                       ),
                     ),
                   ],
                 ),
-              ).animate().fadeIn(delay: 500.ms).slideY(begin: 0.1),
+              ),
 
               const SizedBox(height: 24),
 
@@ -352,7 +292,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                   ],
                 ),
-              ).animate().fadeIn(delay: 600.ms),
+              ),
 
               const SizedBox(height: 24),
 
@@ -384,75 +324,74 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ],
                 ),
               ),
-              ...[
-                for (final txn in savings.transactions.take(5))
-                  Container(
-                    margin: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 4),
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: AppColors.cardBg,
-                      borderRadius: BorderRadius.circular(12),
-                      border:
-                          Border.all(color: AppColors.border, width: 0.5),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: txn.isCredit
-                                ? AppColors.success.withAlpha(20)
-                                : AppColors.actionRed.withAlpha(20),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Icon(
-                            txn.isCredit
-                                ? Icons.arrow_downward_rounded
-                                : Icons.arrow_upward_rounded,
-                            color: txn.isCredit
-                                ? AppColors.success
-                                : AppColors.actionRed,
-                            size: 18,
-                          ),
+              ...savings.transactions.take(5).map((txn) {
+                return Container(
+                  margin: const EdgeInsets.symmetric(
+                      horizontal: 16, vertical: 4),
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: AppColors.cardBg,
+                    borderRadius: BorderRadius.circular(12),
+                    border:
+                        Border.all(color: AppColors.border, width: 0.5),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: txn.isCredit
+                              ? AppColors.success.withAlpha(20)
+                              : AppColors.actionRed.withAlpha(20),
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                txn.typeLabel,
-                                style: GoogleFonts.inter(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.textPrimary,
-                                ),
+                        child: Icon(
+                          txn.isCredit
+                              ? Icons.arrow_downward_rounded
+                              : Icons.arrow_upward_rounded,
+                          color: txn.isCredit
+                              ? AppColors.success
+                              : AppColors.actionRed,
+                          size: 18,
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              txn.typeLabel,
+                              style: GoogleFonts.inter(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.textPrimary,
                               ),
-                              Text(
-                                DateFormat('dd MMM yyyy').format(txn.date),
-                                style: GoogleFonts.inter(
-                                  fontSize: 11,
-                                  color: AppColors.textMuted,
-                                ),
+                            ),
+                            Text(
+                              DateFormat('dd MMM yyyy').format(txn.date),
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                color: AppColors.textMuted,
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                        Text(
-                          '${txn.isCredit ? '+' : '-'} ${currencyFormat.format(txn.amount)}',
-                          style: GoogleFonts.orbitron(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: txn.isCredit
-                                ? AppColors.success
-                                : AppColors.actionRed,
-                          ),
+                      ),
+                      Text(
+                        '${txn.isCredit ? '+' : '-'} ${CurrencyFormatter.formatMK(txn.amount)}',
+                        style: GoogleFonts.orbitron(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: txn.isCredit
+                              ? AppColors.success
+                              : AppColors.actionRed,
                         ),
-                      ],
-                    ),
-                  )
-              ],
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
             ],
           ),
         ),

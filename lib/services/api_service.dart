@@ -1,18 +1,16 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'dart:io';
+import 'dart:async';
 
 /// Central API service handling all HTTP calls to the Django backend.
 /// Stores JWT tokens for authenticated requests.
 class ApiService {
-  // Toggle this for production vs local development
-  static const bool isProduction = false; 
-  
-  // For Android emulator use 10.0.2.2; for local dev use localhost or IP; for production use your live URL
-// API base URL for production
-static const String baseUrl = "https://savingsutl-production.up.railway.app/api";
+  // Production URL
+  static const String baseUrl = "https://savingsutl-production.up.railway.app/api";
 
-String? _accessToken;
-String? _refreshToken;
+  String? _accessToken;
+  String? _refreshToken;
 
   // Singleton
   static final ApiService _instance = ApiService._internal();
@@ -23,6 +21,7 @@ String? _refreshToken;
 
   Map<String, String> get _headers => {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
         if (_accessToken != null) 'Authorization': 'Bearer $_accessToken',
       };
 
@@ -37,38 +36,55 @@ String? _refreshToken;
     String lastName = '',
     String phone = '',
   }) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/auth/register/'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'username': username,
-        'email': email,
-        'password': password,
-        'password2': password2,
-        'first_name': firstName,
-        'last_name': lastName,
-        'phone': phone,
-      }),
-    );
-    return _handleResponse(response);
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/auth/register/'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'username': username,
+          'email': email,
+          'password': password,
+          'password2': password2,
+          'first_name': firstName,
+          'last_name': lastName,
+          'phone': phone,
+        }),
+      ).timeout(const Duration(seconds: 30));
+      return _handleResponse(response);
+    } on SocketException catch (e) {
+      throw Exception('Network error: ${e.message}. Check your internet connection.');
+    } on TimeoutException {
+      throw Exception('Request timeout. Server took too long to respond.');
+    } catch (e) {
+      throw Exception('Registration failed: $e');
+    }
   }
 
   Future<Map<String, dynamic>> login({
     required String username,
     required String password,
   }) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/auth/login/'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'username': username,
-        'password': password,
-      }),
-    );
-    final data = _handleResponse(response);
-    _accessToken = data['access'];
-    _refreshToken = data['refresh'];
-    return data;
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/auth/login/'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'username': username,
+          'password': password,
+        }),
+      ).timeout(const Duration(seconds: 30));
+      
+      final data = _handleResponse(response);
+      _accessToken = data['access'];
+      _refreshToken = data['refresh'];
+      return data;
+    } on SocketException catch (e) {
+      throw Exception('Network error: ${e.message}. Check your internet connection and verify the server is running.');
+    } on TimeoutException {
+      throw Exception('Login timeout. Server took too long to respond.');
+    } catch (e) {
+      throw Exception('Login failed: $e');
+    }
   }
 
   Future<bool> refreshToken() async {
@@ -78,7 +94,8 @@ String? _refreshToken;
         Uri.parse('$baseUrl/auth/refresh/'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'refresh': _refreshToken}),
-      );
+      ).timeout(const Duration(seconds: 30));
+      
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         _accessToken = data['access'];
@@ -88,7 +105,8 @@ String? _refreshToken;
         return true;
       }
       return false;
-    } catch (_) {
+    } catch (e) {
+      print('Token refresh error: $e');
       return false;
     }
   }

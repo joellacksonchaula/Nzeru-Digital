@@ -7,6 +7,7 @@ import '../../config/app_colors.dart';
 import '../../providers/savings_provider.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/progress_ring.dart';
+import '../../utils/currency_util.dart';
 
 class PlanDetailScreen extends StatelessWidget {
   const PlanDetailScreen({super.key});
@@ -15,11 +16,6 @@ class PlanDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final savings = context.watch<SavingsProvider>();
     final plan = savings.plans.isNotEmpty ? savings.plans[0] : null;
-    final currencyFormat = NumberFormat.currency(
-      locale: 'en_US',
-      symbol: 'MK ',
-      decimalDigits: 2,
-    );
     final planTransactions = savings.transactions
         .where((t) => t.planId == plan?.id)
         .toList();
@@ -54,7 +50,7 @@ class PlanDetailScreen extends StatelessWidget {
                   ).animate().scale(duration: 600.ms, curve: Curves.easeOut),
                   const SizedBox(height: 20),
                   Text(
-                    '${currencyFormat.format(plan.currentAmount)} of ${currencyFormat.format(plan.goalAmount)}',
+                    '${CurrencyUtil.format(plan.currentAmount)} of ${CurrencyUtil.format(plan.goalAmount)}',
                     style: GoogleFonts.orbitron(
                       fontSize: 16,
                       color: AppColors.textPrimary,
@@ -70,7 +66,7 @@ class PlanDetailScreen extends StatelessWidget {
                         _infoRow('Frequency', plan.frequencyLabel),
                         const Divider(color: AppColors.border, height: 24),
                         _infoRow('Amount per Period',
-                            currencyFormat.format(plan.amountPerPeriod)),
+                            CurrencyUtil.format(plan.amountPerPeriod)),
                         const Divider(color: AppColors.border, height: 24),
                         _infoRow('Duration', '${plan.durationMonths} months'),
                         const Divider(color: AppColors.border, height: 24),
@@ -152,7 +148,7 @@ class PlanDetailScreen extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            '${txn.isCredit ? '+' : '-'} ${currencyFormat.format(txn.amount)}',
+                            '${txn.isCredit ? '+' : '-'} ${CurrencyUtil.format(txn.amount)}',
                             style: GoogleFonts.orbitron(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,

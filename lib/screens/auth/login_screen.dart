@@ -151,6 +151,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         );
                         if (success && mounted) {
                           navigator.pushReplacementNamed(AppRoutes.mainShell);
+                        } else if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(auth.error ?? 'Login failed')),
+                          );
                         }
                       }
                     },

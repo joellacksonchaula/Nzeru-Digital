@@ -22,14 +22,18 @@ class AuthProvider with ChangeNotifier {
     try {
       await _api.login(username: username, password: password);
       await _fetchCurrentUser();
-      _isAuthenticated = true;
+      _isAuthenticated = _user != null;
       _isLoading = false;
       notifyListeners();
-      return true;
+      return _isAuthenticated;
     } on ApiException catch (e) {
-      _error = e.statusCode == 401
-          ? 'Invalid username or password'
-          : 'Login failed. Please try again.';
+      if (e.statusCode == 401) {
+        _error = 'Invalid username or password';
+      } else if (e.statusCode == 404) {
+        _error = 'User not found or profile missing';
+      } else {
+        _error = 'Login failed (${e.statusCode}). Please try again.';
+      }
       _isLoading = false;
       notifyListeners();
       return false;
@@ -48,7 +52,7 @@ class AuthProvider with ChangeNotifier {
 
     try {
       await _api.register(
-        username: email,  // Use full email as username
+        username: email,
         email: email,
         password: password,
         password2: password,
@@ -58,16 +62,16 @@ class AuthProvider with ChangeNotifier {
       );
       // Auto-login after registration
       await _api.login(
-        username: email,  // Login with email as username
+        username: email,
         password: password,
       );
       await _fetchCurrentUser();
-      _isAuthenticated = true;
+      _isAuthenticated = _user != null;
       _isLoading = false;
       notifyListeners();
-      return true;
-    } on ApiException catch (e) {
-      _error = 'Registration failed: ${e.body}';
+      return _isAuthenticated;
+    } catch (e) {
+      _error = 'Registration failed: $e';
       _isLoading = false;
       notifyListeners();
       return false;
@@ -92,8 +96,9 @@ class AuthProvider with ChangeNotifier {
         loanBalance: (data['loan_balance'] as num?)?.toDouble() ?? 0,
         financialScore: data['financial_score'] as int? ?? 0,
       );
-    } catch (_) {
-      // Profile may not exist yet—create minimal user
+    } catch (e) {
+      debugPrint('Error fetching current user: $e');
+      _user = null;
     }
   }
 
@@ -102,10 +107,14 @@ class AuthProvider with ChangeNotifier {
       final data = await _api.recalculateProfile();
       if (_user != null) {
         _user = _user!.copyWith(
+          name: '${data['user']?['first_name'] ?? ''} ${data['user']?['last_name'] ?? ''}'.trim(),
           savingsBalance: (data['savings_balance'] as num?)?.toDouble(),
           loanBalance: (data['loan_balance'] as num?)?.toDouble(),
           financialScore: data['financial_score'] as int?,
         );
+        notifyListeners();
+      } else {
+        await _fetchCurrentUser();
         notifyListeners();
       }
     } catch (_) {}

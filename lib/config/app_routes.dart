@@ -3,7 +3,7 @@ import '../screens/splash_screen.dart';
 import '../screens/onboarding_screen.dart';
 import '../screens/auth/login_screen.dart';
 import '../screens/auth/register_screen.dart';
-import '../screens/home/dashboard_screen.dart';
+import '../screens/home/dashboard_screen_v2.dart';
 import '../screens/savings/savings_plans_screen.dart';
 import '../screens/savings/create_plan_screen.dart';
 import '../screens/savings/plan_detail_screen.dart';
@@ -44,7 +44,7 @@ class AppRoutes {
         login: (_) => const LoginScreen(),
         register: (_) => const RegisterScreen(),
         mainShell: (_) => const MainShell(),
-        dashboard: (_) => const DashboardScreen(),
+        dashboard: (_) => const DashboardScreenV2(),
         savingsPlans: (_) => const SavingsPlansScreen(),
         createPlan: (_) => const CreatePlanScreen(),
         planDetail: (_) => const PlanDetailScreen(),

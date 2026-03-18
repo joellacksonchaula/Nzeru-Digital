@@ -8,6 +8,7 @@ import '../../config/app_routes.dart';
 import '../../providers/savings_provider.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/progress_ring.dart';
+import '../../utils/currency_util.dart';
 
 class SavingsPlansScreen extends StatelessWidget {
   const SavingsPlansScreen({super.key});
@@ -15,11 +16,6 @@ class SavingsPlansScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final savings = context.watch<SavingsProvider>();
-    final currencyFormat = NumberFormat.currency(
-      locale: 'en_US',
-      symbol: 'MK ',
-      decimalDigits: 2,
-    );
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -126,7 +122,7 @@ class SavingsPlansScreen extends StatelessWidget {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      '${currencyFormat.format(plan.amountPerPeriod)} / ${plan.frequencyLabel.toLowerCase()}',
+                                      '${CurrencyUtil.format(plan.amountPerPeriod)} / ${plan.frequencyLabel.toLowerCase()}',
                                       style: GoogleFonts.inter(
                                         fontSize: 12,
                                         color: AppColors.textMuted,
@@ -138,8 +134,7 @@ class SavingsPlansScreen extends StatelessWidget {
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
-                                          currencyFormat
-                                              .format(plan.currentAmount),
+                                          CurrencyUtil.format(plan.currentAmount),
                                           style: GoogleFonts.orbitron(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w700,
@@ -147,7 +142,7 @@ class SavingsPlansScreen extends StatelessWidget {
                                           ),
                                         ),
                                         Text(
-                                          'of ${currencyFormat.format(plan.goalAmount)}',
+                                          'of ${CurrencyUtil.format(plan.goalAmount)}',
                                           style: GoogleFonts.inter(
                                             fontSize: 12,
                                             color: AppColors.textMuted,
