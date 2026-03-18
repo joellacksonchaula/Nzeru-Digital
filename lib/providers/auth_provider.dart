@@ -92,9 +92,9 @@ class AuthProvider with ChangeNotifier {
         name: '${userData['first_name'] ?? ''} ${userData['last_name'] ?? ''}'.trim(),
         email: userData['email'] ?? '',
         phone: data['phone'] ?? '',
-        savingsBalance: (data['savings_balance'] as num?)?.toDouble() ?? 0,
-        loanBalance: (data['loan_balance'] as num?)?.toDouble() ?? 0,
-        financialScore: data['financial_score'] as int? ?? 0,
+        savingsBalance: double.tryParse(data['savings_balance']?.toString() ?? '') ?? 0.0,
+        loanBalance: double.tryParse(data['loan_balance']?.toString() ?? '') ?? 0.0,
+        financialScore: int.tryParse(data['financial_score']?.toString() ?? '') ?? 0,
       );
     } catch (e) {
       debugPrint('Error fetching current user: $e');
@@ -108,9 +108,9 @@ class AuthProvider with ChangeNotifier {
       if (_user != null) {
         _user = _user!.copyWith(
           name: '${data['user']?['first_name'] ?? ''} ${data['user']?['last_name'] ?? ''}'.trim(),
-          savingsBalance: (data['savings_balance'] as num?)?.toDouble(),
-          loanBalance: (data['loan_balance'] as num?)?.toDouble(),
-          financialScore: data['financial_score'] as int?,
+          savingsBalance: double.tryParse(data['savings_balance']?.toString() ?? ''),
+          loanBalance: double.tryParse(data['loan_balance']?.toString() ?? ''),
+          financialScore: int.tryParse(data['financial_score']?.toString() ?? ''),
         );
         notifyListeners();
       } else {

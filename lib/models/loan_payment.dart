@@ -13,13 +13,20 @@ class LoanPayment {
     required this.remainingBalance,
   });
 
+  static double _parseDouble(dynamic value) {
+    if (value == null) return 0.0;
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value) ?? 0.0;
+    return 0.0;
+  }
+
   factory LoanPayment.fromJson(Map<String, dynamic> json) {
     return LoanPayment(
       id: json['id'] as String,
       loanId: json['loan_id'] as String,
-      amountPaid: (json['amount_paid'] as num).toDouble(),
+      amountPaid: _parseDouble(json['amount_paid']),
       paymentDate: DateTime.parse(json['payment_date'] as String),
-      remainingBalance: (json['remaining_balance'] as num).toDouble(),
+      remainingBalance: _parseDouble(json['remaining_balance']),
     );
   }
 

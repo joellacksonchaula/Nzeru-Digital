@@ -25,9 +25,9 @@ class User {
       name: json['name'] as String,
       email: json['email'] as String,
       phone: json['phone'] as String,
-      savingsBalance: (json['savings_balance'] as num?)?.toDouble() ?? 0,
-      loanBalance: (json['loan_balance'] as num?)?.toDouble() ?? 0,
-      financialScore: json['financial_score'] as int? ?? 0,
+      savingsBalance: double.tryParse(json['savings_balance']?.toString() ?? '') ?? 0.0,
+      loanBalance: double.tryParse(json['loan_balance']?.toString() ?? '') ?? 0.0,
+      financialScore: int.tryParse(json['financial_score']?.toString() ?? '') ?? 0,
       avatarUrl: json['avatar_url'] as String?,
     );
   }

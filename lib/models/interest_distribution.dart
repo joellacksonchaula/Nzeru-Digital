@@ -11,12 +11,19 @@ class InterestDistribution {
     required this.platformShare,
   });
 
+  static double _parseDouble(dynamic value) {
+    if (value == null) return 0.0;
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value) ?? 0.0;
+    return 0.0;
+  }
+
   factory InterestDistribution.fromJson(Map<String, dynamic> json) {
     return InterestDistribution(
       loanId: json['loan_id'] as String,
-      totalInterest: (json['total_interest'] as num).toDouble(),
-      userSavingsShare: (json['user_savings_share'] as num).toDouble(),
-      platformShare: (json['platform_share'] as num).toDouble(),
+      totalInterest: _parseDouble(json['total_interest']),
+      userSavingsShare: _parseDouble(json['user_savings_share']),
+      platformShare: _parseDouble(json['platform_share']),
     );
   }
 
