@@ -5,6 +5,7 @@ import 'config/app_routes.dart';
 import 'providers/auth_provider.dart';
 import 'providers/savings_provider.dart';
 import 'providers/loan_provider.dart';
+import 'providers/dashboard_provider.dart';
 import 'services/api_service.dart';
 
 Future<void> main() async {
@@ -26,6 +27,7 @@ class SavingsUTLApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => DashboardProvider()),
         ChangeNotifierProvider(create: (_) => SavingsProvider()),
         ChangeNotifierProvider(create: (_) => LoanProvider()),
       ],

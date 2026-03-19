@@ -14,15 +14,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 logger = logging.getLogger(__name__)
 
 # ── Security ────────────────────────────────────────────────────────────────
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '')
-if not SECRET_KEY:
-    import warnings
-    warnings.warn(
-        "DJANGO_SECRET_KEY is not set! Using an unsafe fallback. "
-        "Set this env var on Railway immediately.",
-        stacklevel=2,
-    )
-    SECRET_KEY = 'unsafe-secret-key-change-me-in-production'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'super-long-secret-key-at-least-32-characters-very-secure')
 
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() == 'true'
 

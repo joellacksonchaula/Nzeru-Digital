@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../config/app_colors.dart';
 import '../../config/app_routes.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/dashboard_provider.dart';
 import '../../providers/savings_provider.dart';
 import '../../providers/loan_provider.dart';
 import '../../widgets/glass_card.dart';
@@ -21,21 +22,29 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   @override
-  void initState() {
-    super.initState();
-    // Load savings and loans data when dashboard opens
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<SavingsProvider>().loadData();
-      context.read<LoanProvider>().loadData();
-    });
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    context.read<DashboardProvider>().loadDashboard();
+    context.read<SavingsProvider>().loadData();
+    context.read<LoanProvider>().loadData();
   }
 
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
+    final dashboardProvider = context.watch<DashboardProvider>();
     final savings = context.watch<SavingsProvider>();
     final loans = context.watch<LoanProvider>();
     final user = auth.user;
+
+    if (dashboardProvider.isLoading) {
+      return const Scaffold(
+        backgroundColor: AppColors.background,
+        body: Center(child: CircularProgressIndicator(color: AppColors.gold)),
+      );
+    }
+
+    final dashboard = dashboardProvider.data;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -46,6 +55,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           onRefresh: () async {
             await Future.wait([
               context.read<AuthProvider>().refreshProfile(),
+              context.read<DashboardProvider>().loadDashboard(),
               context.read<SavingsProvider>().loadData(),
               context.read<LoanProvider>().loadData(),
             ]);
@@ -173,7 +183,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                       const SizedBox(height: 16),
                       GlowText(
-                        text: CurrencyFormatter.formatMK(user?.savingsBalance ?? 0),
+                        text: CurrencyFormatter.formatMK(dashboard?['total_savings'] ?? 0),
                         fontSize: 34,
                       ),
                       const SizedBox(height: 20),
@@ -194,7 +204,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         icon: Icons.account_balance_wallet,
                         label: 'LOAN BALANCE',
                         value: CurrencyFormatter.formatMK(
-                            loans.activeLoan?.remainingBalance ?? 0),
+                            dashboard?['loan_balance'] ?? 0),
                         iconColor: AppColors.info,
                       ),
                     ),
@@ -203,7 +213,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       child: StatTile(
                         icon: Icons.speed_rounded,
                         label: 'FINANCIAL SCORE',
-                        value: '${user?.financialScore ?? 0}',
+                        value: '${dashboard?['financial_score'] ?? 0}',
                         iconColor: AppColors.gold,
                         valueColor: AppColors.gold,
                       ),
@@ -222,7 +232,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       child: StatTile(
                         icon: Icons.savings_rounded,
                         label: 'ACTIVE PLANS',
-                        value: '${savings.plans.where((p) => p.isActive).length}',
+                        value: '${dashboard?['active_plans'] ?? 0}',
                         iconColor: AppColors.success,
                       ),
                     ),
