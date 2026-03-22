@@ -317,8 +317,6 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
       ),
     );
   }
-
-  }
 }
 
 class _QuickAction extends StatelessWidget {
