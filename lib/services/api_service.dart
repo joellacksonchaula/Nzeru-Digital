@@ -7,9 +7,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// Central API service handling all HTTP calls to the Django backend.
 /// Tokens are persisted to SharedPreferences so sessions survive app restarts.
 class ApiService {
-  // Production URL
-  static const String baseUrl =
-      "https://savingsutl-production.up.railway.app/api";
+  static const String _defaultBaseUrl =
+      'https://savingsutl-production.up.railway.app/api';
+  static const String _envBaseUrl = String.fromEnvironment(
+    'API_BASE_URL',
+    defaultValue: _defaultBaseUrl,
+  );
+
+  static String get baseUrl => _envBaseUrl.endsWith('/')
+      ? _envBaseUrl.substring(0, _envBaseUrl.length - 1)
+      : _envBaseUrl;
 
   String? _accessToken;
   String? _refreshToken;
@@ -114,17 +121,20 @@ class ApiService {
     String lastName = '',
     String phone = '',
   }) async {
+    final normalizedEmail = email.trim().toLowerCase();
+    final normalizedUsername =
+        username.trim().isEmpty ? normalizedEmail : username.trim();
     try {
       final response = await _post(
         '/auth/register/',
         body: {
-          'username': username,
-          'email': email,
+          'username': normalizedUsername,
+          'email': normalizedEmail,
           'password': password,
           'password2': password2,
-          'first_name': firstName,
-          'last_name': lastName,
-          'phone': phone,
+          'first_name': firstName.trim(),
+          'last_name': lastName.trim(),
+          'phone': phone.trim(),
         },
         requiresAuth: false,
       );
@@ -143,10 +153,11 @@ class ApiService {
     required String username,
     required String password,
   }) async {
+    final identifier = username.trim();
     try {
       final response = await _post(
         '/auth/login/',
-        body: {'username': username, 'password': password},
+        body: {'username': identifier, 'password': password},
         requiresAuth: false,
       );
       final data = _handleResponse(response);

@@ -17,6 +17,7 @@ class CreatePlanScreen extends StatefulWidget {
 }
 
 class _CreatePlanScreenState extends State<CreatePlanScreen> {
+  final _titleController = TextEditingController();
   final _amountController = TextEditingController();
   PlanFrequency _frequency = PlanFrequency.weekly;
   int _durationMonths = 6;
@@ -27,6 +28,7 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
 
   @override
   void dispose() {
+    _titleController.dispose();
     _amountController.dispose();
     super.dispose();
   }
@@ -71,6 +73,32 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                _sectionLabel('Savings Title'),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: _titleController,
+                  textCapitalization: TextCapitalization.words,
+                  style: GoogleFonts.playfairDisplay(
+                    fontSize: 20,
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: 'Phone Cash, Car Fund, Vacation Fund...',
+                    hintStyle: GoogleFonts.inter(
+                      color: AppColors.textMuted,
+                      fontSize: 15,
+                    ),
+                    prefixIcon: const Icon(Icons.bookmark_border_rounded),
+                  ),
+                  validator: (v) {
+                    if (v == null || v.trim().isEmpty) return 'Enter a savings title';
+                    if (v.trim().length < 3) return 'Title must be at least 3 characters';
+                    return null;
+                  },
+                ).animate().fadeIn(delay: 50.ms),
+
+                const SizedBox(height: 28),
                 // Savings Amount
                 _sectionLabel('Savings Amount'),
                 const SizedBox(height: 10),
@@ -276,6 +304,7 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
                         SavingsPlan(
                           id: '',
                           userId: auth.user?.id ?? '',
+                          title: _titleController.text.trim(),
                           amountPerPeriod: amount,
                           frequency: _frequency,
                           durationMonths: _durationMonths,

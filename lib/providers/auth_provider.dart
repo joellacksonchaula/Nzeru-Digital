@@ -39,12 +39,13 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<bool> login(String username, String password) async {
+    final normalizedUsername = username.trim();
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      await _api.login(username: username, password: password);
+      await _api.login(username: normalizedUsername, password: password);
       await _fetchCurrentUser();
       _isAuthenticated = _user != null;
       _isLoading = false;
@@ -76,6 +77,9 @@ class AuthProvider with ChangeNotifier {
     String phone,
     String password,
   ) async {
+    final normalizedName = name.trim();
+    final normalizedEmail = email.trim().toLowerCase();
+    final normalizedPhone = phone.trim();
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -83,17 +87,18 @@ class AuthProvider with ChangeNotifier {
     try {
       // Use email as username so login also works with email
       await _api.register(
-        username: email,
-        email: email,
+        username: normalizedEmail,
+        email: normalizedEmail,
         password: password,
         password2: password,
-        firstName: name.split(' ').first,
-        lastName:
-            name.split(' ').length > 1 ? name.split(' ').sublist(1).join(' ') : '',
-        phone: phone,
+        firstName: normalizedName.split(' ').first,
+        lastName: normalizedName.split(' ').length > 1
+            ? normalizedName.split(' ').sublist(1).join(' ')
+            : '',
+        phone: normalizedPhone,
       );
       // Auto-login after registration
-      await _api.login(username: email, password: password);
+      await _api.login(username: normalizedEmail, password: password);
       await _fetchCurrentUser();
       _isAuthenticated = _user != null;
       _isLoading = false;

@@ -7,8 +7,10 @@ import 'package:provider/provider.dart';
 
 import '../../config/app_colors.dart';
 import '../../config/app_routes.dart';
+import '../../models/savings_plan.dart';
 import '../../models/savings_transaction.dart';
 import '../../providers/dashboard_provider.dart';
+import '../../providers/savings_provider.dart';
 import '../../utils/currency_formatter.dart';
 import '../../widgets/candlestick_chart.dart';
 
@@ -25,15 +27,21 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<DashboardProvider>().loadDashboard();
+      context.read<SavingsProvider>().loadData();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<DashboardProvider>();
+    final savingsProvider = context.watch<SavingsProvider>();
     final txns = provider.recentTransactions.isEmpty
         ? _fallbackTransactions
         : provider.recentTransactions.take(4).toList();
+    final plans = _selectRecentPlans(savingsProvider.activePlans);
+    final candles = _buildCandlesFromTransactions(
+      provider.recentTransactions.isEmpty ? _fallbackTransactions : provider.recentTransactions,
+    );
 
     return Scaffold(
       backgroundColor: const Color(0xFFE7E1D5),
@@ -43,7 +51,10 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
           SafeArea(
             child: RefreshIndicator(
               color: AppColors.gold,
-              onRefresh: () => context.read<DashboardProvider>().loadDashboard(),
+              onRefresh: () async {
+                await context.read<DashboardProvider>().loadDashboard();
+                await context.read<SavingsProvider>().loadData();
+              },
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   final compact = constraints.maxWidth < 900;
@@ -58,12 +69,12 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                           children: [
                             _Header(name: provider.user?.name?.toLowerCase() ?? 'joel chaula'),
                             const SizedBox(height: 16),
-                            _PlanCards(compact: compact),
+                            _PlanCards(compact: compact, plans: plans),
                             const SizedBox(height: 16),
                             CandlestickChart(
-                              title: 'Bitcoin Performance',
-                              subtitle: '-5.40%',
-                              candles: _candles,
+                              title: 'Savings Performance',
+                              subtitle: _performanceLabel(candles),
+                              candles: candles,
                               height: compact ? 270 : 360,
                             ),
                             const SizedBox(height: 18),
@@ -159,30 +170,52 @@ class _Header extends StatelessWidget {
 
 class _PlanCards extends StatelessWidget {
   final bool compact;
-  const _PlanCards({required this.compact});
+  final List<SavingsPlan> plans;
+
+  const _PlanCards({required this.compact, required this.plans});
 
   @override
   Widget build(BuildContext context) {
+    final displayPlans = plans.isEmpty ? _fallbackPlans : plans;
+    final cards = displayPlans.take(3).map(_buildPlanCard).toList();
+
     if (compact) {
-      return const Column(
+      return Column(
         children: [
-          _PlanCard(title: 'Phone Cash', target: 'MK 85,000.00', saved: 'MK 45,000.00', progress: .53, change: '+5.4%', left: 'Est. Completion: June 2026', right: 'Next payment: April 1', icon: Icons.phone_iphone_rounded, positive: false),
-          SizedBox(height: 12),
-          _PlanCard(title: 'Car Cash', target: 'MK 15,000,000.00', saved: 'MK 1,200,000.00', progress: .08, change: '+1.2%', left: 'Est. Completion: 2028', right: 'Automated deposit: Active', icon: Icons.directions_car_filled_rounded, ring: true),
-          SizedBox(height: 12),
-          _PlanCard(title: 'Vacation Fund', target: 'MK 500,000.00', saved: 'MK 250,000.00', progress: .50, change: '+0.8%', left: 'Est. Completion: Dec 2026', right: 'Recent activity: Manual add', icon: Icons.beach_access_rounded, gauge: true),
+          for (var i = 0; i < cards.length; i++) ...[
+            cards[i],
+            if (i != cards.length - 1) const SizedBox(height: 12),
+          ],
         ],
       );
     }
 
-    return const Row(
+    return Row(
       children: [
-        Expanded(child: _PlanCard(title: 'Phone Cash', target: 'MK 85,000.00', saved: 'MK 45,000.00', progress: .53, change: '+5.4%', left: 'Est. Completion: June 2026', right: 'Next payment: April 1', icon: Icons.phone_iphone_rounded, positive: false)),
-        SizedBox(width: 16),
-        Expanded(child: _PlanCard(title: 'Car Cash', target: 'MK 15,000,000.00', saved: 'MK 1,200,000.00', progress: .08, change: '+1.2%', left: 'Est. Completion: 2028', right: 'Automated deposit: Active', icon: Icons.directions_car_filled_rounded, ring: true)),
-        SizedBox(width: 16),
-        Expanded(child: _PlanCard(title: 'Vacation Fund', target: 'MK 500,000.00', saved: 'MK 250,000.00', progress: .50, change: '+0.8%', left: 'Est. Completion: Dec 2026', right: 'Recent activity: Manual add', icon: Icons.beach_access_rounded, gauge: true)),
+        for (var i = 0; i < cards.length; i++) ...[
+          Expanded(child: cards[i]),
+          if (i != cards.length - 1) const SizedBox(width: 16),
+        ],
       ],
+    );
+  }
+
+  Widget _buildPlanCard(SavingsPlan plan) {
+    final progress = plan.progressPercent;
+    final visualMode = _visualModeForPlan(plan);
+
+    return _PlanCard(
+      title: plan.title,
+      target: CurrencyFormatter.formatMK(plan.goalAmount),
+      saved: CurrencyFormatter.formatMK(plan.currentAmount),
+      progress: progress,
+      change: _planChangeLabel(plan),
+      left: 'Est. Completion: ${DateFormat('MMM yyyy').format(plan.endDate)}',
+      right: 'Next payment: ${DateFormat('MMM d').format(_nextPaymentDate(plan))}',
+      icon: _iconForPlan(plan.title),
+      positive: progress >= 0.15,
+      ring: visualMode == _PlanVisualMode.ring,
+      gauge: visualMode == _PlanVisualMode.gauge,
     );
   }
 }
@@ -490,9 +523,100 @@ class _SparkPainter extends CustomPainter {
   bool shouldRepaint(covariant _SparkPainter oldDelegate) => oldDelegate.color != color || oldDelegate.up != up;
 }
 
-final _candles = [
-  [98.0, 101.0, 96.0, 97.0], [97.0, 99.0, 92.0, 94.0], [94.0, 95.0, 90.0, 91.0], [91.0, 92.0, 87.0, 88.0], [88.0, 89.0, 85.0, 86.0], [86.0, 88.0, 85.0, 87.0], [87.0, 92.0, 86.0, 90.0], [90.0, 98.0, 89.0, 96.0], [96.0, 97.0, 91.0, 93.0], [93.0, 95.0, 89.0, 90.0], [90.0, 99.0, 88.0, 98.0], [98.0, 100.0, 94.0, 96.0], [96.0, 97.0, 89.0, 91.0], [91.0, 92.0, 84.0, 86.0], [86.0, 87.0, 79.0, 81.0], [81.0, 87.0, 80.0, 85.0], [85.0, 92.0, 84.0, 90.0], [90.0, 91.0, 83.0, 85.0], [85.0, 86.0, 79.0, 81.0], [81.0, 83.0, 78.0, 79.0], [79.0, 85.0, 78.0, 82.0], [82.0, 88.0, 80.0, 86.0], [86.0, 87.0, 79.0, 81.0], [81.0, 82.0, 76.0, 79.0], [79.0, 81.0, 75.0, 77.0], [77.0, 82.0, 76.0, 80.0], [80.0, 85.0, 78.0, 82.0], [82.0, 83.0, 77.0, 79.0], [79.0, 90.0, 78.0, 87.0], [87.0, 89.0, 85.0, 86.0], [86.0, 92.0, 84.0, 89.0], [89.0, 93.0, 88.0, 91.0], [91.0, 92.0, 86.0, 88.0], [88.0, 89.0, 85.0, 87.0], [87.0, 95.0, 86.0, 93.0], [93.0, 96.0, 92.0, 94.0], [94.0, 95.0, 87.0, 89.0], [89.0, 90.0, 83.0, 86.0], [86.0, 87.0, 80.0, 82.0], [82.0, 84.0, 80.0, 81.0],
-].asMap().entries.map((e) => CandleData(time: DateTime.now().subtract(Duration(hours: 40 - e.key)), open: e.value[0], high: e.value[1], low: e.value[2], close: e.value[3], volume: 1000 + e.key * 15)).toList();
+enum _PlanVisualMode { bar, ring, gauge }
+
+List<SavingsPlan> _selectRecentPlans(List<SavingsPlan> plans) {
+  final sorted = [...plans]
+    ..sort((a, b) => (b.createdAt ?? b.startDate).compareTo(a.createdAt ?? a.startDate));
+  return sorted.take(3).toList();
+}
+
+_PlanVisualMode _visualModeForPlan(SavingsPlan plan) {
+  final title = plan.title.toLowerCase();
+  if (title.contains('vacation') || title.contains('travel')) return _PlanVisualMode.gauge;
+  if (plan.progressPercent < 0.2) return _PlanVisualMode.ring;
+  return _PlanVisualMode.bar;
+}
+
+IconData _iconForPlan(String title) {
+  final value = title.toLowerCase();
+  if (value.contains('phone')) return Icons.phone_iphone_rounded;
+  if (value.contains('car')) return Icons.directions_car_filled_rounded;
+  if (value.contains('vacation') || value.contains('travel')) return Icons.beach_access_rounded;
+  if (value.contains('home') || value.contains('rent')) return Icons.home_rounded;
+  if (value.contains('school') || value.contains('fees')) return Icons.school_rounded;
+  return Icons.savings_rounded;
+}
+
+DateTime _nextPaymentDate(SavingsPlan plan) {
+  var next = plan.startDate;
+  final now = DateTime.now();
+  Duration step;
+  switch (plan.frequency) {
+    case PlanFrequency.daily:
+      step = const Duration(days: 1);
+      break;
+    case PlanFrequency.weekly:
+      step = const Duration(days: 7);
+      break;
+    case PlanFrequency.biweekly:
+      step = const Duration(days: 14);
+      break;
+    case PlanFrequency.monthly:
+      step = const Duration(days: 30);
+      break;
+  }
+  while (next.isBefore(now)) {
+    next = next.add(step);
+  }
+  return next;
+}
+
+String _planChangeLabel(SavingsPlan plan) {
+  final pct = ((plan.progressPercent * 9) + 0.8).clamp(0.8, 9.9);
+  return '+${pct.toStringAsFixed(1)}%';
+}
+
+List<CandleData> _buildCandlesFromTransactions(List<SavingsTransaction> txns) {
+  if (txns.isEmpty) return _fallbackCandles;
+
+  final sorted = [...txns]..sort((a, b) => a.date.compareTo(b.date));
+  return sorted.take(20).map((txn) {
+    final amount = txn.amount <= 0 ? 100.0 : txn.amount;
+    final open = txn.isCredit ? amount * 0.88 : amount * 1.04;
+    final close = txn.isCredit ? amount * 1.03 : amount * 0.90;
+    final high = [open, close, amount * 1.08].reduce((a, b) => a > b ? a : b);
+    final low = [open, close, amount * 0.84].reduce((a, b) => a < b ? a : b);
+    return CandleData(
+      time: txn.date,
+      open: open,
+      high: high,
+      low: low,
+      close: close,
+      volume: amount,
+    );
+  }).toList();
+}
+
+String _performanceLabel(List<CandleData> candles) {
+  if (candles.length < 2) return '+0.0%';
+  final first = candles.first.open;
+  final last = candles.last.close;
+  if (first == 0) return '+0.0%';
+  final change = ((last - first) / first) * 100;
+  final prefix = change >= 0 ? '+' : '';
+  return '$prefix${change.toStringAsFixed(2)}%';
+}
+
+final _fallbackCandles = [
+  [98.0, 101.0, 96.0, 97.0], [97.0, 99.0, 92.0, 94.0], [94.0, 95.0, 90.0, 91.0], [91.0, 92.0, 87.0, 88.0], [88.0, 89.0, 85.0, 86.0], [86.0, 88.0, 85.0, 87.0], [87.0, 92.0, 86.0, 90.0], [90.0, 98.0, 89.0, 96.0], [96.0, 97.0, 91.0, 93.0], [93.0, 95.0, 89.0, 90.0], [90.0, 99.0, 88.0, 98.0], [98.0, 100.0, 94.0, 96.0],
+].asMap().entries.map((e) => CandleData(time: DateTime.now().subtract(Duration(hours: 12 - e.key)), open: e.value[0], high: e.value[1], low: e.value[2], close: e.value[3], volume: 1000 + e.key * 15)).toList();
+
+final _fallbackPlans = [
+  SavingsPlan(id: 'plan-1', userId: 'demo', title: 'Phone Cash', amountPerPeriod: 5000, frequency: PlanFrequency.weekly, durationMonths: 6, startDate: DateTime(2026, 1, 1), endDate: DateTime(2026, 6, 30), penaltyPolicy: PenaltyPolicy.monetaryDeduction, goalAmount: 85000, currentAmount: 45000, createdAt: DateTime(2026, 1, 1)),
+  SavingsPlan(id: 'plan-2', userId: 'demo', title: 'Car Cash', amountPerPeriod: 50000, frequency: PlanFrequency.monthly, durationMonths: 24, startDate: DateTime(2026, 1, 1), endDate: DateTime(2028, 1, 1), penaltyPolicy: PenaltyPolicy.monetaryDeduction, goalAmount: 15000000, currentAmount: 1200000, createdAt: DateTime(2026, 1, 2)),
+  SavingsPlan(id: 'plan-3', userId: 'demo', title: 'Vacation Fund', amountPerPeriod: 10000, frequency: PlanFrequency.monthly, durationMonths: 12, startDate: DateTime(2026, 1, 1), endDate: DateTime(2026, 12, 1), penaltyPolicy: PenaltyPolicy.monetaryDeduction, goalAmount: 500000, currentAmount: 250000, createdAt: DateTime(2026, 1, 3)),
+];
 
 final _fallbackTransactions = [
   SavingsTransaction(id: '1', userId: 'demo', amount: 3330000, date: DateTime(2026, 3, 16, 21, 40), type: TransactionType.withdrawal),

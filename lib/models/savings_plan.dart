@@ -5,6 +5,7 @@ enum PenaltyPolicy { monetaryDeduction, appRestriction, both }
 class SavingsPlan {
   final String id;
   final String userId;
+  final String title;
   final double amountPerPeriod;
   final PlanFrequency frequency;
   final int durationMonths;
@@ -15,10 +16,12 @@ class SavingsPlan {
   final double currentAmount;
   final bool isActive;
   final bool isSecret;
+  final DateTime? createdAt;
 
   SavingsPlan({
     required this.id,
     required this.userId,
+    required this.title,
     required this.amountPerPeriod,
     required this.frequency,
     required this.durationMonths,
@@ -29,6 +32,7 @@ class SavingsPlan {
     this.currentAmount = 0,
     this.isActive = true,
     this.isSecret = false,
+    this.createdAt,
   });
 
   double get progressPercent =>
@@ -123,6 +127,9 @@ class SavingsPlan {
     return SavingsPlan(
       id: json['id'].toString(),
       userId: (json['user_id'] ?? json['user'] ?? '').toString(),
+      title: (json['title'] as String?)?.trim().isNotEmpty == true
+          ? (json['title'] as String).trim()
+          : 'Savings Plan',
       amountPerPeriod: _parseDouble(json['amount_per_period']),
       // Backend returns string codes — parse them via the helper
       frequency: frequencyFromApiString(json['frequency'] as String? ?? 'WEEKLY'),
@@ -135,10 +142,14 @@ class SavingsPlan {
       currentAmount: _parseDouble(json['current_amount']),
       isActive: json['is_active'] as bool? ?? true,
       isSecret: json['is_secret'] as bool? ?? false,
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'] as String)
+          : null,
     );
   }
 
   Map<String, dynamic> toJson() => {
+        'title': title,
         'amount_per_period': amountPerPeriod,
         'frequency': frequencyToApiString(frequency),
         'duration_months': durationMonths,
