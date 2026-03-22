@@ -105,7 +105,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         const SizedBox(height: 50),
                         Text(
                           page.title,
-                          style: GoogleFonts.orbitron(
+                          style: GoogleFonts.playfairDisplay(
                             fontSize: 36,
                             fontWeight: FontWeight.w700,
                             color: AppColors.gold,
@@ -115,7 +115,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         const SizedBox(height: 12),
                         Text(
                           page.subtitle,
-                          style: GoogleFonts.orbitron(
+                          style: GoogleFonts.playfairDisplay(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                             color: AppColors.textPrimary,

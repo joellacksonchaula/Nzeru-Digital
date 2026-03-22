@@ -29,7 +29,7 @@ class SavingsPlansScreen extends StatelessWidget {
                 children: [
                   Text(
                     'SAVINGS PLANS',
-                    style: GoogleFonts.orbitron(
+                    style: GoogleFonts.playfairDisplay(
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
                       color: AppColors.gold,
@@ -113,7 +113,7 @@ class SavingsPlansScreen extends StatelessWidget {
                                     const SizedBox(height: 8),
                                     Text(
                                       '${plan.frequencyLabel} Plan',
-                                      style: GoogleFonts.orbitron(
+                                      style: GoogleFonts.playfairDisplay(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w600,
                                         color: AppColors.textPrimary,
@@ -134,7 +134,7 @@ class SavingsPlansScreen extends StatelessWidget {
                                       children: [
                                         Text(
                                           CurrencyUtil.format(plan.currentAmount),
-                                          style: GoogleFonts.orbitron(
+                                          style: GoogleFonts.playfairDisplay(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w700,
                                             color: AppColors.gold,

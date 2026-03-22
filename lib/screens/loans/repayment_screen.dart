@@ -34,7 +34,7 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text('MAKE PAYMENT',
-            style: GoogleFonts.orbitron(
+            style: GoogleFonts.playfairDisplay(
                 fontSize: 16, letterSpacing: 2, color: AppColors.gold)),
         backgroundColor: Colors.transparent,
         leading: IconButton(
@@ -92,7 +92,7 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
                               const SizedBox(height: 4),
                               Text(
                                   CurrencyUtil.format(activeLoan.remainingBalance),
-                                  style: GoogleFonts.orbitron(
+                                  style: GoogleFonts.playfairDisplay(
                                       fontSize: 20,
                                       fontWeight: FontWeight.w700,
                                       color: AppColors.textPrimary)),
@@ -108,7 +108,7 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
                               const SizedBox(height: 4),
                               Text(
                                   CurrencyUtil.format(activeLoan.monthlyPayment),
-                                  style: GoogleFonts.orbitron(
+                                  style: GoogleFonts.playfairDisplay(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
                                       color: AppColors.gold)),
@@ -121,7 +121,7 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
                     const SizedBox(height: 30),
 
                     Text('PAYMENT AMOUNT',
-                        style: GoogleFonts.orbitron(
+                        style: GoogleFonts.playfairDisplay(
                             fontSize: 11,
                             color: AppColors.textMuted,
                             letterSpacing: 2)),
@@ -129,19 +129,19 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
                     TextFormField(
                       controller: _amountController,
                       keyboardType: TextInputType.number,
-                      style: GoogleFonts.orbitron(
+                      style: GoogleFonts.playfairDisplay(
                         fontSize: 32,
                         color: AppColors.gold,
                         fontWeight: FontWeight.w700,
                       ),
                       decoration: InputDecoration(
                         hintText: '0.00',
-                        hintStyle: GoogleFonts.orbitron(
+                        hintStyle: GoogleFonts.playfairDisplay(
                           color: AppColors.textMuted,
                           fontSize: 32,
                         ),
                         prefixText: 'MK ',
-                        prefixStyle: GoogleFonts.orbitron(
+                        prefixStyle: GoogleFonts.playfairDisplay(
                           fontSize: 32,
                           color: AppColors.gold,
                           fontWeight: FontWeight.w700,

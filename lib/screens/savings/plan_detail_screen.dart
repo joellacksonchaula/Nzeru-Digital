@@ -24,7 +24,7 @@ class PlanDetailScreen extends StatelessWidget {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text('PLAN DETAILS',
-            style: GoogleFonts.orbitron(
+            style: GoogleFonts.playfairDisplay(
                 fontSize: 16, letterSpacing: 2, color: AppColors.gold)),
         backgroundColor: Colors.transparent,
         leading: IconButton(
@@ -51,7 +51,7 @@ class PlanDetailScreen extends StatelessWidget {
                   const SizedBox(height: 20),
                   Text(
                     '${CurrencyUtil.format(plan.currentAmount)} of ${CurrencyUtil.format(plan.goalAmount)}',
-                    style: GoogleFonts.orbitron(
+                    style: GoogleFonts.playfairDisplay(
                       fontSize: 16,
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.w600,
@@ -87,7 +87,7 @@ class PlanDetailScreen extends StatelessWidget {
                       alignment: Alignment.centerLeft,
                       child: Text(
                         'TRANSACTION HISTORY',
-                        style: GoogleFonts.orbitron(
+                        style: GoogleFonts.playfairDisplay(
                           fontSize: 12,
                           color: AppColors.textMuted,
                           letterSpacing: 2,
@@ -149,7 +149,7 @@ class PlanDetailScreen extends StatelessWidget {
                           ),
                           Text(
                             '${txn.isCredit ? '+' : '-'} ${CurrencyUtil.format(txn.amount)}',
-                            style: GoogleFonts.orbitron(
+                            style: GoogleFonts.playfairDisplay(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
                               color: txn.isCredit
@@ -175,7 +175,7 @@ class PlanDetailScreen extends StatelessWidget {
             style: GoogleFonts.inter(
                 fontSize: 13, color: AppColors.textMuted)),
         Text(value,
-            style: GoogleFonts.orbitron(
+            style: GoogleFonts.playfairDisplay(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textPrimary)),

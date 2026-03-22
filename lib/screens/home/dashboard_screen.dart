@@ -84,7 +84,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         const SizedBox(height: 4),
                         Text(
                           user?.name ?? 'User',
-                          style: GoogleFonts.orbitron(
+                          style: GoogleFonts.playfairDisplay(
                             fontSize: 20,
                             fontWeight: FontWeight.w600,
                             color: AppColors.textPrimary,
@@ -123,7 +123,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           backgroundColor: AppColors.gold.withAlpha(30),
                           child: Text(
                             (user?.name ?? 'U')[0].toUpperCase(),
-                            style: GoogleFonts.orbitron(
+                            style: GoogleFonts.playfairDisplay(
                               color: AppColors.gold,
                               fontWeight: FontWeight.w700,
                             ),
@@ -147,7 +147,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         children: [
                           Text(
                             'TOTAL SAVINGS',
-                            style: GoogleFonts.orbitron(
+                            style: GoogleFonts.playfairDisplay(
                               fontSize: 11,
                               fontWeight: FontWeight.w500,
                               color: AppColors.textMuted,
@@ -256,7 +256,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
                   'QUICK ACTIONS',
-                  style: GoogleFonts.orbitron(
+                  style: GoogleFonts.playfairDisplay(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textMuted,
@@ -313,7 +313,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   children: [
                     Text(
                       'RECENT TRANSACTIONS',
-                      style: GoogleFonts.orbitron(
+                      style: GoogleFonts.playfairDisplay(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: AppColors.textMuted,
@@ -389,7 +389,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                       Text(
                         '${txn.isCredit ? '+' : '-'} ${CurrencyFormatter.formatMK(txn.amount)}',
-                        style: GoogleFonts.orbitron(
+                        style: GoogleFonts.playfairDisplay(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: txn.isCredit

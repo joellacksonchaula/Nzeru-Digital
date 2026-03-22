@@ -55,7 +55,7 @@ class StatTile extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               value,
-              style: GoogleFonts.orbitron(
+              style: GoogleFonts.playfairDisplay(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
                 color: valueColor ?? AppColors.textPrimary,

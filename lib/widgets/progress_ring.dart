@@ -90,7 +90,7 @@ class _ProgressRingState extends State<ProgressRing>
                     children: [
                       Text(
                         widget.centerText ?? '$percent%',
-                        style: GoogleFonts.orbitron(
+                        style: GoogleFonts.playfairDisplay(
                           fontSize: widget.size * 0.18,
                           fontWeight: FontWeight.w700,
                           color: widget.progressColor,

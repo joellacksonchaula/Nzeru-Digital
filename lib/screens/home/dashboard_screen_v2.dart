@@ -57,10 +57,22 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
               children: [
                 // Header
                 Padding(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      CircleAvatar(
+                        radius: 24,
+                        backgroundColor: AppColors.gold.withAlpha(30),
+                        child: Text(
+                          (user?.name ?? 'U')[0].toUpperCase(),
+                          style: GoogleFonts.playfairDisplay(
+                            color: AppColors.gold,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -68,57 +80,15 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                             'Welcome back,',
                             style: GoogleFonts.inter(
                               fontSize: 14,
-                              color: AppColors.textMuted,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            user?.name ?? 'User',
-                            style: GoogleFonts.orbitron(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
                               color: AppColors.textPrimary,
-                              letterSpacing: 1,
                             ),
                           ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          IconButton(
-                            onPressed: () => Navigator.pushNamed(
-                                context, AppRoutes.notifications),
-                            icon: Stack(
-                              children: [
-                                const Icon(Icons.notifications_outlined,
-                                    color: AppColors.textSecondary, size: 26),
-                                if (dashboardData?['unread_notifications'] != null && 
-                                    dashboardData!['unread_notifications'] > 0)
-                                  Positioned(
-                                    right: 0,
-                                    top: 0,
-                                    child: Container(
-                                      width: 10,
-                                      height: 10,
-                                      decoration: const BoxDecoration(
-                                        color: AppColors.actionRed,
-                                        shape: BoxShape.circle,
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          CircleAvatar(
-                            radius: 20,
-                            backgroundColor: AppColors.gold.withAlpha(30),
-                            child: Text(
-                              (user?.name ?? 'U')[0].toUpperCase(),
-                              style: GoogleFonts.orbitron(
-                                color: AppColors.gold,
-                                fontWeight: FontWeight.w700,
-                              ),
+                          Text(
+                            user?.name?.toLowerCase() ?? 'joel chaula',
+                            style: GoogleFonts.playfairDisplay(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
                             ),
                           ),
                         ],
@@ -160,18 +130,9 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Text(
-                    'MARKET OVERVIEW',
-                    style: GoogleFonts.orbitron(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textMuted,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                ),
                 const SizedBox(height: 12),
                 SizedBox(
-                  height: 130,
+                  height: 140,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -179,7 +140,7 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                     itemBuilder: (context, index) {
                       final m = dashboardProvider.cryptoMarkets[index];
                       return Container(
-                        width: 200,
+                        width: 180,
                         margin: const EdgeInsets.only(right: 12),
                         child: CryptoMarketCard(
                           name: m['name'],
@@ -213,51 +174,47 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
 
                 const SizedBox(height: 24),
 
-                // Quick Actions
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Text(
-                    'QUICK ACTIONS',
-                    style: GoogleFonts.orbitron(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textMuted,
-                      letterSpacing: 2,
+                  child: Center(
+                    child: Text(
+                      'QUICK ACTIONS',
+                      style: GoogleFonts.playfairDisplay(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                        letterSpacing: 1.2,
+                      ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  height: 95,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       _QuickAction(
-                        icon: Icons.add_circle_outline,
+                        icon: Icons.file_download_outlined,
                         label: 'Deposit',
-                        color: AppColors.gold,
                         onTap: () =>
                             Navigator.pushNamed(context, AppRoutes.deposit),
                       ),
                       _QuickAction(
-                        icon: Icons.playlist_add,
+                        icon: Icons.assignment_outlined,
                         label: 'New Plan',
-                        color: AppColors.success,
                         onTap: () =>
                             Navigator.pushNamed(context, AppRoutes.createPlan),
                       ),
                       _QuickAction(
-                        icon: Icons.account_balance,
+                        icon: Icons.savings_outlined,
                         label: 'Loan',
-                        color: AppColors.info,
                         onTap: () =>
                             Navigator.pushNamed(context, AppRoutes.requestLoan),
                       ),
                       _QuickAction(
-                        icon: Icons.payment,
+                        icon: Icons.history_outlined,
                         label: 'Repay',
-                        color: AppColors.warning,
                         onTap: () =>
                             Navigator.pushNamed(context, AppRoutes.repayment),
                       ),
@@ -267,103 +224,96 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
 
                 const SizedBox(height: 24),
 
-                // Recent Transactions
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'RECENT TRANSACTIONS',
-                        style: GoogleFonts.orbitron(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textMuted,
-                          letterSpacing: 2,
-                        ),
+                  child: Center(
+                    child: Text(
+                      'RECENT TRANSACTIONS',
+                      style: GoogleFonts.playfairDisplay(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                        letterSpacing: 1.2,
                       ),
-                      TextButton(
-                        onPressed: () {},
-                        child: Text(
-                          'View All',
-                          style: GoogleFonts.inter(
-                            color: AppColors.gold,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
-                ...dashboardProvider.recentTransactions.take(5).map((txn) {
-                  return Container(
-                    margin: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 6),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppColors.cardBg,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppColors.border, width: 0.5),
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 2.2,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
                     ),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: txn.isCredit
-                                ? AppColors.success.withAlpha(20)
-                                : AppColors.actionRed.withAlpha(20),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Icon(
-                            txn.isCredit
-                                ? Icons.arrow_downward_rounded
-                                : Icons.arrow_upward_rounded,
-                            color: txn.isCredit
-                                ? AppColors.success
-                                : AppColors.actionRed,
-                            size: 16,
-                          ),
+                    itemCount: (dashboardProvider.recentTransactions.length > 4) ? 4 : dashboardProvider.recentTransactions.length,
+                    itemBuilder: (context, index) {
+                      final txn = dashboardProvider.recentTransactions[index];
+                      return Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: AppColors.blackPrimary,
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                txn.typeLabel,
-                                style: GoogleFonts.inter(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.textPrimary,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  txn.typeLabel,
+                                  style: GoogleFonts.inter(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                DateFormat('dd MMM yyyy, HH:mm')
-                                    .format(txn.date),
-                                style: GoogleFonts.inter(
-                                  fontSize: 11,
-                                  color: AppColors.textMuted,
+                                Text(
+                                  DateFormat('dd MMM yyyy, HH:mm')
+                                      .format(txn.date),
+                                  style: GoogleFonts.inter(
+                                    color: Colors.white.withAlpha(150),
+                                    fontSize: 8,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
+                              ],
+                            ),
+                            const Divider(color: Colors.white24, height: 1),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    '${txn.isCredit ? '+' : '-'}${CurrencyFormatter.formatMK(txn.amount)}',
+                                    style: GoogleFonts.inter(
+                                      color: Colors.white,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Icon(
+                                  txn.isCredit
+                                      ? Icons.arrow_upward_rounded
+                                      : Icons.arrow_downward_rounded,
+                                  color: Colors.white,
+                                  size: 14,
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
-                        Text(
-                          '${txn.isCredit ? '+' : '-'}${CurrencyFormatter.formatMK(txn.amount)}',
-                          style: GoogleFonts.orbitron(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: txn.isCredit
-                                ? AppColors.success
-                                : AppColors.actionRed,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }),
+                      );
+                    },
+                  ),
+                ),
               ],
             ),
           ),
@@ -412,13 +362,11 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
 class _QuickAction extends StatelessWidget {
   final IconData icon;
   final String label;
-  final Color color;
   final VoidCallback onTap;
 
   const _QuickAction({
     required this.icon,
     required this.label,
-    required this.color,
     required this.onTap,
   });
 
@@ -426,37 +374,26 @@ class _QuickAction extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        width: 80,
-        margin: const EdgeInsets.only(right: 12),
-        decoration: BoxDecoration(
-          color: AppColors.cardBg,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: color.withAlpha(30), width: 1),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: color.withAlpha(20),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, color: color, size: 22),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: const BoxDecoration(
+              color: AppColors.blackPrimary,
+              shape: BoxShape.circle,
             ),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: GoogleFonts.inter(
-                fontSize: 10,
-                color: AppColors.textSecondary,
-                fontWeight: FontWeight.w500,
-              ),
-              textAlign: TextAlign.center,
+            child: Icon(icon, color: AppColors.gold, size: 28),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: GoogleFonts.inter(
+              fontSize: 12,
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w500,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -35,7 +35,7 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
   Widget _sectionLabel(String text) {
     return Text(
       text.toUpperCase(),
-      style: GoogleFonts.orbitron(
+      style: GoogleFonts.playfairDisplay(
         fontSize: 11,
         fontWeight: FontWeight.w600,
         color: AppColors.textMuted,
@@ -51,7 +51,7 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
       appBar: AppBar(
         title: Text(
           'CREATE PLAN',
-          style: GoogleFonts.orbitron(
+          style: GoogleFonts.playfairDisplay(
             fontSize: 16,
             letterSpacing: 2,
             color: AppColors.gold,
@@ -77,19 +77,19 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
                 TextFormField(
                   controller: _amountController,
                   keyboardType: TextInputType.number,
-                  style: GoogleFonts.orbitron(
+                  style: GoogleFonts.playfairDisplay(
                     fontSize: 24,
                     color: AppColors.gold,
                     fontWeight: FontWeight.w700,
                   ),
                   decoration: InputDecoration(
                     hintText: '0.00',
-                    hintStyle: GoogleFonts.orbitron(
+                    hintStyle: GoogleFonts.playfairDisplay(
                       color: AppColors.textMuted,
                       fontSize: 24,
                     ),
                     prefixText: 'MK ',
-                    prefixStyle: GoogleFonts.orbitron(
+                    prefixStyle: GoogleFonts.playfairDisplay(
                       fontSize: 24,
                       color: AppColors.gold,
                       fontWeight: FontWeight.w700,
@@ -164,7 +164,7 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
                     overlayColor: AppColors.gold.withAlpha(30),
                     valueIndicatorColor: AppColors.gold,
                     valueIndicatorTextStyle:
-                        GoogleFonts.orbitron(color: AppColors.background),
+                        GoogleFonts.playfairDisplay(color: AppColors.background),
                   ),
                   child: Slider(
                     value: _durationMonths.toDouble(),
@@ -179,7 +179,7 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
                 Center(
                   child: Text(
                     '$_durationMonths months',
-                    style: GoogleFonts.orbitron(
+                    style: GoogleFonts.playfairDisplay(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
                       color: AppColors.gold,

@@ -58,7 +58,7 @@ class NotificationsScreen extends StatelessWidget {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text('NOTIFICATIONS',
-            style: GoogleFonts.orbitron(
+            style: GoogleFonts.playfairDisplay(
                 fontSize: 16, letterSpacing: 2, color: AppColors.gold)),
         backgroundColor: Colors.transparent,
         leading: IconButton(

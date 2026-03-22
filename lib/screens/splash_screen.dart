@@ -79,7 +79,7 @@ class _SplashScreenState extends State<SplashScreen> {
             const SizedBox(height: 30),
             Text(
               'SAVINGS UTL',
-              style: GoogleFonts.orbitron(
+              style: GoogleFonts.playfairDisplay(
                 fontSize: 28,
                 fontWeight: FontWeight.w700,
                 color: AppColors.gold,

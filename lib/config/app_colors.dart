@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
-  // Primary Background — Pure White (30%)
+  // Primary Background — Pure White
   static const Color background = Color(0xFFFFFFFF);
   static const Color backgroundLight = Color(0xFFFAFAFA);
 
-  // Black (20%)
+  // Black & Dark Grays
   static const Color black = Color(0xFF000000);
+  static const Color blackPrimary = Color(0xFF1A1A1A);
   static const Color blackSecondary = Color(0xFF111111);
   static const Color blackTertiary = Color(0xFF222222);
 

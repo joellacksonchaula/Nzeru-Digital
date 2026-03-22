@@ -68,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Title
                 Text(
                   'WELCOME BACK',
-                  style: GoogleFonts.orbitron(
+                  style: GoogleFonts.playfairDisplay(
                     fontSize: 24,
                     fontWeight: FontWeight.w700,
                     color: AppColors.gold,

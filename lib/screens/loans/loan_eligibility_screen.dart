@@ -36,7 +36,7 @@ class LoanEligibilityScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(20),
                 child: Text(
                   'LOANS',
-                  style: GoogleFonts.orbitron(
+                  style: GoogleFonts.playfairDisplay(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
                     color: AppColors.gold,
@@ -53,7 +53,7 @@ class LoanEligibilityScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text('LOAN ELIGIBILITY',
-                            style: GoogleFonts.orbitron(
+                            style: GoogleFonts.playfairDisplay(
                                 fontSize: 11,
                                 color: AppColors.textMuted,
                                 letterSpacing: 2)),
@@ -68,7 +68,7 @@ class LoanEligibilityScreen extends StatelessWidget {
                           ),
                           child: Text(
                             maxLoan > 0 ? 'ELIGIBLE' : 'NOT ELIGIBLE',
-                            style: GoogleFonts.orbitron(
+                            style: GoogleFonts.playfairDisplay(
                               fontSize: 9,
                               color: maxLoan > 0
                                   ? AppColors.success
@@ -109,7 +109,7 @@ class LoanEligibilityScreen extends StatelessWidget {
                                       color: AppColors.textMuted)),
                               const SizedBox(height: 4),
                                Text(CurrencyUtil.format(savingsBalance),
-                                  style: GoogleFonts.orbitron(
+                                  style: GoogleFonts.playfairDisplay(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w700,
                                       color: AppColors.textPrimary)),
@@ -126,7 +126,7 @@ class LoanEligibilityScreen extends StatelessWidget {
                                       color: AppColors.textMuted)),
                               const SizedBox(height: 4),
                               Text(CurrencyUtil.format(maxLoan),
-                                  style: GoogleFonts.orbitron(
+                                  style: GoogleFonts.playfairDisplay(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w700,
                                       color: AppColors.gold)),
@@ -154,7 +154,7 @@ class LoanEligibilityScreen extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Text('ACTIVE LOAN',
-                      style: GoogleFonts.orbitron(
+                      style: GoogleFonts.playfairDisplay(
                           fontSize: 12,
                           color: AppColors.textMuted,
                           letterSpacing: 2)),
@@ -179,7 +179,7 @@ class LoanEligibilityScreen extends StatelessWidget {
                                 Text(
                                     CurrencyUtil
                                         .format(activeLoan.totalWithInterest),
-                                    style: GoogleFonts.orbitron(
+                                    style: GoogleFonts.playfairDisplay(
                                         fontSize: 18,
                                         fontWeight: FontWeight.w700,
                                         color: AppColors.textPrimary)),
@@ -192,7 +192,7 @@ class LoanEligibilityScreen extends StatelessWidget {
                                 Text(
                                     CurrencyUtil
                                         .format(activeLoan.monthlyPayment),
-                                    style: GoogleFonts.orbitron(
+                                    style: GoogleFonts.playfairDisplay(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w600,
                                         color: AppColors.gold)),

@@ -81,235 +81,63 @@ class _CandlestickChartState extends State<CandlestickChart>
     return Container(
       decoration: BoxDecoration(
         color: AppColors.background,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border, width: 0.5),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.black, width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header with title and controls
+          // Header
           Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.title,
-                          style: GoogleFonts.orbitron(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.textPrimary,
-                            letterSpacing: 1,
-                          ),
-                        ),
-                        if (widget.subtitle != null)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 4),
-                            child: Text(
-                              widget.subtitle!,
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                color: AppColors.textMuted,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                    if (widget.onRefresh != null)
-                      GestureDetector(
-                        onTap: widget.onRefresh,
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: AppColors.gold.withAlpha(10),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: AppColors.gold.withAlpha(30),
-                              width: 0.5,
-                            ),
-                          ),
-                          child: const Icon(
-                            Icons.refresh,
-                            color: AppColors.gold,
-                            size: 18,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                // Timeframe selector
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: timeframes.map((tf) {
-                      final isSelected = selectedTimeframe == tf;
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              selectedTimeframe = tf;
-                              widget.onTimeframeChanged?.call(tf);
-                            });
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? AppColors.gold
-                                  : AppColors.surface,
-                              borderRadius: BorderRadius.circular(6),
-                              border: Border.all(
-                                color: isSelected
-                                    ? AppColors.gold
-                                    : AppColors.border,
-                                width: 0.5,
-                              ),
-                            ),
-                            child: Text(
-                              tf,
-                              style: GoogleFonts.inter(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: isSelected
-                                    ? AppColors.black
-                                    : AppColors.textSecondary,
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ],
+            padding: const EdgeInsets.all(12),
+            child: Text(
+              widget.title,
+              style: GoogleFonts.playfairDisplay(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
             ),
           ),
-          const Divider(height: 0.5, color: AppColors.border),
+          const Divider(height: 1, color: AppColors.black),
           // Chart area
           Expanded(
             child: widget.candles.isEmpty
-                ? Center(
-                    child: Text(
-                      'No data available',
-                      style: GoogleFonts.inter(
-                        color: AppColors.textMuted,
-                        fontSize: 14,
-                      ),
-                    ),
-                  )
-                : MouseRegion(
-                    onHover: (event) {
-                      setState(() {
-                        _hoveredCandle = event.localPosition;
-                      });
-                    },
-                    onExit: (_) {
-                      setState(() {
-                        _hoveredCandle = null;
-                        _hoveredIndex = null;
-                      });
-                    },
-                    child: Stack(
-                      children: [
-                        // Main chart
-                        CustomPaint(
-                          painter: _CandlestickPainter(
-                            candles: widget.candles,
-                            hoveredIndex: _hoveredIndex,
-                          ),
-                          size: Size.infinite,
+                ? Center(child: Text('No data'))
+                : Stack(
+                    children: [
+                      CustomPaint(
+                        painter: _CandlestickPainter(
+                          candles: widget.candles,
                         ),
-                        // Tooltip on hover
-                        if (_hoveredCandle != null && _hoveredIndex != null)
-                          Positioned(
-                            left: _hoveredCandle!.dx + 10,
-                            top: _hoveredCandle!.dy - 60,
-                            child: _CandleTooltip(
-                              candle: widget.candles[_hoveredIndex!],
-                              currencyFormat: NumberFormat.currency(
-                                symbol: 'MK ',
-                                decimalDigits: 2,
+                        size: Size.infinite,
+                      ),
+                      // Floating Badge
+                      Positioned(
+                        top: 20,
+                        left: 0,
+                        right: 0,
+                        child: Center(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: AppColors.actionRed,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              '- 5.40%',
+                              style: GoogleFonts.inter(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
                               ),
                             ),
                           ),
-                      ],
-                    ),
-                  ),
-          ),
-          // Footer with info
-          if (widget.candles.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Current: MK ${widget.candles.last.close.toStringAsFixed(2)}',
-                    style: GoogleFonts.inter(
-                      fontSize: 11,
-                      color: AppColors.textSecondary,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      _buildStatChip(
-                        'High',
-                        'MK ${widget.candles.map((c) => c.high).reduce((a, b) => a > b ? a : b).toStringAsFixed(2)}',
-                        AppColors.success,
-                      ),
-                      const SizedBox(width: 8),
-                      _buildStatChip(
-                        'Low',
-                        'MK ${widget.candles.map((c) => c.low).reduce((a, b) => a < b ? a : b).toStringAsFixed(2)}',
-                        AppColors.actionRed,
+                        ),
                       ),
                     ],
                   ),
-                ],
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatChip(String label, String value, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withAlpha(10),
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: color.withAlpha(30), width: 0.5),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: GoogleFonts.inter(
-              fontSize: 9,
-              color: AppColors.textMuted,
-            ),
-          ),
-          Text(
-            value,
-            style: GoogleFonts.orbitron(
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
-              color: color,
-            ),
           ),
         ],
       ),
@@ -320,152 +148,72 @@ class _CandlestickChartState extends State<CandlestickChart>
 /// Custom painter for candlestick chart
 class _CandlestickPainter extends CustomPainter {
   final List<CandleData> candles;
-  final int? hoveredIndex;
 
-  _CandlestickPainter({
-    required this.candles,
-    this.hoveredIndex,
-  });
+  _CandlestickPainter({required this.candles});
 
   @override
   void paint(Canvas canvas, Size size) {
     if (candles.isEmpty) return;
 
-    // Calculate pricing bounds
-    final maxPrice =
-        candles.map((c) => c.high).reduce((a, b) => a > b ? a : b);
-    final minPrice =
-        candles.map((c) => c.low).reduce((a, b) => a < b ? a : b);
+    final maxPrice = candles.map((c) => c.high).reduce((a, b) => a > b ? a : b);
+    final minPrice = candles.map((c) => c.low).reduce((a, b) => a < b ? a : b);
     final priceRange = maxPrice - minPrice;
 
-    // Calculate candle width
-    final candleWidth = (size.width - 20) / candles.length;
-    final spacing = candleWidth * 0.2;
-    final bodyWidth = candleWidth - spacing;
+    final candleWidth = size.width / candles.length;
+    final bodyWidth = candleWidth * 0.7;
 
-    // Draw grid lines and labels
-    _drawGridLines(canvas, size, maxPrice, minPrice, priceRange);
+    // Draw Grid
+    final gridPaint = Paint()
+      ..color = AppColors.black
+      ..strokeWidth = 0.5;
+
+    // Horizontal grid lines
+    const int hLines = 6;
+    for (int i = 0; i <= hLines; i++) {
+      final y = (size.height / hLines) * i;
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), gridPaint);
+    }
+
+    // Vertical grid lines
+    const int vLines = 10;
+    for (int i = 0; i <= vLines; i++) {
+      final x = (size.width / vLines) * i;
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), gridPaint);
+    }
 
     // Draw candles
     for (int i = 0; i < candles.length; i++) {
       final candle = candles[i];
-      final x = 10 + (i * candleWidth) + candleWidth / 2;
+      final x = (i * candleWidth) + candleWidth / 2;
 
-      _drawCandle(
-        canvas,
-        size,
-        candle,
-        x,
-        bodyWidth,
-        maxPrice,
-        minPrice,
-        priceRange,
-        i == hoveredIndex,
+      final highY = _priceToY(candle.high, size.height, maxPrice, minPrice, priceRange);
+      final lowY = _priceToY(candle.low, size.height, maxPrice, minPrice, priceRange);
+      final openY = _priceToY(candle.open, size.height, maxPrice, minPrice, priceRange);
+      final closeY = _priceToY(candle.close, size.height, maxPrice, minPrice, priceRange);
+
+      final isGreen = candle.isGreen;
+      final color = isGreen ? Colors.green : Colors.red;
+
+      final wickPaint = Paint()
+        ..color = AppColors.black
+        ..strokeWidth = 1;
+      
+      canvas.drawLine(Offset(x, highY), Offset(x, lowY), wickPaint);
+
+      final bodyPaint = Paint()..color = color;
+      final bodyTop = isGreen ? closeY : openY;
+      final bodyBottom = isGreen ? openY : closeY;
+
+      canvas.drawRect(
+        Rect.fromLTRB(x - bodyWidth / 2, bodyTop, x + bodyWidth / 2, bodyBottom.clamp(bodyTop + 1, size.height)),
+        bodyPaint,
       );
     }
   }
 
-  void _drawGridLines(
-    Canvas canvas,
-    Size size,
-    double maxPrice,
-    double minPrice,
-    double priceRange,
-  ) {
-    final paint = Paint()
-      ..color = AppColors.gridLine
-      ..strokeWidth = 0.5;
-
-    final textPainter = TextPainter(
-      textDirection: ui.TextDirection.ltr,
-    );
-
-    // Draw 5 horizontal grid lines
-    for (int i = 0; i <= 4; i++) {
-      final yRatio = i / 4;
-      final y = size.height * (1 - yRatio);
-
-      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
-
-      // Price label
-      final price = minPrice + (priceRange * yRatio);
-      textPainter.text = TextSpan(
-        text: 'MK ${price.toStringAsFixed(0)}',
-        style: const TextStyle(
-          color: AppColors.textMuted,
-          fontSize: 10,
-        ),
-      );
-      textPainter.layout();
-      textPainter.paint(
-        canvas,
-        Offset(size.width - 60, y - 5),
-      );
-    }
-  }
-
-  void _drawCandle(
-    Canvas canvas,
-    Size size,
-    CandleData candle,
-    double x,
-    double bodyWidth,
-    double maxPrice,
-    double minPrice,
-    double priceRange,
-    bool isHovered,
-  ) {
-    final highY = _priceToY(candle.high, size.height, maxPrice, minPrice, priceRange);
-    final lowY = _priceToY(candle.low, size.height, maxPrice, minPrice, priceRange);
-    final openY =
-        _priceToY(candle.open, size.height, maxPrice, minPrice, priceRange);
-    final closeY =
-        _priceToY(candle.close, size.height, maxPrice, minPrice, priceRange);
-
-    // Wick color and body color
-    final isGreen = candle.isGreen;
-    final color = isGreen ? AppColors.success : AppColors.actionRed;
-    final wickPaint = Paint()
-      ..color = color
-      ..strokeWidth = 1.5;
-
-    final bodyPaint = Paint()
-      ..color = color
-      ..style = PaintingStyle.fill;
-
-    // Draw wick (high-low line)
-    canvas.drawLine(Offset(x, highY), Offset(x, lowY), wickPaint);
-
-    // Draw body (open-close rectangle)
-    final bodyTop = isGreen ? closeY : openY;
-    final bodyBottom = isGreen ? openY : closeY;
-    final bodyHeight = (bodyBottom - bodyTop).abs();
-
-    final bodyRect = RRect.fromRectAndRadius(
-      Rect.fromLTWH(x - bodyWidth / 2, bodyTop, bodyWidth, bodyHeight),
-      const Radius.circular(1),
-    );
-
-    canvas.drawRRect(bodyRect, bodyPaint);
-
-    // Highlight on hover
-    if (isHovered) {
-      final highlightPaint = Paint()
-        ..color = color.withAlpha(50)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2;
-
-      canvas.drawRRect(bodyRect, highlightPaint);
-
-      // Draw highlight box around candle
-      final highlightRect = Rect.fromLTWH(
-        x - bodyWidth / 2 - 2,
-        highY - 2,
-        bodyWidth + 4,
-        lowY - highY + 4,
-      );
-      canvas.drawRect(highlightRect, highlightPaint);
-    }
+  double _priceToY(double price, double height, double max, double min, double range) {
+    if (range == 0) return height / 2;
+    return height - ((price - min) / range) * height;
   }
 
   double _priceToY(
@@ -570,7 +318,7 @@ class _TooltipRow extends StatelessWidget {
           ),
           Text(
             'MK ${value.toStringAsFixed(2)}',
-            style: GoogleFonts.orbitron(
+            style: GoogleFonts.playfairDisplay(
               color: AppColors.gold,
               fontSize: 11,
               fontWeight: FontWeight.w600,

@@ -25,7 +25,7 @@ class LoanDetailScreen extends StatelessWidget {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text('LOAN DETAILS',
-            style: GoogleFonts.orbitron(
+            style: GoogleFonts.playfairDisplay(
                 fontSize: 16, letterSpacing: 2, color: AppColors.gold)),
         backgroundColor: Colors.transparent,
         leading: IconButton(
@@ -90,7 +90,7 @@ class LoanDetailScreen extends StatelessWidget {
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: Text('INTEREST DISTRIBUTION',
-                            style: GoogleFonts.orbitron(
+                            style: GoogleFonts.playfairDisplay(
                                 fontSize: 12,
                                 color: AppColors.textMuted,
                                 letterSpacing: 2)),
@@ -123,7 +123,7 @@ class LoanDetailScreen extends StatelessWidget {
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text('PAYMENT HISTORY',
-                          style: GoogleFonts.orbitron(
+                          style: GoogleFonts.playfairDisplay(
                               fontSize: 12,
                               color: AppColors.textMuted,
                               letterSpacing: 2)),
@@ -171,7 +171,7 @@ class LoanDetailScreen extends StatelessWidget {
                             ),
                           ),
                           Text(CurrencyUtil.format(payment.amountPaid),
-                              style: GoogleFonts.orbitron(
+                              style: GoogleFonts.playfairDisplay(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
                                   color: AppColors.success)),
@@ -193,7 +193,7 @@ class LoanDetailScreen extends StatelessWidget {
             style: GoogleFonts.inter(
                 fontSize: 13, color: AppColors.textMuted)),
         Text(value,
-            style: GoogleFonts.orbitron(
+            style: GoogleFonts.playfairDisplay(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
                 color: valueColor ?? AppColors.textPrimary)),

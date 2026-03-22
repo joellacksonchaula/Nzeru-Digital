@@ -36,7 +36,7 @@ class _DepositScreenState extends State<DepositScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text('MAKE DEPOSIT',
-            style: GoogleFonts.orbitron(
+            style: GoogleFonts.playfairDisplay(
                 fontSize: 16, letterSpacing: 2, color: AppColors.gold)),
         backgroundColor: Colors.transparent,
         leading: IconButton(
@@ -70,7 +70,7 @@ class _DepositScreenState extends State<DepositScreen> {
 
               // Select plan
               Text('SELECT PLAN',
-                  style: GoogleFonts.orbitron(
+                  style: GoogleFonts.playfairDisplay(
                       fontSize: 11,
                       color: AppColors.textMuted,
                       letterSpacing: 2)),
@@ -122,7 +122,7 @@ class _DepositScreenState extends State<DepositScreen> {
 
               const SizedBox(height: 28),
               Text('AMOUNT',
-                  style: GoogleFonts.orbitron(
+                  style: GoogleFonts.playfairDisplay(
                       fontSize: 11,
                       color: AppColors.textMuted,
                       letterSpacing: 2)),
@@ -130,19 +130,19 @@ class _DepositScreenState extends State<DepositScreen> {
               TextFormField(
                 controller: _amountController,
                 keyboardType: TextInputType.number,
-                style: GoogleFonts.orbitron(
+                style: GoogleFonts.playfairDisplay(
                   fontSize: 32,
                   color: AppColors.gold,
                   fontWeight: FontWeight.w700,
                 ),
                 decoration: InputDecoration(
                   hintText: '0.00',
-                  hintStyle: GoogleFonts.orbitron(
+                  hintStyle: GoogleFonts.playfairDisplay(
                     color: AppColors.textMuted,
                     fontSize: 32,
                   ),
                   prefixText: 'MK ',
-                  prefixStyle: GoogleFonts.orbitron(
+                  prefixStyle: GoogleFonts.playfairDisplay(
                     fontSize: 32,
                     color: AppColors.gold,
                     fontWeight: FontWeight.w700,

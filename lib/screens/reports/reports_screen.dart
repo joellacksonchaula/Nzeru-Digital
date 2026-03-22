@@ -29,7 +29,7 @@ class ReportsScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(20),
                 child: Text(
                   'FINANCIAL REPORTS',
-                  style: GoogleFonts.orbitron(
+                  style: GoogleFonts.playfairDisplay(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
                     color: AppColors.gold,
@@ -45,7 +45,7 @@ class ReportsScreen extends StatelessWidget {
                   children: [
                     Text(
                       'SAVINGS GROWTH',
-                      style: GoogleFonts.orbitron(
+                      style: GoogleFonts.playfairDisplay(
                         fontSize: 11,
                         color: AppColors.textMuted,
                         letterSpacing: 2,
@@ -158,7 +158,7 @@ class ReportsScreen extends StatelessWidget {
                   children: [
                     Text(
                       'SAVINGS BREAKDOWN',
-                      style: GoogleFonts.orbitron(
+                      style: GoogleFonts.playfairDisplay(
                         fontSize: 11,
                         color: AppColors.textMuted,
                         letterSpacing: 2,
@@ -223,7 +223,7 @@ class ReportsScreen extends StatelessWidget {
                   children: [
                     Text(
                       'REPAYMENT PERFORMANCE',
-                      style: GoogleFonts.orbitron(
+                      style: GoogleFonts.playfairDisplay(
                         fontSize: 11,
                         color: AppColors.textMuted,
                         letterSpacing: 2,
@@ -304,7 +304,7 @@ class ReportsScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('FINANCIAL SUMMARY',
-                        style: GoogleFonts.orbitron(
+                        style: GoogleFonts.playfairDisplay(
                             fontSize: 11,
                             color: AppColors.textMuted,
                             letterSpacing: 2)),
@@ -358,7 +358,7 @@ class ReportsScreen extends StatelessWidget {
             style: GoogleFonts.inter(
                 fontSize: 13, color: AppColors.textMuted)),
         Text(value,
-            style: GoogleFonts.orbitron(
+            style: GoogleFonts.playfairDisplay(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
                 color: color ?? AppColors.textPrimary)),

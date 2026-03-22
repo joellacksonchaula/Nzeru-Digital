@@ -61,7 +61,7 @@ class _CryptoChartState extends State<CryptoChart> {
                   children: [
                     Text(
                       widget.title,
-                      style: GoogleFonts.orbitron(
+                      style: GoogleFonts.playfairDisplay(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: AppColors.textPrimary,
@@ -106,7 +106,7 @@ class _CryptoChartState extends State<CryptoChart> {
                   ),
                   child: Text(
                     '${widget.isPositive ? '+' : ''} ${widget.changePercent.toStringAsFixed(2)}%',
-                    style: GoogleFonts.orbitron(
+                    style: GoogleFonts.playfairDisplay(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
                       color: AppColors.background,

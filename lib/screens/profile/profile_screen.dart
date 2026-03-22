@@ -45,7 +45,7 @@ class ProfileScreen extends StatelessWidget {
                       child: Center(
                         child: Text(
                           (user?.name ?? 'U')[0].toUpperCase(),
-                          style: GoogleFonts.orbitron(
+                          style: GoogleFonts.playfairDisplay(
                             fontSize: 40,
                             fontWeight: FontWeight.w700,
                             color: AppColors.background,
@@ -73,7 +73,7 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 16),
               Text(
                 user?.name ?? 'User',
-                style: GoogleFonts.orbitron(
+                style: GoogleFonts.playfairDisplay(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
                   color: AppColors.textPrimary,
@@ -94,7 +94,7 @@ class ProfileScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     Text('FINANCIAL HEALTH SCORE',
-                        style: GoogleFonts.orbitron(
+                        style: GoogleFonts.playfairDisplay(
                             fontSize: 11,
                             color: AppColors.textMuted,
                             letterSpacing: 2)),
@@ -167,7 +167,7 @@ class ProfileScreen extends StatelessWidget {
                         const SizedBox(width: 10),
                         Text(
                           'SIGN OUT',
-                          style: GoogleFonts.orbitron(
+                          style: GoogleFonts.playfairDisplay(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
                             color: AppColors.actionRed,
@@ -190,7 +190,7 @@ class ProfileScreen extends StatelessWidget {
     return Column(
       children: [
         Text(value,
-            style: GoogleFonts.orbitron(
+            style: GoogleFonts.playfairDisplay(
                 fontSize: 14, fontWeight: FontWeight.w700, color: color)),
         const SizedBox(height: 4),
         Text(label,

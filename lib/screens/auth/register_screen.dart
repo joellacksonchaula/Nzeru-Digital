@@ -57,7 +57,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 20),
                 Text(
                   'CREATE ACCOUNT',
-                  style: GoogleFonts.orbitron(
+                  style: GoogleFonts.playfairDisplay(
                     fontSize: 24,
                     fontWeight: FontWeight.w700,
                     color: AppColors.gold,

@@ -28,49 +28,39 @@ class CryptoMarketCard extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        gradient: isGold ? AppColors.cryptoCardGradient : AppColors.cryptoCardGradient,
-        borderRadius: BorderRadius.circular(14),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isGold
-              ? AppColors.gold.withAlpha(150)
-              : AppColors.border.withAlpha(150),
-          width: isGold ? 1.5 : 1,
+          color: isGold ? AppColors.gold.withAlpha(150) : AppColors.border,
+          width: 0.8,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: isGold
-                ? AppColors.gold.withAlpha(40)
-                : AppColors.black.withAlpha(20),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       name,
-                      style: GoogleFonts.orbitron(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: isGold ? AppColors.gold : AppColors.textPrimary,
-                        letterSpacing: 0.5,
+                      style: GoogleFonts.playfairDisplay(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
                       ),
                     ),
                     Text(
                       symbol,
                       style: GoogleFonts.inter(
-                        fontSize: 11,
+                        fontSize: 12,
                         color: AppColors.textMuted,
+                        letterSpacing: 0.5,
                       ),
                     ),
                   ],
@@ -81,41 +71,30 @@ class CryptoMarketCard extends StatelessWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: isPositive
-                        ? const Color(0xFF00D084).withAlpha(20)
-                        : AppColors.actionRed.withAlpha(20),
+                    color: isPositive ? AppColors.gold : AppColors.actionRed,
                     borderRadius: BorderRadius.circular(6),
-                    border: Border.all(
-                      color: isPositive
-                          ? const Color(0xFF00D084).withAlpha(100)
-                          : AppColors.actionRed.withAlpha(100),
-                      width: 0.5,
-                    ),
                   ),
                   child: Text(
-                    '${isPositive ? '+' : ''} ${changePercent24h.toStringAsFixed(1)}%',
-                    style: GoogleFonts.orbitron(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
-                      color: isPositive
-                          ? const Color(0xFF00D084)
-                          : AppColors.actionRed,
-                      letterSpacing: 0.3,
+                    '${isPositive ? '+' : ''}${changePercent24h.toStringAsFixed(1)}%',
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
             Text(
-              'MK ${price.toStringAsFixed(2)}',
-              style: GoogleFonts.orbitron(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
+              'MK ${NumberFormat("#,##0.00").format(price)}',
+              style: GoogleFonts.playfairDisplay(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
               ),
             ),
-            const SizedBox(height: 8),
+            const Spacer(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -148,7 +127,7 @@ class _InfoPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Text(
           label,
@@ -158,11 +137,10 @@ class _InfoPill extends StatelessWidget {
             fontWeight: FontWeight.w500,
           ),
         ),
-        const SizedBox(height: 2),
         Text(
           value,
-          style: GoogleFonts.orbitron(
-            fontSize: 10,
+          style: GoogleFonts.inter(
+            fontSize: 9,
             fontWeight: FontWeight.w600,
             color: AppColors.textPrimary,
           ),

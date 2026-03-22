@@ -35,7 +35,7 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text('REQUEST LOAN',
-            style: GoogleFonts.orbitron(
+            style: GoogleFonts.playfairDisplay(
                 fontSize: 16, letterSpacing: 2, color: AppColors.gold)),
         backgroundColor: Colors.transparent,
         leading: IconButton(
@@ -51,7 +51,7 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
             children: [
               // Amount slider
               Text('LOAN AMOUNT',
-                  style: GoogleFonts.orbitron(
+                  style: GoogleFonts.playfairDisplay(
                       fontSize: 11,
                       color: AppColors.textMuted,
                       letterSpacing: 2)),
@@ -59,7 +59,7 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
               Center(
                 child: Text(
                   CurrencyUtil.format(_loanAmount),
-                  style: GoogleFonts.orbitron(
+                  style: GoogleFonts.playfairDisplay(
                     fontSize: 34,
                     fontWeight: FontWeight.w700,
                     color: AppColors.gold,
@@ -98,7 +98,7 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
               const SizedBox(height: 30),
               // Duration
               Text('REPAYMENT PERIOD',
-                  style: GoogleFonts.orbitron(
+                  style: GoogleFonts.playfairDisplay(
                       fontSize: 11,
                       color: AppColors.textMuted,
                       letterSpacing: 2)),
@@ -123,7 +123,7 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
               ),
               Center(
                 child: Text('$_durationMonths months',
-                    style: GoogleFonts.orbitron(
+                    style: GoogleFonts.playfairDisplay(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                         color: AppColors.textPrimary)),
@@ -167,7 +167,7 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
                         Text(
                             CurrencyUtil.format(
                                 _loanAmount * _interestRate / 100 / 2),
-                            style: GoogleFonts.orbitron(
+                            style: GoogleFonts.playfairDisplay(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.success)),
@@ -234,7 +234,7 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
             style: GoogleFonts.inter(
                 fontSize: 13, color: AppColors.textMuted)),
         Text(value,
-            style: GoogleFonts.orbitron(
+            style: GoogleFonts.playfairDisplay(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
                 color: valueColor ?? AppColors.textPrimary)),

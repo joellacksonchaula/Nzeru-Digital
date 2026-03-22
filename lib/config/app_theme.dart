@@ -13,7 +13,7 @@ class AppTheme {
       colorScheme: const ColorScheme.light(
         primary: AppColors.gold,
         secondary: AppColors.goldLight,
-        surface: AppColors.cardBg,
+        surface: AppColors.background,
         error: AppColors.actionRed,
         onPrimary: Colors.white,
         onSecondary: Colors.white,
@@ -25,58 +25,54 @@ class AppTheme {
         backgroundColor: AppColors.background,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: GoogleFonts.orbitron(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-          color: AppColors.gold,
-          letterSpacing: 2,
+        titleTextStyle: GoogleFonts.playfairDisplay(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: AppColors.textPrimary,
         ),
-        iconTheme: const IconThemeData(color: AppColors.gold),
+        iconTheme: const IconThemeData(color: AppColors.textPrimary),
       ),
       cardTheme: CardThemeData(
-        color: AppColors.cardBg,
+        color: AppColors.background,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: AppColors.border, width: 1),
+          borderRadius: BorderRadius.circular(12),
+          side: const BorderSide(color: AppColors.border, width: 0.8),
         ),
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.gold,
-          foregroundColor: Colors.white,
+          backgroundColor: AppColors.blackPrimary,
+          foregroundColor: AppColors.gold,
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(30),
           ),
-          textStyle: GoogleFonts.orbitron(
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 1.5,
+          textStyle: GoogleFonts.playfairDisplay(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
           ),
-          elevation: 4,
-          shadowColor: AppColors.gold.withAlpha(100),
+          elevation: 0,
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.gold,
-          side: const BorderSide(color: AppColors.gold, width: 1.5),
+          foregroundColor: AppColors.textPrimary,
+          side: const BorderSide(color: AppColors.border, width: 1.5),
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          textStyle: GoogleFonts.orbitron(
+          textStyle: GoogleFonts.playfairDisplay(
             fontSize: 14,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 1.5,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.surface,
+        fillColor: AppColors.backgroundLight,
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
         hintStyle: GoogleFonts.inter(
@@ -97,7 +93,7 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.gold, width: 2),
+          borderSide: const BorderSide(color: AppColors.gold, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -114,16 +110,16 @@ class AppTheme {
       ),
       dividerTheme: const DividerThemeData(
         color: AppColors.border,
-        thickness: 1,
+        thickness: 0.5,
       ),
       iconTheme: const IconThemeData(
-        color: AppColors.gold,
+        color: AppColors.textPrimary,
         size: 24,
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: AppColors.gold,
-        foregroundColor: Colors.white,
-        elevation: 8,
+        backgroundColor: AppColors.blackPrimary,
+        foregroundColor: AppColors.gold,
+        elevation: 4,
       ),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: AppColors.textPrimary,
@@ -136,42 +132,36 @@ class AppTheme {
 
   static TextTheme get _textTheme {
     return TextTheme(
-      // Orbitron for display / headline — futuristic
-      displayLarge: GoogleFonts.orbitron(
-        fontSize: 40,
-        fontWeight: FontWeight.w700,
-        color: AppColors.gold,
-        letterSpacing: 2,
+      // Playfair Display for display / headline — elegant serif
+      displayLarge: GoogleFonts.playfairDisplay(
+        fontSize: 34,
+        fontWeight: FontWeight.bold,
+        color: AppColors.textPrimary,
       ),
-      displayMedium: GoogleFonts.orbitron(
-        fontSize: 32,
-        fontWeight: FontWeight.w700,
-        color: AppColors.gold,
-        letterSpacing: 1.5,
+      displayMedium: GoogleFonts.playfairDisplay(
+        fontSize: 28,
+        fontWeight: FontWeight.bold,
+        color: AppColors.textPrimary,
       ),
-      displaySmall: GoogleFonts.orbitron(
+      displaySmall: GoogleFonts.playfairDisplay(
         fontSize: 24,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.bold,
         color: AppColors.textPrimary,
-        letterSpacing: 1,
       ),
-      headlineLarge: GoogleFonts.orbitron(
+      headlineLarge: GoogleFonts.playfairDisplay(
         fontSize: 22,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.bold,
         color: AppColors.textPrimary,
-        letterSpacing: 1,
       ),
-      headlineMedium: GoogleFonts.orbitron(
+      headlineMedium: GoogleFonts.playfairDisplay(
         fontSize: 18,
+        fontWeight: FontWeight.bold,
+        color: AppColors.textPrimary,
+      ),
+      headlineSmall: GoogleFonts.playfairDisplay(
+        fontSize: 16,
         fontWeight: FontWeight.w600,
         color: AppColors.textPrimary,
-        letterSpacing: 0.8,
-      ),
-      headlineSmall: GoogleFonts.orbitron(
-        fontSize: 16,
-        fontWeight: FontWeight.w500,
-        color: AppColors.textPrimary,
-        letterSpacing: 0.5,
       ),
       // Inter for body text — clean and readable
       titleLarge: GoogleFonts.inter(
@@ -204,11 +194,10 @@ class AppTheme {
         fontWeight: FontWeight.w400,
         color: AppColors.textMuted,
       ),
-      labelLarge: GoogleFonts.orbitron(
+      labelLarge: GoogleFonts.playfairDisplay(
         fontSize: 14,
-        fontWeight: FontWeight.w600,
-        color: AppColors.gold,
-        letterSpacing: 1.5,
+        fontWeight: FontWeight.bold,
+        color: AppColors.textPrimary,
       ),
       labelMedium: GoogleFonts.inter(
         fontSize: 12,
@@ -219,7 +208,6 @@ class AppTheme {
         fontSize: 10,
         fontWeight: FontWeight.w500,
         color: AppColors.textMuted,
-        letterSpacing: 1.2,
       ),
     );
   }
