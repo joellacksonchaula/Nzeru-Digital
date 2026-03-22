@@ -63,29 +63,40 @@ def dashboard_summary(request):
     )
     active_loan_balance = sum(l.remaining_balance for l in active_loans)
 
-    # Recent transactions (last 5)
-    recent_txns = Transaction.objects.filter(user=user).order_by('-timestamp')[:5]
+    # Recent transactions (last 10 for charts)
+    recent_txns = Transaction.objects.filter(user=user).order_by('-timestamp')[:10]
 
     # Unread notifications count
     unread_count = Notification.objects.filter(user=user, is_read=False).count()
 
+    # Total Penalties
+    from django.db.models import Sum
+    total_penalties = Penalty.objects.filter(user=user).aggregate(Sum('amount'))['amount__sum'] or 0
+
     return Response({
         'user': {
-            'id': user.id,
+            'id': str(user.id),
             'username': user.username,
             'email': user.email,
             'first_name': user.first_name,
             'last_name': user.last_name,
+            'name': f"{user.first_name} {user.last_name}".strip() or user.username,
+            'phone': profile.phone,
+            'savings_balance': float(profile.savings_balance),
+            'loan_balance': float(profile.loan_balance),
+            'financial_score': profile.financial_score,
         },
         'savings_balance': float(profile.savings_balance),
+        'total_savings': float(profile.savings_balance), # Alias for frontend compatibility
         'loan_balance': float(profile.loan_balance),
         'financial_score': profile.financial_score,
         'active_loan_balance': float(active_loan_balance),
-        'active_plans_count': normal_plans.count(),
+        'active_plans': normal_plans.count(), # Changed from active_plans_count
         'secret_savings_count': secret_plans.count(),
         'secret_savings_balance': float(
             sum(p.current_amount for p in secret_plans)
         ),
+        'total_penalties': float(total_penalties),
         'recent_transactions': TransactionSerializer(recent_txns, many=True).data,
         'unread_notifications': unread_count,
     })

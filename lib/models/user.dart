@@ -21,14 +21,14 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      email: json['email'] as String,
-      phone: json['phone'] as String,
+      id: json['id']?.toString() ?? '',
+      name: json['name']?.toString() ?? 'User',
+      email: json['email']?.toString() ?? '',
+      phone: json['phone']?.toString() ?? '',
       savingsBalance: double.tryParse(json['savings_balance']?.toString() ?? '') ?? 0.0,
       loanBalance: double.tryParse(json['loan_balance']?.toString() ?? '') ?? 0.0,
       financialScore: int.tryParse(json['financial_score']?.toString() ?? '') ?? 0,
-      avatarUrl: json['avatar_url'] as String?,
+      avatarUrl: json['avatar_url']?.toString(),
     );
   }
 

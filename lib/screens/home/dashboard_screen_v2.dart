@@ -12,6 +12,8 @@ import '../../widgets/glow_text.dart';
 import '../../widgets/stat_tile.dart';
 import '../../widgets/candlestick_chart.dart';
 import '../../utils/currency_formatter.dart';
+import '../../providers/dashboard_provider.dart';
+import '../../models/savings_transaction.dart';
 
 class DashboardScreenV2 extends StatefulWidget {
   const DashboardScreenV2({super.key});
@@ -25,17 +27,22 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<SavingsProvider>().loadData();
-      context.read<LoanProvider>().loadData();
+      context.read<DashboardProvider>().loadDashboard();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final auth = context.watch<AuthProvider>();
-    final savings = context.watch<SavingsProvider>();
-    final loans = context.watch<LoanProvider>();
-    final user = auth.user;
+    final dashboardProvider = context.watch<DashboardProvider>();
+    final user = dashboardProvider.user;
+    final dashboardData = dashboardProvider.data;
+
+    if (dashboardProvider.isLoading && dashboardData == null) {
+      return const Scaffold(
+        backgroundColor: AppColors.background,
+        body: Center(child: CircularProgressIndicator(color: AppColors.gold)),
+      );
+    }
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -44,11 +51,7 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
           color: AppColors.gold,
           backgroundColor: AppColors.cardBg,
           onRefresh: () async {
-            await Future.wait([
-              context.read<AuthProvider>().refreshProfile(),
-              context.read<SavingsProvider>().loadData(),
-              context.read<LoanProvider>().loadData(),
-            ]);
+            await context.read<DashboardProvider>().loadDashboard();
           },
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
@@ -93,18 +96,20 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                               children: [
                                 const Icon(Icons.notifications_outlined,
                                     color: AppColors.textSecondary, size: 26),
-                                Positioned(
-                                  right: 0,
-                                  top: 0,
-                                  child: Container(
-                                    width: 10,
-                                    height: 10,
-                                    decoration: const BoxDecoration(
-                                      color: AppColors.actionRed,
-                                      shape: BoxShape.circle,
+                                if (dashboardData?['unread_notifications'] != null && 
+                                    dashboardData!['unread_notifications'] > 0)
+                                  Positioned(
+                                    right: 0,
+                                    top: 0,
+                                    child: Container(
+                                      width: 10,
+                                      height: 10,
+                                      decoration: const BoxDecoration(
+                                        color: AppColors.actionRed,
+                                        shape: BoxShape.circle,
+                                      ),
                                     ),
                                   ),
-                                ),
                               ],
                             ),
                           ),
@@ -192,7 +197,7 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                         // Mini candlestick chart
                         SizedBox(
                           height: 80,
-                          child: _buildMiniChart(savings),
+                          child: _buildMiniChart(dashboardProvider.recentTransactions),
                         ),
                       ],
                     ),
@@ -211,7 +216,7 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                           icon: Icons.account_balance_wallet,
                           label: 'LOAN BALANCE',
                           value: CurrencyFormatter.formatMK(
-                              loans.activeLoan?.remainingBalance ?? 0),
+                              dashboardData?['loan_balance'] ?? 0),
                           iconColor: AppColors.info,
                         ),
                       ),
@@ -239,7 +244,7 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                         child: StatTile(
                           icon: Icons.savings_rounded,
                           label: 'ACTIVE PLANS',
-                          value: '${savings.plans.where((p) => p.isActive).length}',
+                          value: '${dashboardData?['active_plans'] ?? 0}',
                           iconColor: AppColors.success,
                         ),
                       ),
@@ -248,8 +253,8 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                         child: StatTile(
                           icon: Icons.warning_amber_rounded,
                           label: 'PENALTIES',
-                          value: CurrencyFormatter.formatCompact(
-                              savings.totalPenalties),
+                          value: CurrencyFormatter.formatMK(
+                              dashboardData?['total_penalties'] ?? 0),
                           iconColor: AppColors.actionRed,
                           valueColor: AppColors.actionRed,
                         ),
@@ -343,7 +348,7 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                     ],
                   ),
                 ),
-                ...savings.transactions.take(5).map((txn) {
+                ...dashboardProvider.recentTransactions.take(5).map((txn) {
                   return Container(
                     margin: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 6),
@@ -420,9 +425,18 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
   }
 
   /// Generate sample candlestick data from actual transactions
-  Widget _buildMiniChart(SavingsProvider savings) {
+  Widget _buildMiniChart(List<SavingsTransaction> transactions) {
+    if (transactions.isEmpty) {
+      return Center(
+        child: Text(
+          'No transaction data for chart',
+          style: GoogleFonts.inter(color: AppColors.textMuted, fontSize: 10),
+        ),
+      );
+    }
+    
     // Group recent transactions by day
-    final txns = savings.transactions.take(7).toList().reversed.toList();
+    final txns = transactions.toList().reversed.toList();
     final candles = <CandleData>[];
 
     for (int i = 0; i < txns.length; i++) {

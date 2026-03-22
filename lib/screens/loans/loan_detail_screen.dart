@@ -14,12 +14,12 @@ class LoanDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final loans = context.watch<LoanProvider>();
-    final loan = loans.activeLoan;
+    final loanProvider = context.watch<LoanProvider>();
+    final activeLoan = loanProvider.activeLoan;
     final loanPayments =
-        loans.payments.where((p) => p.loanId == loan?.id).toList();
+        loanProvider.payments.where((p) => p.loanId == activeLoan?.id).toList();
     final distribution =
-        loans.distributions.where((d) => d.loanId == loan?.id).firstOrNull;
+        loanProvider.distributions.where((d) => d.loanId == activeLoan?.id).firstOrNull;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -33,7 +33,7 @@ class LoanDetailScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: loan == null
+      body: activeLoan == null
           ? const Center(child: Text('No active loan'))
           : SingleChildScrollView(
               padding: const EdgeInsets.only(bottom: 30),
@@ -42,7 +42,7 @@ class LoanDetailScreen extends StatelessWidget {
                   const SizedBox(height: 20),
                   Center(
                     child: ProgressRing(
-                      progress: loan.repaymentProgress,
+                      progress: activeLoan.repaymentProgress,
                       size: 160,
                       strokeWidth: 14,
                       label: 'REPAID',
@@ -56,28 +56,28 @@ class LoanDetailScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         _row('Loan Amount',
-                            CurrencyUtil.format(loan.amount)),
+                            CurrencyUtil.format(activeLoan.amount)),
                         const Divider(color: AppColors.border, height: 24),
                         _row('Interest Rate',
-                            '${loan.interestRate.toStringAsFixed(0)}%'),
+                            '${activeLoan.interestRate.toStringAsFixed(0)}%'),
                         const Divider(color: AppColors.border, height: 24),
                         _row('Total with Interest',
-                            CurrencyUtil.format(loan.totalWithInterest)),
+                            CurrencyUtil.format(activeLoan.totalWithInterest)),
                         const Divider(color: AppColors.border, height: 24),
                         _row('Monthly Payment',
-                            CurrencyUtil.format(loan.monthlyPayment)),
+                            CurrencyUtil.format(activeLoan.monthlyPayment)),
                         const Divider(color: AppColors.border, height: 24),
                         _row('Total Repaid',
-                            CurrencyUtil.format(loan.totalRepaid),
+                            CurrencyUtil.format(activeLoan.totalRepaid),
                             valueColor: AppColors.success),
                         const Divider(color: AppColors.border, height: 24),
                         _row('Remaining',
-                            CurrencyUtil.format(loan.remainingBalance),
+                            CurrencyUtil.format(activeLoan.remainingBalance),
                             valueColor: AppColors.actionRed),
                         const Divider(color: AppColors.border, height: 24),
-                        _row('Duration', '${loan.durationMonths} months'),
+                        _row('Duration', '${activeLoan.durationMonths} months'),
                         const Divider(color: AppColors.border, height: 24),
-                        _row('Status', loan.statusLabel),
+                        _row('Status', activeLoan.statusLabel),
                       ],
                     ),
                   ).animate().fadeIn(delay: 300.ms),
