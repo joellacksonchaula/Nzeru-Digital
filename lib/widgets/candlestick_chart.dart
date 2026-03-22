@@ -1,7 +1,5 @@
-import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../config/app_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 /// OHLC (Open, High, Low, Close) candle data point
@@ -57,8 +55,6 @@ class _CandlestickChartState extends State<CandlestickChart>
   late String selectedTimeframe;
   late AnimationController _animationController;
   final List<String> timeframes = ['1m', '5m', '15m', '1h', '4h', '1d'];
-  Offset? _hoveredCandle;
-  int? _hoveredIndex;
 
   @override
   void initState() {
@@ -80,26 +76,26 @@ class _CandlestickChartState extends State<CandlestickChart>
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.background,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.black, width: 1),
+        color: Colors.black.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white12, width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header
           Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.only(left: 20, top: 20, bottom: 10),
             child: Text(
               widget.title,
-              style: GoogleFonts.playfairDisplay(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+              style: GoogleFonts.inter(
+                fontSize: 22,
+                fontWeight: FontWeight.w300,
+                color: Colors.white70,
+                letterSpacing: 0.5,
               ),
             ),
           ),
-          const Divider(height: 1, color: AppColors.black),
           // Chart area
           Expanded(
             child: widget.candles.isEmpty
@@ -109,31 +105,56 @@ class _CandlestickChartState extends State<CandlestickChart>
                       CustomPaint(
                         painter: _CandlestickPainter(
                           candles: widget.candles,
-                          hoveredIndex: _hoveredIndex,
                         ),
                         size: Size.infinite,
                       ),
-                      // Floating Badge
+                      // Floating Badge (Centered)
                       Positioned(
                         top: 20,
                         left: 0,
                         right: 0,
                         child: Center(
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: AppColors.actionRed,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              '- 5.40%',
-                              style: GoogleFonts.inter(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              // Multiple glow layers
+                              Container(
+                                width: 140,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(25),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.red.withOpacity(0.4),
+                                      blurRadius: 30,
+                                      spreadRadius: 2,
+                                    ),
+                                    BoxShadow(
+                                      color: Colors.red.withOpacity(0.2),
+                                      blurRadius: 60,
+                                      spreadRadius: 10,
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: Colors.red.withOpacity(0.8),
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(color: Colors.white30, width: 1),
+                                ),
+                                child: Text(
+                                  '- 5.40%',
+                                  style: GoogleFonts.inter(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                    letterSpacing: 1,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -149,9 +170,8 @@ class _CandlestickChartState extends State<CandlestickChart>
 /// Custom painter for candlestick chart
 class _CandlestickPainter extends CustomPainter {
   final List<CandleData> candles;
-  final int? hoveredIndex;
 
-  _CandlestickPainter({required this.candles, this.hoveredIndex});
+  _CandlestickPainter({required this.candles});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -166,24 +186,24 @@ class _CandlestickPainter extends CustomPainter {
 
     // Draw Grid
     final gridPaint = Paint()
-      ..color = AppColors.black
+      ..color = const Color(0xFF00E5FF).withOpacity(0.1)
       ..strokeWidth = 0.5;
 
     // Horizontal grid lines
-    const int hLines = 6;
+    const int hLines = 8;
     for (int i = 0; i <= hLines; i++) {
       final y = (size.height / hLines) * i;
       canvas.drawLine(Offset(0, y), Offset(size.width, y), gridPaint);
     }
 
     // Vertical grid lines
-    const int vLines = 10;
+    const int vLines = 20;
     for (int i = 0; i <= vLines; i++) {
       final x = (size.width / vLines) * i;
       canvas.drawLine(Offset(x, 0), Offset(x, size.height), gridPaint);
     }
 
-    // Draw candles
+    // Draw candles with GLOW
     for (int i = 0; i < candles.length; i++) {
       final candle = candles[i];
       final x = (i * candleWidth) + candleWidth / 2;
@@ -194,20 +214,33 @@ class _CandlestickPainter extends CustomPainter {
       final closeY = _priceToY(candle.close, size.height, maxPrice, minPrice, priceRange);
 
       final isGreen = candle.isGreen;
-      final color = isGreen ? Colors.green : Colors.red;
+      final color = isGreen ? const Color(0xFF00C853) : const Color(0xFFFF1744);
 
+      // Draw GLOW first
+      final glowPaint = Paint()
+        ..color = color.withOpacity(0.3)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12);
+      
+      final bodyTop = isGreen ? closeY : openY;
+      final bodyBottom = isGreen ? openY : closeY;
+      final bodyHeight = (bodyBottom - bodyTop).clamp(2.0, size.height);
+      
+      canvas.drawRect(
+        Rect.fromLTWH(x - bodyWidth / 2, bodyTop, bodyWidth, bodyHeight),
+        glowPaint,
+      );
+
+      // Draw WICK
       final wickPaint = Paint()
-        ..color = AppColors.black
-        ..strokeWidth = 1;
+        ..color = color.withOpacity(0.8)
+        ..strokeWidth = 1.5;
       
       canvas.drawLine(Offset(x, highY), Offset(x, lowY), wickPaint);
 
+      // Draw BODY
       final bodyPaint = Paint()..color = color;
-      final bodyTop = isGreen ? closeY : openY;
-      final bodyBottom = isGreen ? openY : closeY;
-
       canvas.drawRect(
-        Rect.fromLTRB(x - bodyWidth / 2, bodyTop, x + bodyWidth / 2, bodyBottom.clamp(bodyTop + 1, size.height)),
+        Rect.fromLTWH(x - bodyWidth / 2, bodyTop, bodyWidth, bodyHeight),
         bodyPaint,
       );
     }
@@ -220,104 +253,7 @@ class _CandlestickPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_CandlestickPainter oldDelegate) {
-    return oldDelegate.candles != candles || oldDelegate.hoveredIndex != hoveredIndex;
+    return oldDelegate.candles != candles;
   }
 }
 
-/// Tooltip showing OHLC data on hover
-class _CandleTooltip extends StatelessWidget {
-  final CandleData candle;
-  final NumberFormat currencyFormat;
-
-  const _CandleTooltip({
-    required this.candle,
-    required this.currencyFormat,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: AppColors.black.withAlpha(200),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.gold.withAlpha(50), width: 0.5),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withAlpha(100),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            DateFormat('HH:mm:ss').format(candle.time),
-            style: GoogleFonts.inter(
-              color: AppColors.textMuted,
-              fontSize: 10,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _TooltipRow('O', candle.open),
-                  _TooltipRow('H', candle.high),
-                ],
-              ),
-              const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _TooltipRow('L', candle.low),
-                  _TooltipRow('C', candle.close),
-                ],
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _TooltipRow extends StatelessWidget {
-  final String label;
-  final double value;
-
-  const _TooltipRow(this.label, this.value);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            '$label: ',
-            style: GoogleFonts.inter(
-              color: AppColors.textMuted,
-              fontSize: 10,
-            ),
-          ),
-          Text(
-            'MK ${value.toStringAsFixed(2)}',
-            style: GoogleFonts.playfairDisplay(
-              color: AppColors.gold,
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

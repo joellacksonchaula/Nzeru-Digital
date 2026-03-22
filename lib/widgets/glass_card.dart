@@ -10,6 +10,8 @@ class GlassCard extends StatelessWidget {
   final double blurAmount;
   final Color? borderColor;
   final VoidCallback? onTap;
+  final double? width;
+  final double? height;
 
   const GlassCard({
     super.key,
@@ -20,6 +22,8 @@ class GlassCard extends StatelessWidget {
     this.blurAmount = 12,
     this.borderColor,
     this.onTap,
+    this.width,
+    this.height,
   });
 
   @override
@@ -33,6 +37,8 @@ class GlassCard extends StatelessWidget {
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: blurAmount, sigmaY: blurAmount),
             child: Container(
+              width: width,
+              height: height,
               padding: padding ?? const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: AppColors.cardBg.withAlpha(220),
