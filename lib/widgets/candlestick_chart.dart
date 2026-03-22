@@ -39,14 +39,14 @@ class CandlestickChart extends StatefulWidget {
   final Function(String)? onTimeframeChanged;
 
   const CandlestickChart({
-    Key? key,
+    super.key,
     required this.candles,
     this.title = 'Price Chart',
     this.subtitle,
     this.height = 300,
     this.onRefresh,
     this.onTimeframeChanged,
-  }) : super(key: key);
+  });
 
   @override
   State<CandlestickChart> createState() => _CandlestickChartState();
@@ -57,7 +57,6 @@ class _CandlestickChartState extends State<CandlestickChart>
   late String selectedTimeframe;
   late AnimationController _animationController;
   final List<String> timeframes = ['1m', '5m', '15m', '1h', '4h', '1d'];
-  double _scaleLevel = 1.0;
   Offset? _hoveredCandle;
   int? _hoveredIndex;
 
@@ -433,11 +432,6 @@ class _CandlestickPainter extends CustomPainter {
     final bodyPaint = Paint()
       ..color = color
       ..style = PaintingStyle.fill;
-
-    final bodyStrokePaint = Paint()
-      ..color = color
-      ..strokeWidth = 1.5
-      ..style = PaintingStyle.stroke;
 
     // Draw wick (high-low line)
     canvas.drawLine(Offset(x, highY), Offset(x, lowY), wickPaint);

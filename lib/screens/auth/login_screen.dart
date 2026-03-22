@@ -145,14 +145,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
                         final navigator = Navigator.of(context);
+                        final messenger = ScaffoldMessenger.of(context);
                         final success = await auth.login(
                           _usernameController.text.trim(),
                           _passwordController.text,
                         );
-                        if (success && mounted) {
+                        if (success) {
+                          if (!mounted) return;
                           navigator.pushReplacementNamed(AppRoutes.mainShell);
-                        } else if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
+                        } else {
+                          if (!mounted) return;
+                          messenger.showSnackBar(
                             SnackBar(content: Text(auth.error ?? 'Login failed')),
                           );
                         }

@@ -4,15 +4,11 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../config/app_colors.dart';
 import '../../config/app_routes.dart';
-import '../../providers/auth_provider.dart';
-import '../../providers/savings_provider.dart';
-import '../../providers/loan_provider.dart';
-import '../../widgets/glass_card.dart';
-import '../../widgets/glow_text.dart';
-import '../../widgets/stat_tile.dart';
+import '../../providers/dashboard_provider.dart';
+import '../../widgets/crypto_market_card.dart';
+import '../../widgets/crypto_chart.dart';
 import '../../widgets/candlestick_chart.dart';
 import '../../utils/currency_formatter.dart';
-import '../../providers/dashboard_provider.dart';
 import '../../models/savings_transaction.dart';
 
 class DashboardScreenV2 extends StatefulWidget {
@@ -131,73 +127,27 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                   ),
                 ),
 
-                // Total Savings Card with Candlestick Preview
+                // Updated Hint Message (User Request)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: GlassCard(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: AppColors.gold.withAlpha(20),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: AppColors.gold.withAlpha(50)),
+                    ),
+                    child: Row(
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'TOTAL SAVINGS',
-                                  style: GoogleFonts.orbitron(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w500,
-                                    color: AppColors.textMuted,
-                                    letterSpacing: 2,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                GlowText(
-                                  text: CurrencyFormatter.formatMK(
-                                    user?.savingsBalance ?? 0,
-                                    decimalDigits: 2,
-                                  ),
-                                  fontSize: 32,
-                                ),
-                              ],
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: AppColors.success.withAlpha(20),
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(
-                                  color: AppColors.success.withAlpha(30),
-                                  width: 0.5,
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.trending_up,
-                                      color: AppColors.success, size: 14),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    '+12.5%',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 11,
-                                      color: AppColors.success,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                        // Mini candlestick chart
-                        SizedBox(
-                          height: 80,
-                          child: _buildMiniChart(dashboardProvider.recentTransactions),
+                        const Icon(Icons.info_outline, color: AppColors.gold, size: 16),
+                        const SizedBox(width: 8),
+                        Text(
+                          dashboardProvider.marketStatus,
+                          style: GoogleFonts.inter(
+                            color: AppColors.gold,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ],
                     ),
@@ -206,62 +156,60 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
 
                 const SizedBox(height: 24),
 
-                // Quick Stats Grid
+                // Crypto Markets Horizontal List
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: StatTile(
-                          icon: Icons.account_balance_wallet,
-                          label: 'LOAN BALANCE',
-                          value: CurrencyFormatter.formatMK(
-                              dashboardData?['loan_balance'] ?? 0),
-                          iconColor: AppColors.info,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: StatTile(
-                          icon: Icons.speed_rounded,
-                          label: 'FINANCIAL SCORE',
-                          value: '${user?.financialScore ?? 0}',
-                          iconColor: AppColors.gold,
-                          valueColor: AppColors.gold,
-                        ),
-                      ),
-                    ],
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(
+                    'MARKET OVERVIEW',
+                    style: GoogleFonts.orbitron(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textMuted,
+                      letterSpacing: 2,
+                    ),
                   ),
                 ),
-
                 const SizedBox(height: 12),
-
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: StatTile(
-                          icon: Icons.savings_rounded,
-                          label: 'ACTIVE PLANS',
-                          value: '${dashboardData?['active_plans'] ?? 0}',
-                          iconColor: AppColors.success,
+                SizedBox(
+                  height: 130,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: dashboardProvider.cryptoMarkets.length,
+                    itemBuilder: (context, index) {
+                      final m = dashboardProvider.cryptoMarkets[index];
+                      return Container(
+                        width: 200,
+                        margin: const EdgeInsets.only(right: 12),
+                        child: CryptoMarketCard(
+                          name: m['name'],
+                          symbol: m['symbol'],
+                          price: m['price'],
+                          marketCap: m['marketCap'],
+                          volume24h: m['volume'],
+                          changePercent24h: m['change'],
+                          isGold: m['isGold'],
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: StatTile(
-                          icon: Icons.warning_amber_rounded,
-                          label: 'PENALTIES',
-                          value: CurrencyFormatter.formatMK(
-                              dashboardData?['total_penalties'] ?? 0),
-                          iconColor: AppColors.actionRed,
-                          valueColor: AppColors.actionRed,
-                        ),
-                      ),
-                    ],
+                      );
+                    },
                   ),
                 ),
+
+                const SizedBox(height: 24),
+
+                // Market Chart
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: const CryptoChart(
+                    title: 'BITCOIN PERFORMANCE',
+                    symbol: 'BTC/MK',
+                    data: [12.0, 45.0, 32.0, 67.0, 89.0, 50.0, 95.0],
+                    changePercent: 5.4,
+                    isPositive: true,
+                  ),
+                ),
+
+                const SizedBox(height: 24),
 
                 const SizedBox(height: 24),
 
@@ -415,7 +363,7 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                       ],
                     ),
                   );
-                }).toList(),
+                }),
               ],
             ),
           ),

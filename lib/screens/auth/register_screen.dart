@@ -163,16 +163,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       final navigator = Navigator.of(context);
+                      final messenger = ScaffoldMessenger.of(context);
                       final success = await auth.register(
                         _nameController.text,
                         _emailController.text,
                         _phoneController.text,
                         _passwordController.text,
                       );
-                      if (success && mounted) {
+                      if (success) {
+                        if (!mounted) return;
                         navigator.pushReplacementNamed(AppRoutes.mainShell);
-                      } else if (mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
+                      } else {
+                        if (!mounted) return;
+                        messenger.showSnackBar(
                           SnackBar(
                               content: Text(auth.error ?? 'Registration failed')),
                         );

@@ -34,7 +34,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final auth = context.watch<AuthProvider>();
     final dashboardProvider = context.watch<DashboardProvider>();
     final savings = context.watch<SavingsProvider>();
-    final loans = context.watch<LoanProvider>();
     final user = auth.user;
 
     if (dashboardProvider.isLoading) {
@@ -401,7 +400,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ],
                   ),
                 );
-              }).toList(),
+              }),
             ],
           ),
         ),

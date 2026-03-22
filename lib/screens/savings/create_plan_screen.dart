@@ -21,7 +21,7 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
   PlanFrequency _frequency = PlanFrequency.weekly;
   int _durationMonths = 6;
   PenaltyPolicy _penaltyPolicy = PenaltyPolicy.monetaryDeduction;
-  DateTime _startDate = DateTime.now();
+  final DateTime _startDate = DateTime.now();
   final _formKey = GlobalKey<FormState>();
   bool _isProcessing = false;
 

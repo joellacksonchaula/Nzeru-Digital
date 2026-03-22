@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../config/app_colors.dart';
 import '../../providers/savings_provider.dart';
