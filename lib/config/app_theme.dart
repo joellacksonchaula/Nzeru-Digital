@@ -43,8 +43,8 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.blackPrimary,
-          foregroundColor: AppColors.gold,
+          backgroundColor: AppColors.gold,
+          foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30),
@@ -53,13 +53,14 @@ class AppTheme {
             fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
-          elevation: 0,
+          elevation: 2,
+          shadowColor: AppColors.gold.withAlpha(100),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.textPrimary,
-          side: const BorderSide(color: AppColors.border, width: 1.5),
+          foregroundColor: AppColors.gold,
+          side: const BorderSide(color: AppColors.gold, width: 1.5),
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),

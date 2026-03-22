@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import '../config/app_colors.dart';
+import 'glass_card.dart';
 
 class CryptoMarketCard extends StatelessWidget {
   final String name;
@@ -26,18 +26,13 @@ class CryptoMarketCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isPositive = changePercent24h >= 0;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isGold ? AppColors.gold.withAlpha(150) : AppColors.border,
-          width: 0.8,
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        child: Column(
+    return GlassCard(
+      margin: EdgeInsets.zero,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      borderRadius: 16,
+      blurAmount: 10,
+      borderColor: isGold ? AppColors.gold.withAlpha(120) : AppColors.gold.withAlpha(40),
+      child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
@@ -108,9 +103,7 @@ class CryptoMarketCard extends StatelessWidget {
                 ),
               ],
             ),
-          ],
-        ),
-      ),
+      ],
     );
   }
 }

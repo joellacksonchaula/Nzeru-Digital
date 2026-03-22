@@ -7,11 +7,12 @@ class AppColors {
   static const Color background = Color(0xFFFFFFFF);
   static const Color backgroundLight = Color(0xFFFAFAFA);
 
-  // Black & Dark Grays
+  // Black & Dark Grays (Reduced usage)
   static const Color black = Color(0xFF000000);
   static const Color blackPrimary = Color(0xFF1A1A1A);
   static const Color blackSecondary = Color(0xFF111111);
   static const Color blackTertiary = Color(0xFF222222);
+  static const Color blackGlass = Color(0x33000000); // Transparent black for glass overlay
 
   // Premium Gold (5%)
   static const Color gold = Color(0xFFD4AF37);
@@ -79,7 +80,25 @@ class AppColors {
   );
 
   static const LinearGradient cryptoCardGradient = LinearGradient(
-    colors: [background, Color(0xFFF9F9F9), Color(0xFFF5F5F5)],
+    colors: [background, Color(0xFFFDFDFD), Color(0xFFF9F9F9)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  static const LinearGradient glassGradient = LinearGradient(
+    colors: [
+      Color(0xCCFFFFFF), // White with 80% opacity
+      Color(0x66FFFFFF), // White with 40% opacity
+    ],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  static const LinearGradient goldGlassGradient = LinearGradient(
+    colors: [
+      Color(0xDDAF3780), // Gold with transparency
+      Color(0xAAAF3740),
+    ],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );

@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../config/app_colors.dart';
+import 'glass_card.dart';
 
 class CryptoChart extends StatefulWidget {
   final String title;
@@ -32,25 +31,13 @@ class _CryptoChartState extends State<CryptoChart> {
         .map((e) => FlSpot(e.key.toDouble(), e.value))
         .toList();
 
-    return Container(
-      decoration: BoxDecoration(
-        gradient: AppColors.cryptoCardGradient,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppColors.border.withAlpha(200),
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withAlpha(30),
-            blurRadius: 15,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
+    return GlassCard(
+      margin: EdgeInsets.zero,
+      padding: const EdgeInsets.all(20),
+      borderRadius: 20,
+      blurAmount: 15,
+      borderColor: AppColors.gold.withAlpha(40),
+      child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
@@ -60,12 +47,12 @@ class _CryptoChartState extends State<CryptoChart> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.title,
+                      widget.title.toUpperCase(),
                       style: GoogleFonts.playfairDisplay(
                         fontSize: 14,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.bold,
                         color: AppColors.textPrimary,
-                        letterSpacing: 1,
+                        letterSpacing: 1.2,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -80,55 +67,40 @@ class _CryptoChartState extends State<CryptoChart> {
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
+                    horizontal: 10,
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    gradient: widget.isPositive
-                        ? const LinearGradient(
-                            colors: [
-                              Color(0xFF00D084),
-                              Color(0xFF00B366),
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          )
-                        : AppColors.redCryptoGradient,
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: [
-                      BoxShadow(
-                        color: widget.isPositive
-                            ? const Color(0xFF00D084).withAlpha(40)
-                            : AppColors.actionRed.withAlpha(40),
-                        blurRadius: 8,
-                      ),
-                    ],
+                    color: widget.isPositive
+                        ? const Color(0xFF00D084)
+                        : AppColors.actionRed,
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     '${widget.isPositive ? '+' : ''} ${widget.changePercent.toStringAsFixed(2)}%',
-                    style: GoogleFonts.playfairDisplay(
+                    style: GoogleFonts.inter(
                       fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.background,
-                      letterSpacing: 0.5,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
             SizedBox(
-              height: 120,
+              height: 180,
               child: LineChart(
                 LineChartData(
                   gridData: FlGridData(
                     show: true,
                     drawVerticalLine: false,
-                    horizontalInterval: 20,
+                    horizontalInterval: 25,
                     getDrawingHorizontalLine: (value) {
                       return FlLine(
-                        color: AppColors.gridLine.withAlpha(100),
-                        strokeWidth: 0.5,
+                        color: AppColors.border.withAlpha(80),
+                        strokeWidth: 1,
+                        dashArray: [5, 5],
                       );
                     },
                   ),
@@ -136,48 +108,32 @@ class _CryptoChartState extends State<CryptoChart> {
                     show: false,
                   ),
                   borderData: FlBorderData(
-                    show: true,
-                    border: Border(
-                      bottom: BorderSide(
-                        color: AppColors.border.withAlpha(150),
-                        width: 1,
-                      ),
-                      left: BorderSide(
-                        color: AppColors.border.withAlpha(150),
-                        width: 1,
-                      ),
-                    ),
+                    show: false,
                   ),
                   minX: 0,
                   maxX: widget.data.length.toDouble() - 1,
-                  minY: -10,
-                  maxY: 100,
+                  minY: widget.data.reduce((a, b) => a < b ? a : b) * 0.8,
+                  maxY: widget.data.reduce((a, b) => a > b ? a : b) * 1.2,
                   lineBarsData: [
                     LineChartBarData(
                       spots: spots,
                       isCurved: true,
-                      gradient: widget.isPositive
-                          ? const LinearGradient(
-                              colors: [
-                                Color(0xFF00D084),
-                                Color(0xFF00B366),
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            )
-                          : AppColors.redCryptoGradient,
-                      barWidth: 2.5,
+                      curveSmoothness: 0.35,
+                      color: widget.isPositive
+                          ? const Color(0xFF00D084)
+                          : AppColors.actionRed,
+                      barWidth: 3,
                       isStrokeCapRound: true,
                       dotData: FlDotData(
                         show: true,
                         getDotPainter: (spot, percent, barData, index) {
                           return FlDotCirclePainter(
-                            radius: 4,
+                            radius: 5,
                             color: widget.isPositive
                                 ? const Color(0xFF00D084)
                                 : AppColors.actionRed,
-                            strokeWidth: 1.5,
-                            strokeColor: AppColors.background,
+                            strokeWidth: 3,
+                            strokeColor: Colors.white,
                           );
                         },
                       ),
@@ -185,12 +141,14 @@ class _CryptoChartState extends State<CryptoChart> {
                         show: true,
                         gradient: LinearGradient(
                           colors: [
-                            widget.isPositive
-                                ? const Color(0xFF00D084).withAlpha(80)
-                                : AppColors.actionRed.withAlpha(80),
-                            widget.isPositive
-                                ? const Color(0xFF00D084).withAlpha(10)
-                                : AppColors.actionRed.withAlpha(10),
+                            (widget.isPositive
+                                    ? const Color(0xFF00D084)
+                                    : AppColors.actionRed)
+                                .withAlpha(60),
+                            (widget.isPositive
+                                    ? const Color(0xFF00D084)
+                                    : AppColors.actionRed)
+                                .withAlpha(0),
                           ],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
@@ -201,9 +159,7 @@ class _CryptoChartState extends State<CryptoChart> {
                 ),
               ),
             ),
-          ],
-        ),
-      ),
+      ],
     );
   }
 }

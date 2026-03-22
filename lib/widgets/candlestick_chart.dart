@@ -109,6 +109,7 @@ class _CandlestickChartState extends State<CandlestickChart>
                       CustomPaint(
                         painter: _CandlestickPainter(
                           candles: widget.candles,
+                          hoveredIndex: _hoveredIndex,
                         ),
                         size: Size.infinite,
                       ),
@@ -148,8 +149,9 @@ class _CandlestickChartState extends State<CandlestickChart>
 /// Custom painter for candlestick chart
 class _CandlestickPainter extends CustomPainter {
   final List<CandleData> candles;
+  final int? hoveredIndex;
 
-  _CandlestickPainter({required this.candles});
+  _CandlestickPainter({required this.candles, this.hoveredIndex});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -214,16 +216,6 @@ class _CandlestickPainter extends CustomPainter {
   double _priceToY(double price, double height, double max, double min, double range) {
     if (range == 0) return height / 2;
     return height - ((price - min) / range) * height;
-  }
-
-  double _priceToY(
-    double price,
-    double height,
-    double maxPrice,
-    double minPrice,
-    double priceRange,
-  ) {
-    return height - ((price - minPrice) / priceRange) * height;
   }
 
   @override

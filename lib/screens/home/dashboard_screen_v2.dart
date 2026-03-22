@@ -7,7 +7,7 @@ import '../../config/app_routes.dart';
 import '../../providers/dashboard_provider.dart';
 import '../../widgets/crypto_market_card.dart';
 import '../../widgets/crypto_chart.dart';
-import '../../widgets/candlestick_chart.dart';
+import '../../widgets/glass_card.dart';
 import '../../utils/currency_formatter.dart';
 import '../../models/savings_transaction.dart';
 
@@ -127,9 +127,6 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                 const SizedBox(height: 24),
 
                 // Crypto Markets Horizontal List
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Text(
                 const SizedBox(height: 12),
                 SizedBox(
                   height: 140,
@@ -253,12 +250,12 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                     itemCount: (dashboardProvider.recentTransactions.length > 4) ? 4 : dashboardProvider.recentTransactions.length,
                     itemBuilder: (context, index) {
                       final txn = dashboardProvider.recentTransactions[index];
-                      return Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: AppColors.blackPrimary,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
+                      return GlassCard(
+                        margin: EdgeInsets.zero,
+                        padding: const EdgeInsets.all(12),
+                        borderRadius: 12,
+                        blurAmount: 8,
+                        borderColor: AppColors.gold.withAlpha(40),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -269,22 +266,21 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                                 Text(
                                   txn.typeLabel,
                                   style: GoogleFonts.inter(
-                                    color: Colors.white,
+                                    color: AppColors.textPrimary,
                                     fontSize: 10,
-                                    fontWeight: FontWeight.w500,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
                                 Text(
-                                  DateFormat('dd MMM yyyy, HH:mm')
-                                      .format(txn.date),
+                                  DateFormat('dd MMM').format(txn.date),
                                   style: GoogleFonts.inter(
-                                    color: Colors.white.withAlpha(150),
+                                    color: AppColors.textMuted,
                                     fontSize: 8,
                                   ),
                                 ),
                               ],
                             ),
-                            const Divider(color: Colors.white24, height: 1),
+                            const Divider(color: AppColors.border, height: 1),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -292,7 +288,7 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                                   child: Text(
                                     '${txn.isCredit ? '+' : '-'}${CurrencyFormatter.formatMK(txn.amount)}',
                                     style: GoogleFonts.inter(
-                                      color: Colors.white,
+                                      color: txn.isCredit ? AppColors.success : AppColors.actionRed,
                                       fontSize: 11,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -303,7 +299,7 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                                   txn.isCredit
                                       ? Icons.arrow_upward_rounded
                                       : Icons.arrow_downward_rounded,
-                                  color: Colors.white,
+                                  color: txn.isCredit ? AppColors.success : AppColors.actionRed,
                                   size: 14,
                                 ),
                               ],
@@ -322,40 +318,6 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
     );
   }
 
-  /// Generate sample candlestick data from actual transactions
-  Widget _buildMiniChart(List<SavingsTransaction> transactions) {
-    if (transactions.isEmpty) {
-      return Center(
-        child: Text(
-          'No transaction data for chart',
-          style: GoogleFonts.inter(color: AppColors.textMuted, fontSize: 10),
-        ),
-      );
-    }
-    
-    // Group recent transactions by day
-    final txns = transactions.toList().reversed.toList();
-    final candles = <CandleData>[];
-
-    for (int i = 0; i < txns.length; i++) {
-      final amount = txns[i].amount.toDouble();
-      candles.add(
-        CandleData(
-          time: txns[i].date,
-          open: amount * 0.9,
-          high: amount,
-          low: amount * 0.7,
-          close: amount,
-          volume: amount,
-        ),
-      );
-    }
-
-    return CandlestickChart(
-      candles: candles,
-      title: 'DEPOSIT CHART (7D)',
-      height: 80,
-    );
   }
 }
 
@@ -378,9 +340,17 @@ class _QuickAction extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(12),
-            decoration: const BoxDecoration(
-              color: AppColors.blackPrimary,
+            decoration: BoxDecoration(
+              color: AppColors.gold.withAlpha(20),
               shape: BoxShape.circle,
+              border: Border.all(color: AppColors.gold.withAlpha(60), width: 1.5),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.gold.withAlpha(20),
+                  blurRadius: 10,
+                  spreadRadius: 2,
+                ),
+              ],
             ),
             child: Icon(icon, color: AppColors.gold, size: 28),
           ),
