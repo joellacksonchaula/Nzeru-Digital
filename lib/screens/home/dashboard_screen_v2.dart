@@ -757,7 +757,8 @@ List<CandleData> _buildSavingsCandles(FinanceOverviewProvider finance) {
       running += txn.isCredit ? txn.amount : -txn.amount;
       final close = running < 0 ? 0.0 : running;
       final high = mathMax(open, close) + (txn.amount * 0.025);
-      final low = (mathMin(open, close) - (txn.amount * 0.02)).clamp(0, double.infinity);
+      final low =
+          (mathMin(open, close) - (txn.amount * 0.02)).clamp(0.0, double.infinity).toDouble();
       return CandleData(
         time: txn.date,
         open: open,
@@ -773,12 +774,14 @@ List<CandleData> _buildSavingsCandles(FinanceOverviewProvider finance) {
     return finance.prioritizedPlans
         .expand((plan) => List.generate(8, (index) {
               final seed = plan.goalAmount == 0 ? 0.0 : plan.goalAmount * (0.12 + (index * 0.04));
-              final close = (seed + (plan.currentAmount * (index / 8))).clamp(0, plan.goalAmount);
+              final close = (seed + (plan.currentAmount * (index / 8)))
+                  .clamp(0.0, plan.goalAmount)
+                  .toDouble();
               return CandleData(
                 time: plan.startDate.add(Duration(days: index * 4)),
                 open: index == 0 ? seed * 0.92 : (seed * 0.98),
                 high: close + (plan.requiredPerWeek * 0.18),
-                low: (seed * 0.88).clamp(0, double.infinity),
+                low: (seed * 0.88).clamp(0.0, double.infinity).toDouble(),
                 close: close,
                 volume: plan.currentAmount,
               );
