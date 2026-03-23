@@ -50,12 +50,12 @@ class CandlestickChart extends StatelessWidget {
         child: Container(
           height: height,
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(.48),
+            color: Colors.white.withValues(alpha: .48),
             borderRadius: BorderRadius.circular(22),
-            border: Border.all(color: Colors.white.withOpacity(.7)),
+            border: Border.all(color: Colors.white.withValues(alpha: .7)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(.14),
+                color: Colors.black.withValues(alpha: .14),
                 blurRadius: 18,
                 offset: const Offset(0, 8),
               ),
@@ -73,7 +73,7 @@ class CandlestickChart extends StatelessWidget {
                       title,
                       style: GoogleFonts.oswald(
                         fontSize: 24,
-                        color: Colors.white.withOpacity(.9),
+                        color: Colors.white.withValues(alpha: .9),
                         fontWeight: FontWeight.w300,
                       ),
                     ),
@@ -92,7 +92,7 @@ class CandlestickChart extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFD55660).withOpacity(.88),
+                      color: const Color(0xFFD55660).withValues(alpha: .88),
                       borderRadius: BorderRadius.circular(18),
                       boxShadow: [
                         BoxShadow(color: const Color(0x99E56772), blurRadius: 22, spreadRadius: 4),
@@ -172,11 +172,11 @@ class _CandlesPainter extends CustomPainter {
       canvas.drawLine(
         Offset(x, highY),
         Offset(x, lowY),
-        Paint()..color = color.withOpacity(.72)..strokeWidth = 1.4,
+        Paint()..color = color.withValues(alpha: .72)..strokeWidth = 1.4,
       );
       canvas.drawRect(
         Rect.fromLTWH(x - bodyWidth / 2, top, bodyWidth, (bottom - top).abs().clamp(4, size.height)),
-        Paint()..color = color.withOpacity(.24)..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6),
+        Paint()..color = color.withValues(alpha: .24)..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6),
       );
       canvas.drawRect(
         Rect.fromLTWH(x - bodyWidth / 2, top, bodyWidth, (bottom - top).abs().clamp(4, size.height)),

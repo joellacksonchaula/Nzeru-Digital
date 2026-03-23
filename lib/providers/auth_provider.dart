@@ -175,7 +175,6 @@ class AuthProvider with ChangeNotifier {
       try {
         final data = await _api.recalculateProfile();
         if (_user != null) {
-          final userData = data['user'] ?? {};
           _user = _user!.copyWith(
             savingsBalance:
                 double.tryParse(data['savings_balance']?.toString() ?? ''),

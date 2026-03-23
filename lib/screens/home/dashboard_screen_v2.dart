@@ -67,7 +67,7 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _Header(name: provider.user?.name?.toLowerCase() ?? 'joel chaula'),
+                            _Header(name: provider.user?.name.toLowerCase() ?? 'joel chaula'),
                             const SizedBox(height: 16),
                             _PlanCards(compact: compact, plans: plans),
                             const SizedBox(height: 16),
@@ -150,7 +150,7 @@ class _Header extends StatelessWidget {
             gradient: const RadialGradient(
               colors: [Color(0xFFFFE7AD), Color(0xFFC9A03A), Color(0xFF6C4B17)],
             ),
-            border: Border.all(color: Colors.white.withOpacity(0.9), width: 1.5),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.9), width: 1.5),
             boxShadow: [BoxShadow(color: const Color(0x66D7A93D), blurRadius: 18, spreadRadius: 2)],
           ),
           child: const Icon(Icons.auto_awesome, color: Colors.white, size: 28),
@@ -257,10 +257,10 @@ class _PlanCard extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(.62),
+            color: Colors.white.withValues(alpha: .62),
             borderRadius: BorderRadius.circular(22),
-            border: Border.all(color: Colors.white.withOpacity(.75)),
-            boxShadow: [BoxShadow(color: Colors.black.withOpacity(.14), blurRadius: 18, offset: const Offset(0, 8))],
+            border: Border.all(color: Colors.white.withValues(alpha: .75)),
+            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .14), blurRadius: 18, offset: const Offset(0, 8))],
           ),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(children: [
@@ -391,7 +391,7 @@ class _Action extends StatelessWidget {
               child: Container(
                 width: 48,
                 height: 48,
-                decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(.58), border: Border.all(color: Colors.white.withOpacity(.8))),
+                decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: .58), border: Border.all(color: Colors.white.withValues(alpha: .8))),
                 child: Icon(icon, color: const Color(0xFF5C482C), size: 24),
               ),
             ),
@@ -421,10 +421,10 @@ class _Transactions extends StatelessWidget {
           filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(.58),
+              color: Colors.white.withValues(alpha: .58),
               borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: Colors.white.withOpacity(.7)),
-              boxShadow: [BoxShadow(color: Colors.black.withOpacity(.12), blurRadius: 18, offset: const Offset(0, 8))],
+              border: Border.all(color: Colors.white.withValues(alpha: .7)),
+              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .12), blurRadius: 18, offset: const Offset(0, 8))],
             ),
             child: compact
                 ? Column(children: [for (var i = 0; i < list.length; i++) _TxnRow(txn: list[i], divider: i != list.length - 1)])
