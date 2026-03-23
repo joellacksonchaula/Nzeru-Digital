@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -14,7 +12,6 @@ import '../../providers/finance_overview_provider.dart';
 import '../../providers/savings_provider.dart';
 import '../../utils/currency_util.dart';
 import '../../widgets/candlestick_chart.dart';
-import '../../widgets/dashboard_kit.dart';
 
 class DashboardScreenV2 extends StatefulWidget {
   const DashboardScreenV2({super.key});
@@ -24,13 +21,32 @@ class DashboardScreenV2 extends StatefulWidget {
 }
 
 class _DashboardScreenV2State extends State<DashboardScreenV2> {
+  late final PageController _plansController;
+  double _currentPage = 0;
+
   @override
   void initState() {
     super.initState();
+    _plansController = PageController(viewportFraction: 0.9);
+    _plansController.addListener(_handlePageScroll);
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<DashboardProvider>().loadDashboard();
       context.read<SavingsProvider>().loadData();
     });
+  }
+
+  @override
+  void dispose() {
+    _plansController
+      ..removeListener(_handlePageScroll)
+      ..dispose();
+    super.dispose();
+  }
+
+  void _handlePageScroll() {
+    if (!_plansController.hasClients) return;
+    setState(() => _currentPage = _plansController.page ?? _plansController.initialPage.toDouble());
   }
 
   @override
@@ -40,469 +56,358 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
     final plans = finance.prioritizedPlans.isEmpty ? _fallbackPlans : finance.prioritizedPlans;
     final transactions = finance.recentTransactions.isEmpty
         ? _fallbackTransactions
-        : finance.recentTransactions.take(4).toList();
+        : finance.recentTransactions.take(5).toList();
     final candles = _buildSavingsCandles(finance);
+    final userName = _firstName(finance.user?.name);
 
-    return DashboardPage(
-      eyebrow: 'Fintech Command',
-      title: 'Savings layers built for motion',
-      subtitle:
-          'Your graph stays live underneath the dashboard while plans, actions, and funding cues float above it in one continuous finance surface.',
-      trailing: IconButton(
-        onPressed: () => Navigator.pushNamed(context, AppRoutes.notifications),
-        icon: Container(
-          width: 54,
-          height: 54,
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.72),
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: const Color(0xFFE3D7C4)),
-            boxShadow: const [
-              BoxShadow(
-                color: Color(0x12000000),
-                blurRadius: 20,
-                offset: Offset(0, 12),
+    return Scaffold(
+      backgroundColor: const Color(0xFFF7F6F2),
+      body: SafeArea(
+        child: RefreshIndicator(
+          color: AppColors.gold,
+          onRefresh: () async {
+            await Future.wait([
+              context.read<DashboardProvider>().loadDashboard(),
+              context.read<SavingsProvider>().loadData(),
+            ]);
+          },
+          child: ListView(
+            physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+            padding: const EdgeInsets.fromLTRB(18, 16, 18, 28),
+            children: [
+              _HeaderRow(
+                name: userName,
+                onNotifications: () => Navigator.pushNamed(context, AppRoutes.notifications),
               ),
+              const SizedBox(height: 22),
+              _SectionHeading(
+                title: 'Savings Plans',
+                trailing: '${plans.length} active',
+              ),
+              const SizedBox(height: 14),
+              _SavingsCardsCarousel(
+                controller: _plansController,
+                currentPage: _currentPage,
+                plans: plans,
+              ),
+              const SizedBox(height: 22),
+              CandlestickChart(
+                candles: candles,
+                title: 'Savings Performance',
+                subtitle: _performanceLabel(candles),
+                darkMode: true,
+                height: 318,
+                borderRadius: BorderRadius.circular(30),
+              ),
+              const SizedBox(height: 22),
+              _SectionHeading(title: 'Quick Actions'),
+              const SizedBox(height: 14),
+              _ActionButtonsRow(),
+              const SizedBox(height: 24),
+              _SectionHeading(
+                title: 'Recent Transactions',
+                trailing: DateFormat('dd MMM').format(DateTime.now()),
+              ),
+              const SizedBox(height: 14),
+              _TransactionsPanel(transactions: transactions),
+              if (dashboard.isLoading) ...[
+                const SizedBox(height: 20),
+                const Center(
+                  child: CircularProgressIndicator(color: AppColors.gold),
+                ),
+              ],
             ],
-          ),
-          child: const Icon(
-            Icons.notifications_none_rounded,
-            color: Color(0xFF171412),
           ),
         ),
       ),
+    );
+  }
+}
+
+class _HeaderRow extends StatelessWidget {
+  final String name;
+  final VoidCallback onNotifications;
+
+  const _HeaderRow({
+    required this.name,
+    required this.onNotifications,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final initial = name.isEmpty ? 'U' : name[0].toUpperCase();
+
+    return Row(
       children: [
-        _LayeredHero(
-          finance: finance,
-          plans: plans,
-          candles: candles,
+        CircleAvatar(
+          radius: 28,
+          backgroundColor: const Color(0xFFFFF7E4),
+          child: Text(
+            initial,
+            style: GoogleFonts.oswald(
+              fontSize: 24,
+              color: const Color(0xFFB88A2E),
+            ),
+          ),
         ),
-        const SizedBox(height: 28),
-        DashboardSectionTitle(title: 'Portfolio Snapshot'),
-        const SizedBox(height: 12),
-        DashboardStatGrid(
-          items: [
-            DashboardStatItem(
-              label: 'Saved',
-              value: CurrencyUtil.formatCompact(finance.totalSaved),
-              detail: '${plans.length} active plans moving in parallel.',
-              icon: Icons.savings_rounded,
-              accent: const Color(0xFFBF912C),
-            ),
-            DashboardStatItem(
-              label: 'Monthly pace',
-              value: CurrencyUtil.formatCompact(finance.monthlyCommitment),
-              detail: 'Required contribution rate across all goals.',
-              icon: Icons.calendar_month_rounded,
-              accent: const Color(0xFF537A8A),
-            ),
-            DashboardStatItem(
-              label: 'On track',
-              value: '${finance.onTrackPlans}',
-              detail: '${finance.watchPlans} watch, ${finance.behindPlans} behind.',
-              icon: Icons.track_changes_rounded,
-              accent: const Color(0xFF3B9D5D),
-            ),
-            DashboardStatItem(
-              label: 'Loan exposure',
-              value: CurrencyUtil.formatCompact(finance.outstandingLoan),
-              detail: 'Outstanding balance still affecting net flexibility.',
-              icon: Icons.account_balance_wallet_rounded,
-              accent: const Color(0xFFD55C4B),
-            ),
-          ],
-        ),
-        const SizedBox(height: 28),
-        DashboardSectionTitle(
-          title: 'Recent Transactions',
-          actionLabel: 'See All',
-          onAction: () => Navigator.pushNamed(context, AppRoutes.savingsPlans),
-        ),
-        const SizedBox(height: 12),
-        DashboardPanel(
+        const SizedBox(width: 14),
+        Expanded(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              for (final txn in transactions) _TransactionRow(txn: txn),
+              Text(
+                'Welcome back',
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  color: const Color(0xFF867A6B),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                name,
+                style: GoogleFonts.oswald(
+                  fontSize: 28,
+                  height: 0.95,
+                  color: const Color(0xFF171412),
+                ),
+              ),
             ],
           ),
         ),
-        if (dashboard.isLoading) ...[
-          const SizedBox(height: 16),
-          const Center(
-            child: CircularProgressIndicator(color: AppColors.gold),
+        InkWell(
+          onTap: onNotifications,
+          borderRadius: BorderRadius.circular(18),
+          child: Ink(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0x14000000),
+                  blurRadius: 18,
+                  offset: Offset(0, 10),
+                ),
+              ],
+            ),
+            child: const Icon(
+              Icons.notifications_none_rounded,
+              color: Color(0xFF171412),
+            ),
           ),
-        ],
+        ),
       ],
     );
   }
 }
 
-class _LayeredHero extends StatelessWidget {
-  final FinanceOverviewProvider finance;
-  final List<SavingsPlan> plans;
-  final List<CandleData> candles;
+class _SectionHeading extends StatelessWidget {
+  final String title;
+  final String? trailing;
 
-  const _LayeredHero({
-    required this.finance,
+  const _SectionHeading({
+    required this.title,
+    this.trailing,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Text(
+          title,
+          style: GoogleFonts.oswald(
+            fontSize: 22,
+            color: const Color(0xFF171412),
+          ),
+        ),
+        const Spacer(),
+        if (trailing != null)
+          Text(
+            trailing!,
+            style: GoogleFonts.inter(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: const Color(0xFFB88A2E),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _SavingsCardsCarousel extends StatelessWidget {
+  final PageController controller;
+  final double currentPage;
+  final List<SavingsPlan> plans;
+
+  const _SavingsCardsCarousel({
+    required this.controller,
+    required this.currentPage,
     required this.plans,
-    required this.candles,
   });
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final compact = constraints.maxWidth < 700;
-        final heroHeight = compact ? 425.0 : 470.0;
-        final overlayHeight = compact ? 172.0 : 208.0;
-
-        return TweenAnimationBuilder<double>(
-          duration: const Duration(milliseconds: 750),
-          curve: Curves.easeOutCubic,
-          tween: Tween(begin: 0, end: 1),
-          builder: (context, value, child) {
-            return Transform.translate(
-              offset: Offset(0, 18 * (1 - value)),
-              child: Opacity(opacity: value, child: child),
-            );
-          },
-          child: SizedBox(
-            height: heroHeight,
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Positioned.fill(
-                  child: _GraphHeroSurface(
-                    finance: finance,
-                    candles: candles,
-                    compact: compact,
-                  ),
-                ),
-                Positioned(
-                  left: compact ? 14 : 18,
-                  right: compact ? 14 : 18,
-                  bottom: compact ? 18 : 22,
-                  child: _ActionRail(compact: compact),
-                ),
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: compact ? -18 : -26,
-                  child: SizedBox(
-                    height: overlayHeight,
-                    child: _FloatingSavingsRow(
-                      plans: plans,
+        final compact = constraints.maxWidth < 420;
+        return Column(
+          children: [
+            SizedBox(
+              height: compact ? 212 : 228,
+              child: PageView.builder(
+                controller: controller,
+                padEnds: false,
+                physics: const BouncingScrollPhysics(),
+                itemCount: plans.length,
+                itemBuilder: (context, index) {
+                  final rightPad = index == plans.length - 1 ? 0.0 : 14.0;
+                  return Padding(
+                    padding: EdgeInsets.only(right: rightPad),
+                    child: _SavingsPlanCard(
+                      plan: plans[index],
                       compact: compact,
                     ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                for (var i = 0; i < plans.length; i++)
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 220),
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    width: (currentPage.round() == i) ? 20 : 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: (currentPage.round() == i)
+                          ? const Color(0xFFB88A2E)
+                          : const Color(0xFFD9D2C7),
+                      borderRadius: BorderRadius.circular(999),
+                    ),
                   ),
-                ),
               ],
             ),
-          ),
+          ],
         );
       },
     );
   }
 }
 
-class _GraphHeroSurface extends StatelessWidget {
-  final FinanceOverviewProvider finance;
-  final List<CandleData> candles;
-  final bool compact;
-
-  const _GraphHeroSurface({
-    required this.finance,
-    required this.candles,
-    required this.compact,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final pace = CurrencyUtil.formatNoDecimal(finance.monthlyCommitment);
-    final saved = CurrencyUtil.formatCompact(finance.totalSaved);
-
-    return Stack(
-      children: [
-        CandlestickChart(
-          candles: candles,
-          showHeader: false,
-          height: compact ? 390 : 430,
-          padding: const EdgeInsets.fromLTRB(14, 14, 14, 78),
-          borderRadius: BorderRadius.circular(34),
-        ),
-        Positioned.fill(
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(34),
-              gradient: LinearGradient(
-                colors: [
-                  Colors.white.withValues(alpha: 0.18),
-                  Colors.white.withValues(alpha: 0.02),
-                  const Color(0xFFF8F4EA).withValues(alpha: 0.6),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-          ),
-        ),
-        Positioned(
-          top: compact ? 18 : 22,
-          left: compact ? 18 : 22,
-          right: compact ? 18 : 22,
-          child: Wrap(
-            alignment: WrapAlignment.spaceBetween,
-            runSpacing: 12,
-            spacing: 12,
-            children: [
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 380),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.72),
-                        borderRadius: BorderRadius.circular(999),
-                        border: Border.all(color: const Color(0xFFE5DAC8)),
-                      ),
-                      child: Text(
-                        'Live savings surface',
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: const Color(0xFF8F6C2C),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    Text(
-                      'MK $saved flowing across your goals',
-                      style: GoogleFonts.oswald(
-                        fontSize: compact ? 28 : 34,
-                        height: 0.94,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF171412),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      '${_performanceLabel(candles)} with a required pace of MK $pace per month.',
-                      style: GoogleFonts.inter(
-                        fontSize: compact ? 12 : 13,
-                        height: 1.45,
-                        color: const Color(0xFF685F55),
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              _HeroSignalCard(
-                title: 'Top Layer',
-                value: '${finance.onTrackPlans}',
-                subtitle: 'Plans on track',
-                accent: const Color(0xFF3B9D5D),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _HeroSignalCard extends StatelessWidget {
-  final String title;
-  final String value;
-  final String subtitle;
-  final Color accent;
-
-  const _HeroSignalCard({
-    required this.title,
-    required this.value,
-    required this.subtitle,
-    required this.accent,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(24),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-        child: Container(
-          width: 164,
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.52),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: accent.withValues(alpha: 0.25)),
-            boxShadow: [
-              BoxShadow(
-                color: accent.withValues(alpha: 0.10),
-                blurRadius: 20,
-                offset: const Offset(0, 14),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title.toUpperCase(),
-                style: GoogleFonts.oswald(
-                  fontSize: 12,
-                  letterSpacing: 1.8,
-                  color: const Color(0xFF8B7E6B),
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                value,
-                style: GoogleFonts.oswald(
-                  fontSize: 34,
-                  height: 0.9,
-                  color: const Color(0xFF171412),
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                subtitle,
-                style: GoogleFonts.inter(
-                  fontSize: 12,
-                  color: accent,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _FloatingSavingsRow extends StatelessWidget {
-  final List<SavingsPlan> plans;
-  final bool compact;
-
-  const _FloatingSavingsRow({
-    required this.plans,
-    required this.compact,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.separated(
-      padding: EdgeInsets.symmetric(horizontal: compact ? 14 : 18),
-      scrollDirection: Axis.horizontal,
-      physics: const BouncingScrollPhysics(),
-      itemCount: plans.length,
-      separatorBuilder: (_, __) => const SizedBox(width: 12),
-      itemBuilder: (context, index) {
-        return TweenAnimationBuilder<double>(
-          duration: Duration(milliseconds: 500 + (index * 100)),
-          curve: Curves.easeOutCubic,
-          tween: Tween(begin: 0, end: 1),
-          builder: (context, value, child) {
-            return Transform.translate(
-              offset: Offset(0, 24 * (1 - value)),
-              child: Opacity(opacity: value, child: child),
-            );
-          },
-          child: _FloatingPlanCard(
-            plan: plans[index],
-            compact: compact,
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _FloatingPlanCard extends StatelessWidget {
+class _SavingsPlanCard extends StatelessWidget {
   final SavingsPlan plan;
   final bool compact;
 
-  const _FloatingPlanCard({
+  const _SavingsPlanCard({
     required this.plan,
     required this.compact,
   });
 
   @override
   Widget build(BuildContext context) {
-    final accent = _statusColor(plan.health);
-    final width = compact ? 198.0 : 246.0;
-    final percent = (plan.progressPercent * 100).round();
-    final textScale = compact ? 0.92 : 1.0;
+    final statusColor = _statusColor(plan.health);
 
     return Container(
-      width: width,
-      padding: EdgeInsets.all(compact ? 14 : 16),
+      padding: EdgeInsets.all(compact ? 16 : 18),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.64),
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: accent.withValues(alpha: 0.24)),
-        boxShadow: [
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(26),
+        boxShadow: const [
           BoxShadow(
-            color: accent.withValues(alpha: 0.10),
+            color: Color(0x14000000),
             blurRadius: 24,
-            offset: const Offset(0, 12),
-          ),
-          const BoxShadow(
-            color: Color(0x16000000),
-            blurRadius: 34,
-            offset: Offset(0, 20),
+            offset: Offset(0, 14),
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Text(
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
                   plan.title,
-                  maxLines: compact ? 1 : 2,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.oswald(
-                    fontSize: (compact ? 18 : 21) * textScale,
-                    height: 0.98,
+                    fontSize: compact ? 22 : 24,
                     color: const Color(0xFF171412),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Goal ${CurrencyUtil.formatNoDecimal(plan.goalAmount)}',
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: const Color(0xFF7E7266),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              Container(
-                width: compact ? 44 : 50,
-                height: compact ? 44 : 50,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white.withValues(alpha: 0.74),
-                  border: Border.all(color: accent.withValues(alpha: 0.24)),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: [
+                    _MetricChip(
+                      label: 'Saved',
+                      value: CurrencyUtil.formatNoDecimal(plan.currentAmount),
+                    ),
+                    _MetricChip(
+                      label: 'Remaining',
+                      value: CurrencyUtil.formatNoDecimal(plan.remainingAmount),
+                    ),
+                    _MetricChip(
+                      label: 'Deadline',
+                      value: DateFormat('dd MMM').format(plan.endDate),
+                    ),
+                  ],
                 ),
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: statusColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    _statusLabel(plan.health),
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      color: statusColor,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 14),
+          Column(
+            children: [
+              SizedBox(
+                width: compact ? 64 : 74,
+                height: compact ? 64 : 74,
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.all(5),
-                      child: CircularProgressIndicator(
-                        value: plan.progressPercent,
-                        strokeWidth: 4,
-                        backgroundColor: const Color(0xFFF0EAE0),
-                        valueColor: AlwaysStoppedAnimation<Color>(accent),
-                      ),
+                    CircularProgressIndicator(
+                      value: plan.progressPercent,
+                      strokeWidth: 6,
+                      backgroundColor: const Color(0xFFF0ECE5),
+                      valueColor: AlwaysStoppedAnimation<Color>(statusColor),
                     ),
                     Center(
                       child: Text(
-                        '$percent%',
+                        '${(plan.progressPercent * 100).round()}%',
                         style: GoogleFonts.oswald(
-                          fontSize: compact ? 12 : 13,
+                          fontSize: compact ? 16 : 18,
                           color: const Color(0xFF171412),
                         ),
                       ),
@@ -510,45 +415,17 @@ class _FloatingPlanCard extends StatelessWidget {
                   ],
                 ),
               ),
-            ],
-          ),
-          const Spacer(),
-          Text(
-            '${CurrencyUtil.formatNoDecimal(plan.currentAmount)} / ${CurrencyUtil.formatNoDecimal(plan.goalAmount)}',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.inter(
-              fontSize: compact ? 11 : 12,
-              fontWeight: FontWeight.w700,
-              color: const Color(0xFF685F55),
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            _requiredSavingLabel(plan),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.inter(
-              fontSize: compact ? 11 : 12,
-              color: accent,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-            decoration: BoxDecoration(
-              color: accent.withValues(alpha: 0.10),
-              borderRadius: BorderRadius.circular(999),
-            ),
-            child: Text(
-              _statusLabel(plan.health),
-              style: GoogleFonts.inter(
-                fontSize: compact ? 10 : 11,
-                fontWeight: FontWeight.w800,
-                color: accent,
+              const SizedBox(height: 12),
+              Text(
+                _requiredLabel(plan),
+                textAlign: TextAlign.center,
+                style: GoogleFonts.inter(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFF7E7266),
+                ),
               ),
-            ),
+            ],
           ),
         ],
       ),
@@ -558,26 +435,26 @@ class _FloatingPlanCard extends StatelessWidget {
   Color _statusColor(PlanHealth health) {
     switch (health) {
       case PlanHealth.onTrack:
-        return const Color(0xFF3B9D5D);
+        return const Color(0xFF3FA66B);
       case PlanHealth.watch:
-        return const Color(0xFFBF912C);
+        return const Color(0xFFB88A2E);
       case PlanHealth.behind:
-        return const Color(0xFFD55C4B);
+        return const Color(0xFFD76354);
     }
   }
 
   String _statusLabel(PlanHealth health) {
     switch (health) {
       case PlanHealth.onTrack:
-        return 'On track';
+        return 'On Track';
       case PlanHealth.watch:
-        return 'Slight delay';
+        return 'Slight Delay';
       case PlanHealth.behind:
         return 'Behind';
     }
   }
 
-  String _requiredSavingLabel(SavingsPlan plan) {
+  String _requiredLabel(SavingsPlan plan) {
     switch (plan.frequency) {
       case PlanFrequency.daily:
         return 'Save ${CurrencyUtil.formatNoDecimal(plan.requiredPerDay)} / day';
@@ -590,90 +467,113 @@ class _FloatingPlanCard extends StatelessWidget {
   }
 }
 
-class _ActionRail extends StatelessWidget {
-  final bool compact;
+class _MetricChip extends StatelessWidget {
+  final String label;
+  final String value;
 
-  const _ActionRail({
-    required this.compact,
+  const _MetricChip({
+    required this.label,
+    required this.value,
   });
 
   @override
   Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF6F2EB),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.inter(
+              fontSize: 10,
+              color: const Color(0xFF8B7E6E),
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            value,
+            style: GoogleFonts.oswald(
+              fontSize: 14,
+              color: const Color(0xFF171412),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ActionButtonsRow extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
     final items = [
-      (
-        label: 'Deposit',
-        icon: Icons.download_rounded,
-        route: AppRoutes.deposit,
-        accent: const Color(0xFF3B9D5D),
-      ),
-      (
-        label: 'New Plan',
-        icon: Icons.note_alt_rounded,
-        route: AppRoutes.createPlan,
-        accent: const Color(0xFFBF912C),
-      ),
-      (
-        label: 'Loan',
-        icon: Icons.account_balance_wallet_rounded,
-        route: AppRoutes.requestLoan,
-        accent: const Color(0xFF537A8A),
-      ),
-      (
-        label: 'Repay',
-        icon: Icons.currency_exchange_rounded,
-        route: AppRoutes.repayment,
-        accent: const Color(0xFFD55C4B),
-      ),
+      (label: 'Deposit', icon: Icons.download_rounded, route: AppRoutes.deposit),
+      (label: 'New Plan', icon: Icons.note_alt_rounded, route: AppRoutes.createPlan),
+      (label: 'Loan', icon: Icons.account_balance_wallet_rounded, route: AppRoutes.requestLoan),
+      (label: 'Repay', icon: Icons.currency_exchange_rounded, route: AppRoutes.repayment),
     ];
 
     return SizedBox(
-      height: compact ? 66 : 72,
+      height: 104,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
         itemCount: items.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 10),
+        separatorBuilder: (_, __) => const SizedBox(width: 12),
         itemBuilder: (context, index) {
           final item = items[index];
           return InkWell(
             onTap: () => Navigator.pushNamed(context, item.route),
-            borderRadius: BorderRadius.circular(999),
+            borderRadius: BorderRadius.circular(24),
             child: Ink(
-              padding: EdgeInsets.symmetric(
-                horizontal: compact ? 14 : 18,
-                vertical: compact ? 10 : 12,
-              ),
+              width: 94,
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.68),
-                borderRadius: BorderRadius.circular(999),
-                border: Border.all(color: item.accent.withValues(alpha: 0.20)),
-                boxShadow: [
+                borderRadius: BorderRadius.circular(24),
+                gradient: const LinearGradient(
+                  colors: [
+                    Color(0xFFFFF3CF),
+                    Color(0xFFE7C768),
+                    Color(0xFFC49426),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                boxShadow: const [
                   BoxShadow(
-                    color: item.accent.withValues(alpha: 0.08),
-                    blurRadius: 20,
-                    offset: const Offset(0, 12),
+                    color: Color(0x24C49426),
+                    blurRadius: 22,
+                    offset: Offset(0, 14),
                   ),
                 ],
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    width: compact ? 34 : 38,
-                    height: compact ? 34 : 38,
+                    width: 42,
+                    height: 42,
                     decoration: BoxDecoration(
-                      color: item.accent.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(999),
+                      color: Colors.white.withValues(alpha: 0.22),
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    child: Icon(item.icon, color: item.accent, size: compact ? 18 : 20),
+                    child: Icon(
+                      item.icon,
+                      color: const Color(0xFF5F4513),
+                    ),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(height: 10),
                   Text(
                     item.label,
                     style: GoogleFonts.inter(
-                      fontSize: compact ? 12 : 13,
+                      fontSize: 12,
                       fontWeight: FontWeight.w800,
-                      color: const Color(0xFF171412),
+                      color: const Color(0xFF4A3710),
                     ),
                   ),
                 ],
@@ -681,6 +581,37 @@ class _ActionRail extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _TransactionsPanel extends StatelessWidget {
+  final List<SavingsTransaction> transactions;
+
+  const _TransactionsPanel({
+    required this.transactions,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(26),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x14000000),
+            blurRadius: 24,
+            offset: Offset(0, 14),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          for (final txn in transactions) _TransactionRow(txn: txn),
+        ],
       ),
     );
   }
@@ -695,7 +626,7 @@ class _TransactionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = txn.isCredit ? const Color(0xFF3B9D5D) : const Color(0xFFD55C4B);
+    final color = txn.isCredit ? const Color(0xFF3FA66B) : const Color(0xFFD76354);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
@@ -704,7 +635,7 @@ class _TransactionRow extends StatelessWidget {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.14),
+              color: color.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(14),
             ),
             child: Icon(
@@ -721,14 +652,14 @@ class _TransactionRow extends StatelessWidget {
                   txn.typeLabel,
                   style: GoogleFonts.oswald(
                     fontSize: 18,
-                    color: const Color(0xFF23211E),
+                    color: const Color(0xFF171412),
                   ),
                 ),
                 Text(
                   DateFormat('dd MMM yyyy, HH:mm').format(txn.date),
                   style: GoogleFonts.inter(
                     fontSize: 12,
-                    color: const Color(0xFF6F665C),
+                    color: const Color(0xFF7E7266),
                   ),
                 ),
               ],
@@ -752,13 +683,13 @@ List<CandleData> _buildSavingsCandles(FinanceOverviewProvider finance) {
 
   if (transactions.isNotEmpty) {
     var running = 0.0;
-    return transactions.take(36).map((txn) {
+    return transactions.take(42).map((txn) {
       final open = running;
       running += txn.isCredit ? txn.amount : -txn.amount;
       final close = running < 0 ? 0.0 : running;
-      final high = mathMax(open, close) + (txn.amount * 0.025);
+      final high = _maxDouble(open, close) + (txn.amount * 0.025);
       final low =
-          (mathMin(open, close) - (txn.amount * 0.02)).clamp(0.0, double.infinity).toDouble();
+          (_minDouble(open, close) - (txn.amount * 0.02)).clamp(0.0, double.infinity).toDouble();
       return CandleData(
         time: txn.date,
         open: open,
@@ -772,21 +703,21 @@ List<CandleData> _buildSavingsCandles(FinanceOverviewProvider finance) {
 
   if (finance.prioritizedPlans.isNotEmpty) {
     return finance.prioritizedPlans
-        .expand((plan) => List.generate(8, (index) {
-              final seed = plan.goalAmount == 0 ? 0.0 : plan.goalAmount * (0.12 + (index * 0.04));
-              final close = (seed + (plan.currentAmount * (index / 8)))
+        .expand((plan) => List.generate(10, (index) {
+              final base = plan.goalAmount == 0 ? 0.0 : plan.goalAmount * (0.10 + (index * 0.03));
+              final close = (base + (plan.currentAmount * (index / 10)))
                   .clamp(0.0, plan.goalAmount)
                   .toDouble();
               return CandleData(
-                time: plan.startDate.add(Duration(days: index * 4)),
-                open: index == 0 ? seed * 0.92 : (seed * 0.98),
-                high: close + (plan.requiredPerWeek * 0.18),
-                low: (seed * 0.88).clamp(0.0, double.infinity).toDouble(),
+                time: plan.startDate.add(Duration(days: index * 3)),
+                open: index == 0 ? base * 0.94 : base,
+                high: close + (plan.requiredPerWeek * 0.16),
+                low: (base * 0.90).clamp(0.0, double.infinity).toDouble(),
                 close: close,
                 volume: plan.currentAmount,
               );
             }))
-        .take(36)
+        .take(42)
         .toList();
   }
 
@@ -794,16 +725,22 @@ List<CandleData> _buildSavingsCandles(FinanceOverviewProvider finance) {
 }
 
 String _performanceLabel(List<CandleData> candles) {
-  if (candles.length < 2) return 'Live savings data will appear here';
+  if (candles.length < 2) return 'Live update feed';
   final first = candles.first.close <= 0 ? 1 : candles.first.close;
   final last = candles.last.close;
   final change = ((last - first) / first) * 100;
   final prefix = change >= 0 ? '+' : '';
-  return '$prefix${change.toStringAsFixed(1)}% vs starting balance';
+  return '$prefix${change.toStringAsFixed(1)}% over your tracked period';
 }
 
-double mathMax(double a, double b) => a > b ? a : b;
-double mathMin(double a, double b) => a < b ? a : b;
+String _firstName(String? name) {
+  final trimmed = (name ?? '').trim();
+  if (trimmed.isEmpty) return 'User';
+  return trimmed.split(' ').first;
+}
+
+double _maxDouble(double a, double b) => a > b ? a : b;
+double _minDouble(double a, double b) => a < b ? a : b;
 
 final List<SavingsPlan> _fallbackPlans = [
   SavingsPlan(
@@ -856,41 +793,41 @@ final _fallbackTransactions = [
     userId: 'demo',
     amount: 3330000,
     date: DateTime(2026, 3, 16, 21, 40),
-    type: TransactionType.withdrawal,
+    type: TransactionType.deposit,
   ),
   SavingsTransaction(
     id: '2',
     userId: 'demo',
     amount: 2000,
-    date: DateTime(2026, 3, 16, 21, 40),
+    date: DateTime(2026, 3, 15, 9, 20),
     type: TransactionType.deposit,
   ),
   SavingsTransaction(
     id: '3',
     userId: 'demo',
-    amount: 2000,
-    date: DateTime(2026, 3, 16, 21, 40),
+    amount: 1200,
+    date: DateTime(2026, 3, 14, 7, 10),
     type: TransactionType.deposit,
   ),
   SavingsTransaction(
     id: '4',
     userId: 'demo',
-    amount: 3300,
-    date: DateTime(2026, 3, 16, 21, 40),
+    amount: 2800,
+    date: DateTime(2026, 3, 12, 17, 55),
     type: TransactionType.deposit,
   ),
 ];
 
 final _fallbackCandles = List.generate(
-  30,
+  36,
   (index) {
-    final open = 12000.0 + (index * 280);
-    final close = open + (index.isEven ? 120 : -40);
+    final open = 12000.0 + (index * 220);
+    final close = open + (index.isEven ? 60 : -40);
     return CandleData(
       time: DateTime(2026, 3, 1).add(Duration(days: index)),
       open: open,
-      high: mathMax(open, close) + 160,
-      low: mathMin(open, close) - 120,
+      high: _maxDouble(open, close) + 110,
+      low: _minDouble(open, close) - 80,
       close: close,
       volume: 1000,
     );

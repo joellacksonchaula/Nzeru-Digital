@@ -33,6 +33,7 @@ class CandlestickChart extends StatelessWidget {
   final String? subtitle;
   final double height;
   final bool showHeader;
+  final bool darkMode;
   final EdgeInsetsGeometry padding;
   final BorderRadius borderRadius;
 
@@ -43,6 +44,7 @@ class CandlestickChart extends StatelessWidget {
     this.subtitle,
     this.height = 320,
     this.showHeader = true,
+    this.darkMode = false,
     this.padding = const EdgeInsets.fromLTRB(14, 14, 14, 14),
     this.borderRadius = const BorderRadius.all(Radius.circular(24)),
   });
@@ -51,6 +53,7 @@ class CandlestickChart extends StatelessWidget {
   Widget build(BuildContext context) {
     final series = candles.isEmpty ? _fallbackCandles : candles;
     final stats = _ChartStats.from(series);
+    final theme = _ChartPalette.fromMode(darkMode);
 
     return ClipRRect(
       borderRadius: borderRadius,
@@ -59,14 +62,14 @@ class CandlestickChart extends StatelessWidget {
         child: Container(
           height: height,
           decoration: BoxDecoration(
-            color: const Color(0xF7FFFEFC),
+            color: theme.background,
             borderRadius: borderRadius,
-            border: Border.all(color: const Color(0xFFE9E0D2)),
-            boxShadow: const [
+            border: Border.all(color: theme.border),
+            boxShadow: [
               BoxShadow(
-                color: Color(0x12000000),
+                color: theme.shadow,
                 blurRadius: 24,
-                offset: Offset(0, 12),
+                offset: const Offset(0, 12),
               ),
             ],
           ),
@@ -91,7 +94,7 @@ class CandlestickChart extends StatelessWidget {
                                   title,
                                   style: GoogleFonts.oswald(
                                     fontSize: 24,
-                                    color: const Color(0xFF171412),
+                                    color: theme.heading,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -101,7 +104,7 @@ class CandlestickChart extends StatelessWidget {
                                     subtitle!,
                                     style: GoogleFonts.inter(
                                       fontSize: 13,
-                                      color: const Color(0xFF6F665C),
+                                      color: theme.body,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
@@ -110,16 +113,11 @@ class CandlestickChart extends StatelessWidget {
                             ),
                           ),
                           Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 8,
-                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFF8F3EA),
+                              color: theme.chipBackground,
                               borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: const Color(0xFFE8DDCA),
-                              ),
+                              border: Border.all(color: theme.chipBorder),
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
@@ -128,7 +126,7 @@ class CandlestickChart extends StatelessWidget {
                                   'Latest',
                                   style: GoogleFonts.inter(
                                     fontSize: 11,
-                                    color: const Color(0xFF847969),
+                                    color: theme.axis,
                                   ),
                                 ),
                                 const SizedBox(height: 2),
@@ -136,7 +134,7 @@ class CandlestickChart extends StatelessWidget {
                                   CurrencyUtil.formatCompact(stats.latest),
                                   style: GoogleFonts.oswald(
                                     fontSize: 18,
-                                    color: const Color(0xFF171412),
+                                    color: theme.heading,
                                   ),
                                 ),
                               ],
@@ -155,9 +153,9 @@ class CandlestickChart extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                _AxisLabel(CurrencyUtil.formatCompact(stats.max)),
-                                _AxisLabel(CurrencyUtil.formatCompact(stats.mid)),
-                                _AxisLabel(CurrencyUtil.formatCompact(stats.min)),
+                                _AxisLabel(CurrencyUtil.formatCompact(stats.max), color: theme.axis),
+                                _AxisLabel(CurrencyUtil.formatCompact(stats.mid), color: theme.axis),
+                                _AxisLabel(CurrencyUtil.formatCompact(stats.min), color: theme.axis),
                               ],
                             ),
                           ),
@@ -167,7 +165,7 @@ class CandlestickChart extends StatelessWidget {
                               children: [
                                 Positioned.fill(
                                   child: CustomPaint(
-                                    painter: _GridPainter(),
+                                    painter: _GridPainter(color: theme.grid),
                                   ),
                                 ),
                                 Positioned.fill(
@@ -190,9 +188,12 @@ class CandlestickChart extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _AxisLabel(DateFormat('dd MMM').format(series.first.time)),
-                        _AxisLabel(DateFormat('dd MMM').format(series[series.length ~/ 2].time)),
-                        _AxisLabel(DateFormat('dd MMM').format(series.last.time)),
+                        _AxisLabel(DateFormat('dd MMM').format(series.first.time), color: theme.axis),
+                        _AxisLabel(
+                          DateFormat('dd MMM').format(series[series.length ~/ 2].time),
+                          color: theme.axis,
+                        ),
+                        _AxisLabel(DateFormat('dd MMM').format(series.last.time), color: theme.axis),
                       ],
                     ),
                   ],
@@ -206,10 +207,63 @@ class CandlestickChart extends StatelessWidget {
   }
 }
 
+class _ChartPalette {
+  final Color background;
+  final Color border;
+  final Color heading;
+  final Color body;
+  final Color axis;
+  final Color chipBackground;
+  final Color chipBorder;
+  final Color grid;
+  final Color shadow;
+
+  const _ChartPalette({
+    required this.background,
+    required this.border,
+    required this.heading,
+    required this.body,
+    required this.axis,
+    required this.chipBackground,
+    required this.chipBorder,
+    required this.grid,
+    required this.shadow,
+  });
+
+  factory _ChartPalette.fromMode(bool darkMode) {
+    if (darkMode) {
+      return const _ChartPalette(
+        background: Color(0xFF0C1016),
+        border: Color(0xFF202833),
+        heading: Color(0xFFF9FAFC),
+        body: Color(0xB8FFFFFF),
+        axis: Color(0x80FFFFFF),
+        chipBackground: Color(0xFF141B24),
+        chipBorder: Color(0xFF283241),
+        grid: Color(0x14FFFFFF),
+        shadow: Color(0x33000000),
+      );
+    }
+
+    return const _ChartPalette(
+      background: Color(0xF7FFFEFC),
+      border: Color(0xFFE9E0D2),
+      heading: Color(0xFF171412),
+      body: Color(0xFF6F665C),
+      axis: Color(0xFF8B7E6B),
+      chipBackground: Color(0xFFF8F3EA),
+      chipBorder: Color(0xFFE8DDCA),
+      grid: Color(0xFFE8E0D2),
+      shadow: Color(0x12000000),
+    );
+  }
+}
+
 class _AxisLabel extends StatelessWidget {
   final String value;
+  final Color color;
 
-  const _AxisLabel(this.value);
+  const _AxisLabel(this.value, {required this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -217,7 +271,7 @@ class _AxisLabel extends StatelessWidget {
       value,
       style: GoogleFonts.inter(
         fontSize: 11,
-        color: const Color(0xFF8B7E6B),
+        color: color,
       ),
     );
   }
@@ -249,10 +303,14 @@ class _ChartStats {
 }
 
 class _GridPainter extends CustomPainter {
+  final Color color;
+
+  _GridPainter({required this.color});
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = const Color(0xFFE8E0D2)
+      ..color = color
       ..strokeWidth = 1;
 
     for (var i = 0; i <= 5; i++) {
@@ -267,7 +325,7 @@ class _GridPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _GridPainter oldDelegate) => oldDelegate.color != color;
 }
 
 class _CandlesPainter extends CustomPainter {
@@ -305,9 +363,7 @@ class _CandlesPainter extends CustomPainter {
       final lowY = yFor(candle.low);
       final top = math.min(openY, closeY);
       final bottom = math.max(openY, closeY);
-      final color = candle.isGreen
-          ? const Color(0xFF3FA66B)
-          : const Color(0xFFD76354);
+      final color = candle.isGreen ? const Color(0xFF3FA66B) : const Color(0xFFD76354);
 
       canvas.drawLine(
         Offset(x, highY),
