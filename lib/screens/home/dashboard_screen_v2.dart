@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../../config/app_colors.dart';
 import '../../config/app_routes.dart';
+import '../../models/savings_plan.dart';
 import '../../models/savings_transaction.dart';
 import '../../providers/dashboard_provider.dart';
 import '../../providers/finance_overview_provider.dart';
@@ -292,7 +293,7 @@ List<CandleData> _buildSavingsCandles(FinanceOverviewProvider finance) {
     return transactions.take(24).map((txn) {
       final open = running;
       running += txn.isCredit ? txn.amount : -txn.amount;
-      final close = running < 0 ? 0 : running;
+      final close = running < 0 ? 0.0 : running;
       final high = open > close ? open : close;
       final low = open < close ? open : close;
       return CandleData(
@@ -333,7 +334,7 @@ String _performanceLabel(List<CandleData> candles) {
   return '$prefix${change.toStringAsFixed(1)}% vs starting savings balance';
 }
 
-final _fallbackPlans = [
+final List<SavingsPlan> _fallbackPlans = [
   SavingsPlan(
     id: 'plan-1',
     userId: 'demo',
