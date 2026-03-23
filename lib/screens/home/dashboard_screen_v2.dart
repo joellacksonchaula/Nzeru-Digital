@@ -21,32 +21,13 @@ class DashboardScreenV2 extends StatefulWidget {
 }
 
 class _DashboardScreenV2State extends State<DashboardScreenV2> {
-  late final PageController _plansController;
-  double _currentPage = 0;
-
   @override
   void initState() {
     super.initState();
-    _plansController = PageController(viewportFraction: 0.9);
-    _plansController.addListener(_handlePageScroll);
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<DashboardProvider>().loadDashboard();
       context.read<SavingsProvider>().loadData();
     });
-  }
-
-  @override
-  void dispose() {
-    _plansController
-      ..removeListener(_handlePageScroll)
-      ..dispose();
-    super.dispose();
-  }
-
-  void _handlePageScroll() {
-    if (!_plansController.hasClients) return;
-    setState(() => _currentPage = _plansController.page ?? _plansController.initialPage.toDouble());
   }
 
   @override
@@ -86,8 +67,6 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
               ),
               const SizedBox(height: 14),
               _SavingsCardsCarousel(
-                controller: _plansController,
-                currentPage: _currentPage,
                 plans: plans,
               ),
               const SizedBox(height: 22),
@@ -238,13 +217,9 @@ class _SectionHeading extends StatelessWidget {
 }
 
 class _SavingsCardsCarousel extends StatelessWidget {
-  final PageController controller;
-  final double currentPage;
   final List<SavingsPlan> plans;
 
   const _SavingsCardsCarousel({
-    required this.controller,
-    required this.currentPage,
     required this.plans,
   });
 
@@ -252,20 +227,22 @@ class _SavingsCardsCarousel extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final compact = constraints.maxWidth < 420;
+        final compact = constraints.maxWidth < 480;
+        final cardWidth = compact ? 214.0 : 286.0;
+
         return Column(
           children: [
             SizedBox(
-              height: compact ? 212 : 228,
-              child: PageView.builder(
-                controller: controller,
-                padEnds: false,
+              height: compact ? 214 : 230,
+              child: ListView.separated(
+                padding: EdgeInsets.zero,
+                scrollDirection: Axis.horizontal,
                 physics: const BouncingScrollPhysics(),
                 itemCount: plans.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 12),
                 itemBuilder: (context, index) {
-                  final rightPad = index == plans.length - 1 ? 0.0 : 14.0;
-                  return Padding(
-                    padding: EdgeInsets.only(right: rightPad),
+                  return SizedBox(
+                    width: cardWidth,
                     child: _SavingsPlanCard(
                       plan: plans[index],
                       compact: compact,
@@ -278,16 +255,22 @@ class _SavingsCardsCarousel extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                for (var i = 0; i < plans.length; i++)
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 220),
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    width: (currentPage.round() == i) ? 20 : 8,
-                    height: 8,
+                Container(
+                  width: 28,
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFB88A2E),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                ),
+                const SizedBox(width: 6),
+                for (var i = 0; i < (plans.length > 4 ? 3 : plans.length - 1); i++)
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 3),
+                    width: 6,
+                    height: 6,
                     decoration: BoxDecoration(
-                      color: (currentPage.round() == i)
-                          ? const Color(0xFFB88A2E)
-                          : const Color(0xFFD9D2C7),
+                      color: const Color(0xFFD9D2C7),
                       borderRadius: BorderRadius.circular(999),
                     ),
                   ),
@@ -327,6 +310,7 @@ class _SavingsPlanCard extends StatelessWidget {
         ],
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
             child: Column(
@@ -351,21 +335,22 @@ class _SavingsPlanCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 12),
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _MetricChip(
+                    _MetricLine(
                       label: 'Saved',
                       value: CurrencyUtil.formatNoDecimal(plan.currentAmount),
                     ),
-                    _MetricChip(
+                    const SizedBox(height: 4),
+                    _MetricLine(
                       label: 'Remaining',
                       value: CurrencyUtil.formatNoDecimal(plan.remainingAmount),
                     ),
-                    _MetricChip(
+                    const SizedBox(height: 4),
+                    _MetricLine(
                       label: 'Deadline',
-                      value: DateFormat('dd MMM').format(plan.endDate),
+                      value: DateFormat('dd MMM yyyy').format(plan.endDate),
                     ),
                   ],
                 ),
@@ -467,44 +452,41 @@ class _SavingsPlanCard extends StatelessWidget {
   }
 }
 
-class _MetricChip extends StatelessWidget {
+class _MetricLine extends StatelessWidget {
   final String label;
   final String value;
 
-  const _MetricChip({
+  const _MetricLine({
     required this.label,
     required this.value,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF6F2EB),
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
+    return Row(
+      children: [
+        SizedBox(
+          width: 68,
+          child: Text(
             label,
             style: GoogleFonts.inter(
               fontSize: 10,
               color: const Color(0xFF8B7E6E),
             ),
           ),
-          const SizedBox(height: 2),
-          Text(
+        ),
+        Expanded(
+          child: Text(
             value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: GoogleFonts.oswald(
-              fontSize: 14,
+              fontSize: 15,
               color: const Color(0xFF171412),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

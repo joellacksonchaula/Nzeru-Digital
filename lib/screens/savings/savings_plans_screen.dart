@@ -13,24 +13,50 @@ class SavingsPlansScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final finance = context.watch<FinanceOverviewProvider>();
+    final plans = finance.prioritizedPlans;
 
     return DashboardPage(
       eyebrow: 'Savings',
-      title: 'Savings plans with live pacing',
+      title: 'Savings plans first',
       subtitle:
-          'Create, review, and manage plans directly here with a futuristic horizontal layout that keeps your goals and actions side by side.',
+          'Review every savings plan at the top, then manage pacing, targets, and new plan creation below.',
       trailing: FilledButton.tonalIcon(
         onPressed: () => Navigator.pushNamed(context, AppRoutes.createPlan),
         icon: const Icon(Icons.add_rounded),
         label: const Text('New Plan'),
       ),
       children: [
+        DashboardSectionTitle(title: 'Your Savings'),
+        const SizedBox(height: 10),
+        if (plans.isEmpty)
+          const DashboardPanel(
+            width: double.infinity,
+            child: Text(
+              'No active savings plans yet. Create your first plan below.',
+              style: TextStyle(color: Color(0xFF171412)),
+            ),
+          )
+        else
+          DashboardHorizontalRail(
+            children: plans
+                .map(
+                  (plan) => SizedBox(
+                    width: 390,
+                    child: DashboardSavingsPlanCard(
+                      plan: plan,
+                      onTap: () => Navigator.pushNamed(context, AppRoutes.planDetail),
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+        const SizedBox(height: 18),
         DashboardStatGrid(
           items: [
             DashboardStatItem(
               label: 'Total saved',
               value: CurrencyUtil.formatCompact(finance.totalSaved),
-              detail: 'Across ${finance.prioritizedPlans.length} active savings plans.',
+              detail: 'Across ${plans.length} active savings plans.',
               icon: Icons.savings_rounded,
               accent: const Color(0xFF876446),
             ),
@@ -58,46 +84,9 @@ class SavingsPlansScreen extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 18),
-        DashboardSectionTitle(title: 'Savings Hub'),
+        DashboardSectionTitle(title: 'Create Plan'),
         const SizedBox(height: 10),
-        DashboardHorizontalRail(
-          children: [
-            const SavingsPlanComposer(embedded: true),
-            if (finance.prioritizedPlans.isEmpty)
-              const DashboardPanel(
-                width: 420,
-                child: Text(
-                  'No active savings plans yet. Use the planner on the left to create your first one.',
-                  style: TextStyle(color: Colors.white),
-                ),
-              )
-            else
-              SizedBox(
-                width: 520,
-                child: DashboardPlanCarousel(
-                  plans: finance.prioritizedPlans.take(5).toList(),
-                  onTap: (_) => Navigator.pushNamed(context, AppRoutes.planDetail),
-                ),
-              ),
-          ],
-        ),
-        const SizedBox(height: 18),
-        DashboardSectionTitle(title: 'All Plans'),
-        const SizedBox(height: 10),
-        if (finance.prioritizedPlans.isNotEmpty)
-          DashboardHorizontalRail(
-            children: finance.prioritizedPlans
-                .map(
-                  (plan) => SizedBox(
-                    width: 420,
-                    child: DashboardSavingsPlanCard(
-                      plan: plan,
-                      onTap: () => Navigator.pushNamed(context, AppRoutes.planDetail),
-                    ),
-                  ),
-                )
-                .toList(),
-          ),
+        const SavingsPlanComposer(embedded: true),
       ],
     );
   }
