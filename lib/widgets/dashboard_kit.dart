@@ -26,7 +26,7 @@ class DashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF050608),
+      backgroundColor: const Color(0xFFF7F4EE),
       body: Stack(
         children: [
           const _DashboardBackdrop(),
@@ -83,7 +83,7 @@ class DashboardHeader extends StatelessWidget {
                 style: GoogleFonts.oswald(
                   fontSize: 14,
                   letterSpacing: 2.8,
-                  color: const Color(0xFFE0B449),
+                  color: const Color(0xFFB98A2D),
                 ),
               ),
               const SizedBox(height: 6),
@@ -93,7 +93,7 @@ class DashboardHeader extends StatelessWidget {
                   fontSize: 34,
                   height: 0.96,
                   fontWeight: FontWeight.w600,
-                  color: Colors.white,
+                  color: const Color(0xFF171412),
                 ),
               ),
               const SizedBox(height: 8),
@@ -104,7 +104,7 @@ class DashboardHeader extends StatelessWidget {
                   style: GoogleFonts.inter(
                     fontSize: 14,
                     height: 1.45,
-                    color: Colors.white.withValues(alpha: 0.72),
+                    color: const Color(0xFF6F665C),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -139,35 +139,37 @@ class DashboardPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: width,
-      margin: margin,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(26),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-          child: Container(
-            padding: padding,
-            decoration: BoxDecoration(
-              color: const Color(0xCC0D1117),
-              borderRadius: BorderRadius.circular(26),
-              border: Border.all(
-                color: glowColor.withValues(alpha: 0.45),
+      child: Container(
+        margin: margin,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(26),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+            child: Container(
+              padding: padding,
+              decoration: BoxDecoration(
+                color: const Color(0xD9FFFFFF),
+                borderRadius: BorderRadius.circular(26),
+                border: Border.all(
+                  color: glowColor.withValues(alpha: 0.25),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: glowColor.withValues(alpha: 0.10),
+                    blurRadius: 28,
+                    spreadRadius: 1,
+                  ),
+                  const BoxShadow(
+                    color: Color(0x14000000),
+                    blurRadius: 36,
+                    offset: Offset(0, 20),
+                  ),
+                ],
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: glowColor.withValues(alpha: 0.2),
-                  blurRadius: 24,
-                  spreadRadius: 1,
-                ),
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.45),
-                  blurRadius: 24,
-                  offset: const Offset(0, 16),
-                ),
-              ],
+              child: child,
             ),
-            child: child,
           ),
         ),
       ),
@@ -223,7 +225,7 @@ class DashboardSectionTitle extends StatelessWidget {
           style: GoogleFonts.oswald(
             fontSize: 16,
             letterSpacing: 2,
-            color: Colors.white,
+            color: const Color(0xFF171412),
           ),
         ),
         const Spacer(),
@@ -234,7 +236,7 @@ class DashboardSectionTitle extends StatelessWidget {
               actionLabel!,
               style: GoogleFonts.oswald(
                 fontSize: 14,
-                color: const Color(0xFFE0B449),
+                color: const Color(0xFFB98A2D),
               ),
             ),
           ),
@@ -316,7 +318,7 @@ class DashboardStatCard extends StatelessWidget {
                   style: GoogleFonts.oswald(
                     fontSize: 12,
                     letterSpacing: 1.4,
-                    color: Colors.white.withValues(alpha: 0.72),
+                    color: const Color(0xFF6F665C),
                   ),
                 ),
               ],
@@ -327,7 +329,7 @@ class DashboardStatCard extends StatelessWidget {
               style: GoogleFonts.oswald(
                 fontSize: 30,
                 height: 0.95,
-                color: Colors.white,
+                color: const Color(0xFF171412),
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -337,7 +339,7 @@ class DashboardStatCard extends StatelessWidget {
               style: GoogleFonts.inter(
                 fontSize: 13,
                 height: 1.35,
-                color: Colors.white.withValues(alpha: 0.68),
+                color: const Color(0xFF6F665C),
               ),
             ),
           ],
@@ -451,7 +453,7 @@ class DashboardSavingsPlanCard extends StatelessWidget {
                           style: GoogleFonts.oswald(
                             fontSize: 24,
                             height: 0.94,
-                            color: Colors.white,
+                            color: const Color(0xFF171412),
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -470,9 +472,9 @@ class DashboardSavingsPlanCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
-                      color: healthColor.withValues(alpha: 0.18),
+                      color: healthColor.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(999),
-                      border: Border.all(color: healthColor.withValues(alpha: 0.45)),
+                      border: Border.all(color: healthColor.withValues(alpha: 0.3)),
                     ),
                     child: Text(
                       statusLabel,
@@ -496,7 +498,7 @@ class DashboardSavingsPlanCard extends StatelessWidget {
                         CircularProgressIndicator(
                           value: plan.progressPercent,
                           strokeWidth: 7,
-                          backgroundColor: Colors.white.withValues(alpha: 0.08),
+                          backgroundColor: const Color(0xFFF0EAE0),
                           valueColor: AlwaysStoppedAnimation<Color>(healthColor),
                         ),
                         Center(
@@ -504,7 +506,7 @@ class DashboardSavingsPlanCard extends StatelessWidget {
                             '${(plan.progressPercent * 100).round()}%',
                             style: GoogleFonts.oswald(
                               fontSize: 18,
-                              color: Colors.white,
+                              color: const Color(0xFF171412),
                             ),
                           ),
                         ),
@@ -541,7 +543,7 @@ class DashboardSavingsPlanCard extends StatelessWidget {
                 child: LinearProgressIndicator(
                   value: plan.progressPercent,
                   minHeight: 9,
-                  backgroundColor: Colors.white.withValues(alpha: 0.08),
+                  backgroundColor: const Color(0xFFF0EAE0),
                   color: healthColor,
                 ),
               ),
@@ -562,7 +564,7 @@ class DashboardSavingsPlanCard extends StatelessWidget {
                     const SizedBox(width: 8),
                     _RateChip(
                       label: 'Day ${CurrencyUtil.formatNoDecimal(plan.requiredPerDay)}',
-                      color: const Color(0xFFFF5E5E),
+                      color: const Color(0xFFE36A5B),
                     ),
                   ],
                 ),
@@ -572,7 +574,7 @@ class DashboardSavingsPlanCard extends StatelessWidget {
                 'Deadline ${DateFormat('dd MMM yyyy').format(plan.endDate)}',
                 style: GoogleFonts.inter(
                   fontSize: 13,
-                  color: Colors.white.withValues(alpha: 0.72),
+                  color: const Color(0xFF6F665C),
                 ),
               ),
             ],
@@ -583,8 +585,7 @@ class DashboardSavingsPlanCard extends StatelessWidget {
   }
 
   String _primaryRateLabel(SavingsPlan plan) {
-    final frequency = plan.frequency;
-    switch (frequency) {
+    switch (plan.frequency) {
       case PlanFrequency.daily:
         return 'Save ${CurrencyUtil.formatNoDecimal(plan.requiredPerDay)} per day';
       case PlanFrequency.weekly:
@@ -598,11 +599,11 @@ class DashboardSavingsPlanCard extends StatelessWidget {
   Color _healthColor(PlanHealth health) {
     switch (health) {
       case PlanHealth.onTrack:
-        return const Color(0xFF56D68D);
+        return const Color(0xFF3B9D5D);
       case PlanHealth.watch:
-        return const Color(0xFFE0B449);
+        return const Color(0xFFBF912C);
       case PlanHealth.behind:
-        return const Color(0xFFFF5E5E);
+        return const Color(0xFFD55C4B);
     }
   }
 
@@ -611,7 +612,7 @@ class DashboardSavingsPlanCard extends StatelessWidget {
       case PlanHealth.onTrack:
         return 'On Track';
       case PlanHealth.watch:
-        return 'Slightly Behind';
+        return 'Slight Delay';
       case PlanHealth.behind:
         return 'Behind';
     }
@@ -637,7 +638,7 @@ class _AmountLine extends StatelessWidget {
             label,
             style: GoogleFonts.inter(
               fontSize: 12,
-              color: Colors.white.withValues(alpha: 0.56),
+              color: const Color(0xFF7E756A),
             ),
           ),
         ),
@@ -646,7 +647,7 @@ class _AmountLine extends StatelessWidget {
             value,
             style: GoogleFonts.oswald(
               fontSize: 16,
-              color: Colors.white,
+              color: const Color(0xFF171412),
             ),
           ),
         ),
@@ -669,9 +670,9 @@ class _RateChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
+        color: color.withValues(alpha: 0.10),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: color.withValues(alpha: 0.26)),
+        border: Border.all(color: color.withValues(alpha: 0.20)),
       ),
       child: Text(
         label,
@@ -708,7 +709,7 @@ class DashboardInfoRow extends StatelessWidget {
               label,
               style: GoogleFonts.inter(
                 fontSize: 13,
-                color: Colors.white.withValues(alpha: 0.58),
+                color: const Color(0xFF7E756A),
               ),
             ),
           ),
@@ -716,7 +717,7 @@ class DashboardInfoRow extends StatelessWidget {
             value,
             style: GoogleFonts.oswald(
               fontSize: 15,
-              color: valueColor ?? Colors.white,
+              color: valueColor ?? const Color(0xFF171412),
             ),
           ),
         ],
@@ -748,9 +749,9 @@ class _DashboardBackdrop extends StatelessWidget {
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Color(0xFF020305),
-                Color(0xFF090E14),
-                Color(0xFF050608),
+                Color(0xFFF9F7F1),
+                Color(0xFFF4F0E6),
+                Color(0xFFF8F5EE),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -758,9 +759,9 @@ class _DashboardBackdrop extends StatelessWidget {
           ),
         ),
         Positioned.fill(child: CustomPaint(painter: _GridGlowPainter())),
-        Positioned(top: -70, left: -40, child: orb(220, const Color(0x2296FF6B))),
-        Positioned(top: 120, right: -40, child: orb(220, const Color(0x26E0B449))),
-        Positioned(bottom: 10, left: 100, child: orb(240, const Color(0x26FF5E5E))),
+        Positioned(top: -70, left: -40, child: orb(220, const Color(0x148FD7A5))),
+        Positioned(top: 120, right: -40, child: orb(220, const Color(0x16E0B449))),
+        Positioned(bottom: 10, left: 100, child: orb(240, const Color(0x14DA6C5B))),
       ],
     );
   }
@@ -770,7 +771,7 @@ class _GridGlowPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final linePaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.03)
+      ..color = const Color(0xFFE8E1D5)
       ..strokeWidth = 1;
 
     for (var i = 0; i <= 12; i++) {

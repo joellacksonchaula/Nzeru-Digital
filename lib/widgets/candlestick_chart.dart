@@ -32,6 +32,9 @@ class CandlestickChart extends StatelessWidget {
   final String title;
   final String? subtitle;
   final double height;
+  final bool showHeader;
+  final EdgeInsetsGeometry padding;
+  final BorderRadius borderRadius;
 
   const CandlestickChart({
     super.key,
@@ -39,6 +42,9 @@ class CandlestickChart extends StatelessWidget {
     this.title = 'Savings Performance',
     this.subtitle,
     this.height = 320,
+    this.showHeader = true,
+    this.padding = const EdgeInsets.fromLTRB(14, 14, 14, 14),
+    this.borderRadius = const BorderRadius.all(Radius.circular(24)),
   });
 
   @override
@@ -47,20 +53,20 @@ class CandlestickChart extends StatelessWidget {
     final stats = _ChartStats.from(series);
 
     return ClipRRect(
-      borderRadius: BorderRadius.circular(24),
+      borderRadius: borderRadius,
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
         child: Container(
           height: height,
           decoration: BoxDecoration(
-            color: Colors.black.withValues(alpha: 0.78),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
-            boxShadow: [
+            color: const Color(0xF7FFFEFC),
+            borderRadius: borderRadius,
+            border: Border.all(color: const Color(0xFFE9E0D2)),
+            boxShadow: const [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.2),
+                color: Color(0x12000000),
                 blurRadius: 24,
-                offset: const Offset(0, 12),
+                offset: Offset(0, 12),
               ),
             ],
           ),
@@ -70,74 +76,76 @@ class CandlestickChart extends StatelessWidget {
             tween: Tween(begin: 0, end: 1),
             builder: (context, value, _) {
               return Padding(
-                padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+                padding: padding,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                title,
-                                style: GoogleFonts.oswald(
-                                  fontSize: 24,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              if (subtitle != null) ...[
-                                const SizedBox(height: 4),
+                    if (showHeader) ...[
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
                                 Text(
-                                  subtitle!,
+                                  title,
+                                  style: GoogleFonts.oswald(
+                                    fontSize: 24,
+                                    color: const Color(0xFF171412),
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                if (subtitle != null) ...[
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    subtitle!,
+                                    style: GoogleFonts.inter(
+                                      fontSize: 13,
+                                      color: const Color(0xFF6F665C),
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF8F3EA),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: const Color(0xFFE8DDCA),
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  'Latest',
                                   style: GoogleFonts.inter(
-                                    fontSize: 13,
-                                    color: Colors.white.withValues(alpha: 0.76),
-                                    fontWeight: FontWeight.w600,
+                                    fontSize: 11,
+                                    color: const Color(0xFF847969),
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  CurrencyUtil.formatCompact(stats.latest),
+                                  style: GoogleFonts.oswald(
+                                    fontSize: 18,
+                                    color: const Color(0xFF171412),
                                   ),
                                 ),
                               ],
-                            ],
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF111111),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.08),
                             ),
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                'Latest',
-                                style: GoogleFonts.inter(
-                                  fontSize: 11,
-                                  color: Colors.white.withValues(alpha: 0.58),
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                CurrencyUtil.formatCompact(stats.latest),
-                                style: GoogleFonts.oswald(
-                                  fontSize: 18,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                    ],
                     Expanded(
                       child: Row(
                         children: [
@@ -209,7 +217,7 @@ class _AxisLabel extends StatelessWidget {
       value,
       style: GoogleFonts.inter(
         fontSize: 11,
-        color: Colors.white.withValues(alpha: 0.54),
+        color: const Color(0xFF8B7E6B),
       ),
     );
   }
@@ -244,16 +252,16 @@ class _GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.08)
+      ..color = const Color(0xFFE8E0D2)
       ..strokeWidth = 1;
 
-    for (var i = 0; i <= 4; i++) {
-      final y = size.height * i / 4;
+    for (var i = 0; i <= 5; i++) {
+      final y = size.height * i / 5;
       canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
     }
 
-    for (var i = 0; i <= 5; i++) {
-      final x = size.width * i / 5;
+    for (var i = 0; i <= 9; i++) {
+      final x = size.width * i / 9;
       canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
     }
   }
@@ -280,8 +288,8 @@ class _CandlesPainter extends CustomPainter {
     final visibleCount = math.max(1, (candles.length * progress).ceil());
     final range = (max - min).abs() < 0.001 ? 1.0 : max - min;
     final step = size.width / candles.length;
-    final wickWidth = math.max(1.1, step * 0.06);
-    final bodyWidth = math.max(4.0, step * 0.24);
+    final wickWidth = math.max(0.7, step * 0.035);
+    final bodyWidth = math.max(1.4, step * 0.10);
 
     double yFor(double value) {
       final normalized = (value - min) / range;
@@ -298,14 +306,14 @@ class _CandlesPainter extends CustomPainter {
       final top = math.min(openY, closeY);
       final bottom = math.max(openY, closeY);
       final color = candle.isGreen
-          ? const Color(0xFF6BFF9A)
-          : const Color(0xFFFF646E);
+          ? const Color(0xFF3FA66B)
+          : const Color(0xFFD76354);
 
       canvas.drawLine(
         Offset(x, highY),
         Offset(x, lowY),
         Paint()
-          ..color = color.withValues(alpha: 0.82)
+          ..color = color.withValues(alpha: 0.75)
           ..strokeWidth = wickWidth
           ..strokeCap = StrokeCap.round,
       );
@@ -316,12 +324,12 @@ class _CandlesPainter extends CustomPainter {
             x - bodyWidth / 2,
             top,
             bodyWidth,
-            math.max(5, bottom - top),
+            math.max(2.2, bottom - top),
           ),
-          const Radius.circular(6),
+          const Radius.circular(4),
         ),
         Paint()
-          ..color = color.withValues(alpha: 0.94)
+          ..color = color.withValues(alpha: 0.92)
           ..style = PaintingStyle.fill,
       );
     }
@@ -337,14 +345,16 @@ class _CandlesPainter extends CustomPainter {
 }
 
 final _fallbackCandles = List.generate(
-  8,
+  24,
   (index) {
-    final close = 1200.0 + (index * 140);
+    final open = 1200.0 + (index * 28);
+    final drift = index.isEven ? 16.0 : -10.0;
+    final close = open + drift;
     return CandleData(
-      time: DateTime.now().subtract(Duration(days: 7 - index)),
-      open: close - 60,
-      high: close + 80,
-      low: close - 100,
+      time: DateTime.now().subtract(Duration(hours: 24 - index)),
+      open: open,
+      high: math.max(open, close) + 22,
+      low: math.min(open, close) - 20,
       close: close,
       volume: 1000,
     );
