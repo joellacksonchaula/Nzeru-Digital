@@ -109,33 +109,29 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
         const SizedBox(height: 18),
         DashboardSectionTitle(title: 'Quick Actions'),
         const SizedBox(height: 10),
-        DashboardPanel(
-          child: Wrap(
-            spacing: 14,
-            runSpacing: 14,
-            children: [
-              _ActionTile(
-                icon: Icons.download_rounded,
-                label: 'Deposit',
-                onTap: () => Navigator.pushNamed(context, AppRoutes.deposit),
-              ),
-              _ActionTile(
-                icon: Icons.note_alt_rounded,
-                label: 'New Plan',
-                onTap: () => Navigator.pushNamed(context, AppRoutes.createPlan),
-              ),
-              _ActionTile(
-                icon: Icons.account_balance_wallet_rounded,
-                label: 'Loan',
-                onTap: () => Navigator.pushNamed(context, AppRoutes.requestLoan),
-              ),
-              _ActionTile(
-                icon: Icons.currency_exchange_rounded,
-                label: 'Repay',
-                onTap: () => Navigator.pushNamed(context, AppRoutes.repayment),
-              ),
-            ],
-          ),
+        DashboardHorizontalRail(
+          children: [
+            _ActionTile(
+              icon: Icons.download_rounded,
+              label: 'Deposit',
+              onTap: () => Navigator.pushNamed(context, AppRoutes.deposit),
+            ),
+            _ActionTile(
+              icon: Icons.note_alt_rounded,
+              label: 'New Plan',
+              onTap: () => Navigator.pushNamed(context, AppRoutes.createPlan),
+            ),
+            _ActionTile(
+              icon: Icons.account_balance_wallet_rounded,
+              label: 'Loan',
+              onTap: () => Navigator.pushNamed(context, AppRoutes.requestLoan),
+            ),
+            _ActionTile(
+              icon: Icons.currency_exchange_rounded,
+              label: 'Repay',
+              onTap: () => Navigator.pushNamed(context, AppRoutes.repayment),
+            ),
+          ],
         ),
         const SizedBox(height: 18),
         DashboardSectionTitle(title: 'Recent Transactions'),
@@ -177,14 +173,9 @@ class _ActionTile extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(22),
-      child: Ink(
-        width: 140,
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.44),
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.7)),
-        ),
+      child: DashboardPanel(
+        width: 168,
+        glowColor: const Color(0x66E0B449),
         child: Column(
           children: [
             Container(
@@ -207,7 +198,7 @@ class _ActionTile extends StatelessWidget {
               label,
               style: GoogleFonts.oswald(
                 fontSize: 16,
-                color: const Color(0xFF2E261E),
+                color: Colors.white,
               ),
             ),
           ],

@@ -15,14 +15,14 @@ class BottomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withAlpha(245),
+        color: const Color(0xFF090C10),
         border: Border(
-          top: BorderSide(color: AppColors.gold.withAlpha(30), width: 1),
+          top: BorderSide(color: AppColors.gold.withAlpha(50), width: 1),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(45),
-            blurRadius: 24,
+            color: Colors.black.withAlpha(90),
+            blurRadius: 28,
             offset: const Offset(0, -4),
           ),
         ],
@@ -93,10 +93,12 @@ class _NavItem extends StatelessWidget {
         duration: const Duration(milliseconds: 250),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
-          color: isActive ? const Color(0xFFB68A25).withValues(alpha: 0.16) : Colors.transparent,
+          color: isActive
+              ? const Color(0xFFE0B449).withValues(alpha: 0.14)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
           border: isActive
-              ? Border.all(color: const Color(0xFFB68A25).withValues(alpha: 0.3))
+              ? Border.all(color: const Color(0xFFE0B449).withValues(alpha: 0.4))
               : null,
         ),
         child: Column(
@@ -104,7 +106,7 @@ class _NavItem extends StatelessWidget {
           children: [
             Icon(
               icon,
-              color: isActive ? AppColors.gold : AppColors.textMuted,
+              color: isActive ? AppColors.goldLight : Colors.white.withValues(alpha: 0.5),
               size: 24,
             ),
             const SizedBox(height: 4),
@@ -113,7 +115,7 @@ class _NavItem extends StatelessWidget {
               style: TextStyle(
                 fontSize: 10,
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-                color: isActive ? AppColors.gold : AppColors.textMuted,
+                color: isActive ? AppColors.goldLight : Colors.white.withValues(alpha: 0.5),
                 letterSpacing: 0.5,
               ),
             ),
@@ -123,12 +125,12 @@ class _NavItem extends StatelessWidget {
                 width: 24,
                 height: 3,
                 decoration: BoxDecoration(
-                  color: AppColors.gold,
+                  color: AppColors.goldLight,
                   borderRadius: BorderRadius.circular(2),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.gold.withAlpha(80),
-                      blurRadius: 6,
+                      color: AppColors.gold.withAlpha(120),
+                      blurRadius: 10,
                     ),
                   ],
                 ),

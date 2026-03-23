@@ -5,6 +5,7 @@ import '../../config/app_routes.dart';
 import '../../providers/finance_overview_provider.dart';
 import '../../utils/currency_util.dart';
 import '../../widgets/dashboard_kit.dart';
+import 'create_plan_screen.dart';
 
 class SavingsPlansScreen extends StatelessWidget {
   const SavingsPlansScreen({super.key});
@@ -17,7 +18,7 @@ class SavingsPlansScreen extends StatelessWidget {
       eyebrow: 'Savings',
       title: 'Savings plans with live pacing',
       subtitle:
-          'Every plan below updates its required monthly, weekly, and daily pace from your current saved amount and deadline.',
+          'Create, review, and manage plans directly here with a futuristic horizontal layout that keeps your goals and actions side by side.',
       trailing: FilledButton.tonalIcon(
         onPressed: () => Navigator.pushNamed(context, AppRoutes.createPlan),
         icon: const Icon(Icons.add_rounded),
@@ -57,27 +58,46 @@ class SavingsPlansScreen extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 18),
-        DashboardSectionTitle(title: 'Top Priority Plans'),
+        DashboardSectionTitle(title: 'Savings Hub'),
         const SizedBox(height: 10),
-        if (finance.prioritizedPlans.isEmpty)
-          const DashboardPanel(
-            child: Text('No active savings plans yet. Create one to start tracking progress.'),
-          )
-        else
-          DashboardPlanCarousel(
-            plans: finance.prioritizedPlans,
-            onTap: (_) => Navigator.pushNamed(context, AppRoutes.planDetail),
-          ),
+        DashboardHorizontalRail(
+          children: [
+            const SavingsPlanComposer(embedded: true),
+            if (finance.prioritizedPlans.isEmpty)
+              const DashboardPanel(
+                width: 420,
+                child: Text(
+                  'No active savings plans yet. Use the planner on the left to create your first one.',
+                  style: TextStyle(color: Colors.white),
+                ),
+              )
+            else
+              SizedBox(
+                width: 520,
+                child: DashboardPlanCarousel(
+                  plans: finance.prioritizedPlans.take(5).toList(),
+                  onTap: (_) => Navigator.pushNamed(context, AppRoutes.planDetail),
+                ),
+              ),
+          ],
+        ),
         const SizedBox(height: 18),
         DashboardSectionTitle(title: 'All Plans'),
         const SizedBox(height: 10),
-        for (final plan in finance.prioritizedPlans) ...[
-          DashboardSavingsPlanCard(
-            plan: plan,
-            onTap: () => Navigator.pushNamed(context, AppRoutes.planDetail),
+        if (finance.prioritizedPlans.isNotEmpty)
+          DashboardHorizontalRail(
+            children: finance.prioritizedPlans
+                .map(
+                  (plan) => SizedBox(
+                    width: 420,
+                    child: DashboardSavingsPlanCard(
+                      plan: plan,
+                      onTap: () => Navigator.pushNamed(context, AppRoutes.planDetail),
+                    ),
+                  ),
+                )
+                .toList(),
           ),
-          const SizedBox(height: 14),
-        ],
       ],
     );
   }
