@@ -13,6 +13,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 logger = logging.getLogger(__name__)
 
+
+def _csv_env(name: str) -> list[str]:
+    raw = os.environ.get(name, '')
+    return [item.strip() for item in raw.split(',') if item.strip()]
+
 # ── Security ────────────────────────────────────────────────────────────────
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'super-long-secret-key-at-least-32-characters-very-secure')
 
@@ -28,7 +33,7 @@ ALLOWED_HOSTS = [
 CSRF_TRUSTED_ORIGINS = [
     "https://savingsutl-production.up.railway.app",
     "https://*.railway.app",
-]
+] + _csv_env('EXTRA_CSRF_TRUSTED_ORIGINS')
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
@@ -160,6 +165,17 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8081",
     "http://127.0.0.1:8080",
     "http://127.0.0.1:8081",
+] + _csv_env('EXTRA_CORS_ALLOWED_ORIGINS')
+
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://[a-z0-9-]+\.netlify\.app$",
+    r"^https://[a-z0-9-]+--[a-z0-9-]+\.netlify\.app$",
+    r"^https://[a-z0-9-]+\.vercel\.app$",
+    r"^http://localhost:\d+$",
+    r"^http://127\.0\.0\.1:\d+$",
+    r"^http://192\.168\.\d{1,3}\.\d{1,3}:\d+$",
+    r"^http://10\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d+$",
+    r"^http://172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}:\d+$",
 ]
 
 if DEBUG:
