@@ -1,367 +1,193 @@
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:fl_chart/fl_chart.dart';
-import '../../config/app_colors.dart';
-import '../../providers/savings_provider.dart';
-import '../../providers/loan_provider.dart';
-import '../../widgets/glass_card.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../providers/finance_overview_provider.dart';
 import '../../utils/currency_util.dart';
+import '../../widgets/dashboard_kit.dart';
 
 class ReportsScreen extends StatelessWidget {
   const ReportsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final savings = context.watch<SavingsProvider>();
-    final loans = context.watch<LoanProvider>();
+    final finance = context.watch<FinanceOverviewProvider>();
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.only(bottom: 30),
+    return DashboardPage(
+      eyebrow: 'Reports',
+      title: 'A unified view of progress and pressure',
+      subtitle:
+          'Savings, penalties, deposits, and loan obligations all feed the same reporting surface so trends stay meaningful.',
+      children: [
+        DashboardStatGrid(
+          items: [
+            DashboardStatItem(
+              label: 'Deposits',
+              value: CurrencyUtil.formatCompact(finance.totalDeposits),
+              detail: 'All credited savings deposits recorded so far.',
+              icon: Icons.south_west_rounded,
+              accent: const Color(0xFF4B9957),
+            ),
+            DashboardStatItem(
+              label: 'Withdrawals',
+              value: CurrencyUtil.formatCompact(finance.totalWithdrawals),
+              detail: 'Money moved out of savings plans.',
+              icon: Icons.north_east_rounded,
+              accent: const Color(0xFFC2545E),
+            ),
+            DashboardStatItem(
+              label: 'Penalties',
+              value: CurrencyUtil.formatCompact(finance.totalPenalties),
+              detail: 'Penalty deductions now flow straight from savings data.',
+              icon: Icons.warning_amber_rounded,
+              accent: const Color(0xFFB7821E),
+            ),
+            DashboardStatItem(
+              label: 'Interest',
+              value: CurrencyUtil.formatCompact(finance.interestEarned),
+              detail: 'Interest rewards reflected alongside deposits.',
+              icon: Icons.trending_up_rounded,
+              accent: const Color(0xFF4C6A78),
+            ),
+          ],
+        ),
+        const SizedBox(height: 18),
+        DashboardSectionTitle(title: 'Plan Priorities'),
+        const SizedBox(height: 10),
+        if (finance.prioritizedPlans.isNotEmpty)
+          DashboardPlanCarousel(plans: finance.prioritizedPlans)
+        else
+          const DashboardPanel(child: Text('Create savings plans to unlock richer reporting.')),
+        const SizedBox(height: 18),
+        DashboardSectionTitle(title: 'Financial Mix'),
+        const SizedBox(height: 10),
+        DashboardPanel(
+          child: SizedBox(
+            height: 220,
+            child: PieChart(
+              PieChartData(
+                sectionsSpace: 4,
+                centerSpaceRadius: 46,
+                sections: [
+                  PieChartSectionData(
+                    value: finance.totalDeposits <= 0 ? 1 : finance.totalDeposits,
+                    title: '',
+                    color: const Color(0xFF876446),
+                    radius: 34,
+                  ),
+                  PieChartSectionData(
+                    value: finance.totalPenalties <= 0 ? 1 : finance.totalPenalties,
+                    title: '',
+                    color: const Color(0xFFC2545E),
+                    radius: 32,
+                  ),
+                  PieChartSectionData(
+                    value: finance.interestEarned <= 0 ? 1 : finance.interestEarned,
+                    title: '',
+                    color: const Color(0xFF4B9957),
+                    radius: 30,
+                  ),
+                  PieChartSectionData(
+                    value: finance.outstandingLoan <= 0 ? 1 : finance.outstandingLoan,
+                    title: '',
+                    color: const Color(0xFF4C6A78),
+                    radius: 28,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 18),
+        DashboardSectionTitle(title: 'Momentum'),
+        const SizedBox(height: 10),
+        DashboardPanel(
+          child: SizedBox(
+            height: 220,
+            child: BarChart(
+              BarChartData(
+                gridData: FlGridData(
+                  show: true,
+                  drawVerticalLine: false,
+                  getDrawingHorizontalLine: (_) => FlLine(
+                    color: Colors.black.withValues(alpha: 0.08),
+                    strokeWidth: 1,
+                  ),
+                ),
+                borderData: FlBorderData(show: false),
+                titlesData: FlTitlesData(
+                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      getTitlesWidget: (value, meta) {
+                        const labels = ['Saved', 'Needed', 'Loan', 'Net'];
+                        final index = value.toInt();
+                        if (index < 0 || index >= labels.length) {
+                          return const SizedBox.shrink();
+                        }
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Text(labels[index]),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                barGroups: [
+                  _bar(0, finance.totalSaved, const Color(0xFF876446)),
+                  _bar(1, finance.monthlyCommitment, const Color(0xFF4B9957)),
+                  _bar(2, finance.outstandingLoan, const Color(0xFFC2545E)),
+                  _bar(3, finance.netWorth < 0 ? 0 : finance.netWorth, const Color(0xFF4C6A78)),
+                ],
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 18),
+        DashboardPanel(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Text(
-                  'FINANCIAL REPORTS',
-                  style: GoogleFonts.playfairDisplay(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.gold,
-                    letterSpacing: 3,
-                  ),
-                ),
-              ).animate().fadeIn(duration: 400.ms),
-
-              // Savings Growth Chart
-              GlassCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'SAVINGS GROWTH',
-                      style: GoogleFonts.playfairDisplay(
-                        fontSize: 11,
-                        color: AppColors.textMuted,
-                        letterSpacing: 2,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    SizedBox(
-                      height: 200,
-                      child: LineChart(
-                        LineChartData(
-                          gridData: FlGridData(
-                            show: true,
-                            drawVerticalLine: false,
-                            horizontalInterval: 500,
-                            getDrawingHorizontalLine: (value) => FlLine(
-                              color: AppColors.border,
-                              strokeWidth: 0.5,
-                            ),
-                          ),
-                          titlesData: FlTitlesData(
-                            topTitles: const AxisTitles(
-                                sideTitles: SideTitles(showTitles: false)),
-                            rightTitles: const AxisTitles(
-                                sideTitles: SideTitles(showTitles: false)),
-                            leftTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                reservedSize: 50,
-                                interval: 1000,
-                                getTitlesWidget: (value, meta) => Text(
-                                  CurrencyUtil.formatCompact(value),
-                                  style: GoogleFonts.inter(
-                                      fontSize: 10,
-                                      color: AppColors.textMuted),
-                                ),
-                              ),
-                            ),
-                            bottomTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                interval: 1,
-                                getTitlesWidget: (value, meta) {
-                                  const months = [
-                                    'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'
-                                  ];
-                                  if (value.toInt() < months.length) {
-                                    return Text(
-                                      months[value.toInt()],
-                                      style: GoogleFonts.inter(
-                                          fontSize: 10,
-                                          color: AppColors.textMuted),
-                                    );
-                                  }
-                                  return const SizedBox.shrink();
-                                },
-                              ),
-                            ),
-                          ),
-                          borderData: FlBorderData(show: false),
-                          minY: 0,
-                          maxY: 4000,
-                          lineBarsData: [
-                            LineChartBarData(
-                              spots: const [
-                                FlSpot(0, 300),
-                                FlSpot(1, 800),
-                                FlSpot(2, 1400),
-                                FlSpot(3, 1900),
-                                FlSpot(4, 2600),
-                                FlSpot(5, 3200),
-                              ],
-                              isCurved: true,
-                              color: AppColors.gold,
-                              barWidth: 3,
-                              isStrokeCapRound: true,
-                              dotData: FlDotData(
-                                show: true,
-                                getDotPainter: (spot, percent, barData, index) =>
-                                    FlDotCirclePainter(
-                                  radius: 4,
-                                  color: AppColors.gold,
-                                  strokeWidth: 2,
-                                  strokeColor: AppColors.background,
-                                ),
-                              ),
-                              belowBarData: BarAreaData(
-                                show: true,
-                                gradient: LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [
-                                    AppColors.gold.withAlpha(50),
-                                    AppColors.gold.withAlpha(5),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.1),
-
-              // Savings vs Penalties Pie
-              GlassCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'SAVINGS BREAKDOWN',
-                      style: GoogleFonts.playfairDisplay(
-                        fontSize: 11,
-                        color: AppColors.textMuted,
-                        letterSpacing: 2,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    SizedBox(
-                      height: 180,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: PieChart(
-                              PieChartData(
-                                sectionsSpace: 3,
-                                centerSpaceRadius: 40,
-                                sections: [
-                                  PieChartSectionData(
-                                    value: 3200,
-                                    title: '',
-                                    color: AppColors.gold,
-                                    radius: 30,
-                                  ),
-                                  PieChartSectionData(
-                                    value: 20,
-                                    title: '',
-                                    color: AppColors.actionRed,
-                                    radius: 30,
-                                  ),
-                                  PieChartSectionData(
-                                    value: 50,
-                                    title: '',
-                                    color: AppColors.success,
-                                    radius: 30,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 20),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _legendItem('Deposits', AppColors.gold),
-                              const SizedBox(height: 12),
-                              _legendItem('Penalties', AppColors.actionRed),
-                              const SizedBox(height: 12),
-                              _legendItem('Interest', AppColors.success),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.1),
-
-              // Loan Repayment Chart
-              GlassCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'REPAYMENT PERFORMANCE',
-                      style: GoogleFonts.playfairDisplay(
-                        fontSize: 11,
-                        color: AppColors.textMuted,
-                        letterSpacing: 2,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    SizedBox(
-                      height: 160,
-                      child: BarChart(
-                        BarChartData(
-                          gridData: const FlGridData(show: false),
-                          titlesData: FlTitlesData(
-                            topTitles: const AxisTitles(
-                                sideTitles: SideTitles(showTitles: false)),
-                            rightTitles: const AxisTitles(
-                                sideTitles: SideTitles(showTitles: false)),
-                            leftTitles: const AxisTitles(
-                                sideTitles: SideTitles(showTitles: false)),
-                            bottomTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                getTitlesWidget: (value, meta) {
-                                  const m = ['Jan', 'Feb', 'Mar'];
-                                  if (value.toInt() < m.length) {
-                                    return Padding(
-                                      padding: const EdgeInsets.only(top: 8),
-                                      child: Text(m[value.toInt()],
-                                          style: GoogleFonts.inter(
-                                              fontSize: 10,
-                                              color: AppColors.textMuted)),
-                                    );
-                                  }
-                                  return const SizedBox.shrink();
-                                },
-                              ),
-                            ),
-                          ),
-                          borderData: FlBorderData(show: false),
-                          barGroups: [
-                            BarChartGroupData(x: 0, barRods: [
-                              BarChartRodData(
-                                toY: 100,
-                                color: AppColors.gold,
-                                width: 30,
-                                borderRadius: const BorderRadius.vertical(
-                                    top: Radius.circular(6)),
-                              ),
-                            ]),
-                            BarChartGroupData(x: 1, barRods: [
-                              BarChartRodData(
-                                toY: 100,
-                                color: AppColors.gold,
-                                width: 30,
-                                borderRadius: const BorderRadius.vertical(
-                                    top: Radius.circular(6)),
-                              ),
-                            ]),
-                            BarChartGroupData(x: 2, barRods: [
-                              BarChartRodData(
-                                toY: 100,
-                                color: AppColors.gold,
-                                width: 30,
-                                borderRadius: const BorderRadius.vertical(
-                                    top: Radius.circular(6)),
-                              ),
-                            ]),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.1),
-
-              // Summary Stats
-              GlassCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('FINANCIAL SUMMARY',
-                        style: GoogleFonts.playfairDisplay(
-                            fontSize: 11,
-                            color: AppColors.textMuted,
-                            letterSpacing: 2)),
-                    const SizedBox(height: 16),
-                    _summaryRow('Total Deposits', CurrencyUtil.format(3200)),
-                    const Divider(color: AppColors.border, height: 20),
-                    _summaryRow('Total Penalties',
-                        CurrencyUtil.format(savings.totalPenalties),
-                        color: AppColors.actionRed),
-                    const Divider(color: AppColors.border, height: 20),
-                    _summaryRow('Interest Earned', CurrencyUtil.format(50),
-                        color: AppColors.success),
-                    const Divider(color: AppColors.border, height: 20),
-                    _summaryRow('Loan Repaid',
-                        CurrencyUtil.format(loans.totalRepaid),
-                        color: AppColors.info),
-                  ],
-                ),
-              ).animate().fadeIn(delay: 800.ms),
+              const DashboardSectionTitle(title: 'Financial Summary'),
+              const SizedBox(height: 8),
+              DashboardInfoRow(
+                label: 'Savings progress',
+                value: '${(finance.progress * 100).round()}%',
+              ),
+              DashboardInfoRow(
+                label: 'Plans on track',
+                value: '${finance.onTrackPlans}',
+                valueColor: const Color(0xFF4B9957),
+              ),
+              DashboardInfoRow(
+                label: 'Plans behind',
+                value: '${finance.behindPlans}',
+                valueColor: const Color(0xFFC2545E),
+              ),
+              DashboardInfoRow(
+                label: 'Net worth',
+                value: CurrencyUtil.formatNoDecimal(finance.netWorth),
+              ),
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _legendItem(String label, Color color) {
-    return Row(
-      children: [
-        Container(
-          width: 12,
-          height: 12,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(3),
-          ),
-        ),
-        const SizedBox(width: 8),
-        Text(label,
-            style: GoogleFonts.inter(
-                fontSize: 12, color: AppColors.textSecondary)),
       ],
     );
   }
 
-  Widget _summaryRow(String label, String value, {Color? color}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(label,
-            style: GoogleFonts.inter(
-                fontSize: 13, color: AppColors.textMuted)),
-        Text(value,
-            style: GoogleFonts.playfairDisplay(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: color ?? AppColors.textPrimary)),
+  BarChartGroupData _bar(int x, double y, Color color) {
+    return BarChartGroupData(
+      x: x,
+      barRods: [
+        BarChartRodData(
+          toY: y <= 0 ? 1 : y,
+          color: color,
+          width: 24,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+        ),
       ],
     );
   }

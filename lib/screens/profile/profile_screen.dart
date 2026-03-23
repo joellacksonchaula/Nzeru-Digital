@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_animate/flutter_animate.dart';
-import '../../config/app_colors.dart';
+
 import '../../config/app_routes.dart';
 import '../../providers/auth_provider.dart';
-import '../../widgets/glass_card.dart';
-import '../../widgets/progress_ring.dart';
+import '../../providers/finance_overview_provider.dart';
+import '../../utils/currency_util.dart';
+import '../../widgets/dashboard_kit.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -14,239 +13,122 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
+    final finance = context.watch<FinanceOverviewProvider>();
     final user = auth.user;
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.only(bottom: 30),
+    return DashboardPage(
+      eyebrow: 'Profile',
+      title: user?.name ?? 'Your profile',
+      subtitle:
+          'Personal details, financial health, and account actions now sit inside the same dashboard system as the rest of the app.',
+      children: [
+        DashboardStatGrid(
+          items: [
+            DashboardStatItem(
+              label: 'Health score',
+              value: '${user?.financialScore ?? 0}/100',
+              detail: 'Snapshot of overall financial health.',
+              icon: Icons.favorite_rounded,
+              accent: const Color(0xFF4B9957),
+            ),
+            DashboardStatItem(
+              label: 'Saved',
+              value: CurrencyUtil.formatCompact(finance.totalSaved),
+              detail: 'Visible total from active savings plans.',
+              icon: Icons.savings_rounded,
+              accent: const Color(0xFF876446),
+            ),
+            DashboardStatItem(
+              label: 'Loan due',
+              value: CurrencyUtil.formatCompact(finance.outstandingLoan),
+              detail: 'Outstanding balance linked from loans.',
+              icon: Icons.account_balance_wallet_rounded,
+              accent: const Color(0xFFC2545E),
+            ),
+            DashboardStatItem(
+              label: 'Net position',
+              value: CurrencyUtil.formatCompact(finance.netWorth),
+              detail: 'Savings minus outstanding debt.',
+              icon: Icons.analytics_rounded,
+              accent: const Color(0xFF4C6A78),
+            ),
+          ],
+        ),
+        const SizedBox(height: 18),
+        DashboardSectionTitle(title: 'Priority Plans'),
+        const SizedBox(height: 10),
+        if (finance.prioritizedPlans.isNotEmpty)
+          DashboardPlanCarousel(plans: finance.prioritizedPlans)
+        else
+          const DashboardPanel(child: Text('Your savings plans will appear here once created.')),
+        const SizedBox(height: 18),
+        DashboardSectionTitle(title: 'Account Details'),
+        const SizedBox(height: 10),
+        DashboardPanel(
           child: Column(
             children: [
-              const SizedBox(height: 30),
-
-              // Avatar
-              Center(
-                child: Stack(
-                  children: [
-                    Container(
-                      width: 100,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: AppColors.goldGradient,
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.gold.withAlpha(40),
-                            blurRadius: 30,
-                          ),
-                        ],
-                      ),
-                      child: Center(
-                        child: Text(
-                          (user?.name ?? 'U')[0].toUpperCase(),
-                          style: GoogleFonts.playfairDisplay(
-                            fontSize: 40,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.background,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      right: 0,
-                      bottom: 0,
-                      child: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: const BoxDecoration(
-                          color: AppColors.gold,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(Icons.edit,
-                            color: AppColors.background, size: 16),
-                      ),
-                    ),
-                  ],
-                ),
-              ).animate().scale(duration: 500.ms, curve: Curves.elasticOut),
-
-              const SizedBox(height: 16),
-              Text(
-                user?.name ?? 'User',
-                style: GoogleFonts.playfairDisplay(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
-                  letterSpacing: 1,
-                ),
-              ).animate().fadeIn(delay: 200.ms),
-              const SizedBox(height: 4),
-              Text(
-                user?.email ?? '',
-                style: GoogleFonts.inter(
-                    fontSize: 14, color: AppColors.textMuted),
-              ).animate().fadeIn(delay: 300.ms),
-
-              const SizedBox(height: 30),
-
-              // Financial Score
-              GlassCard(
-                child: Column(
-                  children: [
-                    Text('FINANCIAL HEALTH SCORE',
-                        style: GoogleFonts.playfairDisplay(
-                            fontSize: 11,
-                            color: AppColors.textMuted,
-                            letterSpacing: 2)),
-                    const SizedBox(height: 20),
-                    ProgressRing(
-                      progress: (user?.financialScore ?? 0) / 100,
-                      size: 140,
-                      strokeWidth: 12,
-                      centerText: '${user?.financialScore ?? 0}',
-                      label: 'OUT OF 100',
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _scoreItem('Consistency', '90%', AppColors.success),
-                        _scoreItem('Repayment', '100%', AppColors.gold),
-                        _scoreItem('Penalties', 'Low', AppColors.info),
-                      ],
-                    ),
-                  ],
-                ),
-              ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.1),
-
-              const SizedBox(height: 8),
-
-              // User info
-              GlassCard(
-                child: Column(
-                  children: [
-                    _infoRow(Icons.person_outline, 'Name', user?.name ?? ''),
-                    const Divider(color: AppColors.border, height: 24),
-                    _infoRow(Icons.email_outlined, 'Email', user?.email ?? ''),
-                    const Divider(color: AppColors.border, height: 24),
-                    _infoRow(Icons.phone_outlined, 'Phone', user?.phone ?? ''),
-                  ],
-                ),
-              ).animate().fadeIn(delay: 500.ms),
-
-              // Settings
-              const SizedBox(height: 16),
-              _settingsTile(Icons.security, 'Security', () {}),
-              _settingsTile(Icons.notifications_outlined, 'Notifications', () {}),
-              _settingsTile(Icons.help_outline, 'Help & Support', () {}),
-              _settingsTile(Icons.info_outline, 'About', () {}),
-
-              const SizedBox(height: 16),
-
-              // Logout
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: GestureDetector(
-                  onTap: () {
-                    auth.logout();
-                    Navigator.pushReplacementNamed(context, AppRoutes.login);
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: AppColors.actionRed.withAlpha(15),
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(
-                          color: AppColors.actionRed.withAlpha(40)),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.logout,
-                            color: AppColors.actionRed, size: 20),
-                        const SizedBox(width: 10),
-                        Text(
-                          'SIGN OUT',
-                          style: GoogleFonts.playfairDisplay(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.actionRed,
-                            letterSpacing: 2,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ).animate().fadeIn(delay: 700.ms),
+              DashboardInfoRow(label: 'Name', value: user?.name ?? ''),
+              DashboardInfoRow(label: 'Email', value: user?.email ?? ''),
+              DashboardInfoRow(label: 'Phone', value: user?.phone ?? ''),
+              DashboardInfoRow(
+                label: 'Financial score',
+                value: '${user?.financialScore ?? 0}',
+                valueColor: const Color(0xFF4B9957),
+              ),
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _scoreItem(String label, String value, Color color) {
-    return Column(
-      children: [
-        Text(value,
-            style: GoogleFonts.playfairDisplay(
-                fontSize: 14, fontWeight: FontWeight.w700, color: color)),
-        const SizedBox(height: 4),
-        Text(label,
-            style: GoogleFonts.inter(
-                fontSize: 11, color: AppColors.textMuted)),
-      ],
-    );
-  }
-
-  Widget _infoRow(IconData icon, String label, String value) {
-    return Row(
-      children: [
-        Icon(icon, color: AppColors.textMuted, size: 20),
-        const SizedBox(width: 14),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(label,
-                style: GoogleFonts.inter(
-                    fontSize: 11, color: AppColors.textMuted)),
-            const SizedBox(height: 2),
-            Text(value,
-                style: GoogleFonts.inter(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.textPrimary)),
-          ],
+        const SizedBox(height: 18),
+        DashboardSectionTitle(title: 'Settings'),
+        const SizedBox(height: 10),
+        DashboardPanel(
+          child: Column(
+            children: const [
+              _SettingRow(icon: Icons.security_rounded, label: 'Security'),
+              _SettingRow(icon: Icons.notifications_outlined, label: 'Notifications'),
+              _SettingRow(icon: Icons.help_outline_rounded, label: 'Help & Support'),
+              _SettingRow(icon: Icons.info_outline_rounded, label: 'About'),
+            ],
+          ),
         ),
-      ],
-    );
-  }
-
-  Widget _settingsTile(IconData icon, String label, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: AppColors.cardBg,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.border, width: 0.5),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, color: AppColors.textSecondary, size: 22),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Text(label,
-                  style: GoogleFonts.inter(
-                      fontSize: 14, color: AppColors.textPrimary)),
+        const SizedBox(height: 18),
+        DashboardPanel(
+          child: Center(
+            child: OutlinedButton.icon(
+              onPressed: () {
+                auth.logout();
+                Navigator.pushReplacementNamed(context, AppRoutes.login);
+              },
+              icon: const Icon(Icons.logout_rounded),
+              label: const Text('Sign Out'),
             ),
-            const Icon(Icons.chevron_right,
-                color: AppColors.textMuted, size: 20),
-          ],
+          ),
         ),
+      ],
+    );
+  }
+}
+
+class _SettingRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+
+  const _SettingRow({
+    required this.icon,
+    required this.label,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        children: [
+          Icon(icon, color: const Color(0xFF6A645C)),
+          const SizedBox(width: 12),
+          Expanded(child: Text(label)),
+          const Icon(Icons.chevron_right_rounded, color: Color(0xFF6A645C)),
+        ],
       ),
     );
   }

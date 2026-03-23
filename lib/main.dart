@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'config/app_theme.dart';
 import 'config/app_routes.dart';
 import 'providers/auth_provider.dart';
+import 'providers/finance_overview_provider.dart';
 import 'providers/savings_provider.dart';
 import 'providers/loan_provider.dart';
 import 'providers/dashboard_provider.dart';
@@ -30,6 +31,15 @@ class SavingsUTLApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => DashboardProvider()),
         ChangeNotifierProvider(create: (_) => SavingsProvider()),
         ChangeNotifierProvider(create: (_) => LoanProvider()),
+        ChangeNotifierProxyProvider3<AuthProvider, SavingsProvider, LoanProvider,
+            FinanceOverviewProvider>(
+          create: (_) => FinanceOverviewProvider(),
+          update: (_, auth, savings, loans, finance) {
+            final provider = finance ?? FinanceOverviewProvider();
+            provider.sync(auth: auth, savings: savings, loans: loans);
+            return provider;
+          },
+        ),
       ],
       child: MaterialApp(
         title: 'Savings UTL',

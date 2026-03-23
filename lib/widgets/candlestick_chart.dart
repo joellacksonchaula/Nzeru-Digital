@@ -1,7 +1,11 @@
+import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+
+import '../utils/currency_util.dart';
 
 class CandleData {
   final DateTime time;
@@ -28,87 +32,165 @@ class CandlestickChart extends StatelessWidget {
   final String title;
   final String? subtitle;
   final double height;
-  final VoidCallback? onRefresh;
-  final Function(String)? onTimeframeChanged;
 
   const CandlestickChart({
     super.key,
     required this.candles,
-    this.title = 'Price Chart',
+    this.title = 'Savings Performance',
     this.subtitle,
-    this.height = 300,
-    this.onRefresh,
-    this.onTimeframeChanged,
+    this.height = 320,
   });
 
   @override
   Widget build(BuildContext context) {
+    final series = candles.isEmpty ? _fallbackCandles : candles;
+    final stats = _ChartStats.from(series);
+
     return ClipRRect(
-      borderRadius: BorderRadius.circular(22),
+      borderRadius: BorderRadius.circular(24),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
         child: Container(
           height: height,
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: .48),
-            borderRadius: BorderRadius.circular(22),
-            border: Border.all(color: Colors.white.withValues(alpha: .7)),
+            color: Colors.black.withValues(alpha: 0.78),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: .14),
-                blurRadius: 18,
-                offset: const Offset(0, 8),
+                color: Colors.black.withValues(alpha: 0.2),
+                blurRadius: 24,
+                offset: const Offset(0, 12),
               ),
             ],
           ),
-          child: Stack(
-            children: [
-              Positioned.fill(child: CustomPaint(painter: _GridPainter())),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(12, 14, 12, 14),
+          child: TweenAnimationBuilder<double>(
+            duration: const Duration(milliseconds: 900),
+            curve: Curves.easeOutCubic,
+            tween: Tween(begin: 0, end: 1),
+            builder: (context, value, _) {
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      title,
-                      style: GoogleFonts.oswald(
-                        fontSize: 24,
-                        color: Colors.white.withValues(alpha: .9),
-                        fontWeight: FontWeight.w300,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                title,
+                                style: GoogleFonts.oswald(
+                                  fontSize: 24,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              if (subtitle != null) ...[
+                                const SizedBox(height: 4),
+                                Text(
+                                  subtitle!,
+                                  style: GoogleFonts.inter(
+                                    fontSize: 13,
+                                    color: Colors.white.withValues(alpha: 0.76),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF111111),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.08),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                'Latest',
+                                style: GoogleFonts.inter(
+                                  fontSize: 11,
+                                  color: Colors.white.withValues(alpha: 0.58),
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                CurrencyUtil.formatCompact(stats.latest),
+                                style: GoogleFonts.oswald(
+                                  fontSize: 18,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Expanded(
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 58,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _AxisLabel(CurrencyUtil.formatCompact(stats.max)),
+                                _AxisLabel(CurrencyUtil.formatCompact(stats.mid)),
+                                _AxisLabel(CurrencyUtil.formatCompact(stats.min)),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Stack(
+                              children: [
+                                Positioned.fill(
+                                  child: CustomPaint(
+                                    painter: _GridPainter(),
+                                  ),
+                                ),
+                                Positioned.fill(
+                                  child: CustomPaint(
+                                    painter: _CandlesPainter(
+                                      candles: series,
+                                      min: stats.min,
+                                      max: stats.max,
+                                      progress: value,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Expanded(
-                      child: candles.isEmpty
-                          ? const Center(child: Text('No data'))
-                          : CustomPaint(painter: _CandlesPainter(candles), size: Size.infinite),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _AxisLabel(DateFormat('dd MMM').format(series.first.time)),
+                        _AxisLabel(DateFormat('dd MMM').format(series[series.length ~/ 2].time)),
+                        _AxisLabel(DateFormat('dd MMM').format(series.last.time)),
+                      ],
                     ),
                   ],
                 ),
-              ),
-              if (subtitle != null)
-                Align(
-                  alignment: const Alignment(0, -.8),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFD55660).withValues(alpha: .88),
-                      borderRadius: BorderRadius.circular(18),
-                      boxShadow: [
-                        BoxShadow(color: const Color(0x99E56772), blurRadius: 22, spreadRadius: 4),
-                      ],
-                    ),
-                    child: Text(
-                      subtitle!,
-                      style: GoogleFonts.oswald(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-            ],
+              );
+            },
           ),
         ),
       ),
@@ -116,27 +198,63 @@ class CandlestickChart extends StatelessWidget {
   }
 }
 
+class _AxisLabel extends StatelessWidget {
+  final String value;
+
+  const _AxisLabel(this.value);
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      value,
+      style: GoogleFonts.inter(
+        fontSize: 11,
+        color: Colors.white.withValues(alpha: 0.54),
+      ),
+    );
+  }
+}
+
+class _ChartStats {
+  final double min;
+  final double mid;
+  final double max;
+  final double latest;
+
+  const _ChartStats({
+    required this.min,
+    required this.mid,
+    required this.max,
+    required this.latest,
+  });
+
+  factory _ChartStats.from(List<CandleData> candles) {
+    final max = candles.map((e) => e.high).reduce(math.max);
+    final min = candles.map((e) => e.low).reduce(math.min);
+    return _ChartStats(
+      min: min,
+      mid: min + ((max - min) / 2),
+      max: max,
+      latest: candles.last.close,
+    );
+  }
+}
+
 class _GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final grid = Paint()
-      ..color = const Color(0x55A8C6D8)
-      ..strokeWidth = 1;
-    final floor = Paint()
-      ..color = const Color(0x33A8C6D8)
+    final paint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.08)
       ..strokeWidth = 1;
 
-    for (var i = 0; i <= 7; i++) {
-      final y = size.height * i / 7;
-      canvas.drawLine(Offset.zero.translate(0, y), Offset(size.width, y), grid);
+    for (var i = 0; i <= 4; i++) {
+      final y = size.height * i / 4;
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
     }
-    for (var i = 0; i <= 11; i++) {
-      final x = size.width * i / 11;
-      canvas.drawLine(Offset(x, 0), Offset(x, size.height), grid);
-    }
-    for (var i = 0; i < 12; i++) {
-      final x = size.width * i / 11;
-      canvas.drawLine(Offset(x, size.height), Offset(size.width / 2, size.height * .74), floor);
+
+    for (var i = 0; i <= 5; i++) {
+      final x = size.width * i / 5;
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
     }
   }
 
@@ -146,45 +264,89 @@ class _GridPainter extends CustomPainter {
 
 class _CandlesPainter extends CustomPainter {
   final List<CandleData> candles;
-  _CandlesPainter(this.candles);
+  final double min;
+  final double max;
+  final double progress;
+
+  _CandlesPainter({
+    required this.candles,
+    required this.min,
+    required this.max,
+    required this.progress,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
-    final max = candles.map((e) => e.high).reduce((a, b) => a > b ? a : b);
-    final min = candles.map((e) => e.low).reduce((a, b) => a < b ? a : b);
-    final range = (max - min) == 0 ? 1.0 : max - min;
+    final visibleCount = math.max(1, (candles.length * progress).ceil());
+    final range = (max - min).abs() < 0.001 ? 1.0 : max - min;
     final step = size.width / candles.length;
-    final bodyWidth = step * .54;
+    final wickWidth = math.max(1.1, step * 0.06);
+    final bodyWidth = math.max(4.0, step * 0.24);
 
-    double yFor(double value) => size.height - ((value - min) / range) * size.height * .88 - 6;
+    double yFor(double value) {
+      final normalized = (value - min) / range;
+      return size.height - (normalized * (size.height - 8)) - 4;
+    }
 
-    for (var i = 0; i < candles.length; i++) {
-      final c = candles[i];
+    for (var i = 0; i < visibleCount; i++) {
+      final candle = candles[i];
       final x = i * step + step / 2;
-      final openY = yFor(c.open);
-      final closeY = yFor(c.close);
-      final highY = yFor(c.high);
-      final lowY = yFor(c.low);
-      final top = c.isGreen ? closeY : openY;
-      final bottom = c.isGreen ? openY : closeY;
-      final color = c.isGreen ? const Color(0xFF6BFF9A) : const Color(0xFFFF525A);
+      final openY = yFor(candle.open);
+      final closeY = yFor(candle.close);
+      final highY = yFor(candle.high);
+      final lowY = yFor(candle.low);
+      final top = math.min(openY, closeY);
+      final bottom = math.max(openY, closeY);
+      final color = candle.isGreen
+          ? const Color(0xFF6BFF9A)
+          : const Color(0xFFFF646E);
 
       canvas.drawLine(
         Offset(x, highY),
         Offset(x, lowY),
-        Paint()..color = color.withValues(alpha: .72)..strokeWidth = 1.4,
+        Paint()
+          ..color = color.withValues(alpha: 0.82)
+          ..strokeWidth = wickWidth
+          ..strokeCap = StrokeCap.round,
       );
-      canvas.drawRect(
-        Rect.fromLTWH(x - bodyWidth / 2, top, bodyWidth, (bottom - top).abs().clamp(4, size.height)),
-        Paint()..color = color.withValues(alpha: .24)..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6),
-      );
-      canvas.drawRect(
-        Rect.fromLTWH(x - bodyWidth / 2, top, bodyWidth, (bottom - top).abs().clamp(4, size.height)),
-        Paint()..color = color,
+
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromLTWH(
+            x - bodyWidth / 2,
+            top,
+            bodyWidth,
+            math.max(5, bottom - top),
+          ),
+          const Radius.circular(6),
+        ),
+        Paint()
+          ..color = color.withValues(alpha: 0.94)
+          ..style = PaintingStyle.fill,
       );
     }
   }
 
   @override
-  bool shouldRepaint(covariant _CandlesPainter oldDelegate) => oldDelegate.candles != candles;
+  bool shouldRepaint(covariant _CandlesPainter oldDelegate) {
+    return oldDelegate.candles != candles ||
+        oldDelegate.progress != progress ||
+        oldDelegate.min != min ||
+        oldDelegate.max != max;
+  }
 }
+
+final _fallbackCandles = List.generate(
+  8,
+  (index) {
+    final close = 1200.0 + (index * 140);
+    return CandleData(
+      time: DateTime.now().subtract(Duration(days: 7 - index)),
+      open: close - 60,
+      high: close + 80,
+      low: close - 100,
+      close: close,
+      volume: 1000,
+    );
+  },
+);

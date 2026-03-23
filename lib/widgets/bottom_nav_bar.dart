@@ -15,14 +15,14 @@ class BottomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Colors.white.withAlpha(245),
         border: Border(
           top: BorderSide(color: AppColors.gold.withAlpha(30), width: 1),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(80),
-            blurRadius: 20,
+            color: Colors.black.withAlpha(45),
+            blurRadius: 24,
             offset: const Offset(0, -4),
           ),
         ],
@@ -91,10 +91,13 @@ class _NavItem extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
-          color: isActive ? AppColors.gold.withAlpha(20) : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
+          color: isActive ? const Color(0xFFB68A25).withValues(alpha: 0.16) : Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
+          border: isActive
+              ? Border.all(color: const Color(0xFFB68A25).withValues(alpha: 0.3))
+              : null,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -117,8 +120,8 @@ class _NavItem extends StatelessWidget {
             if (isActive)
               Container(
                 margin: const EdgeInsets.only(top: 4),
-                width: 20,
-                height: 2.5,
+                width: 24,
+                height: 3,
                 decoration: BoxDecoration(
                   color: AppColors.gold,
                   borderRadius: BorderRadius.circular(2),

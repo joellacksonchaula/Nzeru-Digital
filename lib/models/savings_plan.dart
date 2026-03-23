@@ -2,6 +2,8 @@ enum PlanFrequency { daily, weekly, biweekly, monthly }
 
 enum PenaltyPolicy { monetaryDeduction, appRestriction, both }
 
+enum PlanHealth { onTrack, watch, behind }
+
 class SavingsPlan {
   final String id;
   final String userId;
@@ -37,6 +39,68 @@ class SavingsPlan {
 
   double get progressPercent =>
       goalAmount > 0 ? (currentAmount / goalAmount).clamp(0, 1) : 0;
+
+  double get remainingAmount => (goalAmount - currentAmount).clamp(0, goalAmount);
+
+  int get totalDurationDays {
+    final days = endDate.difference(startDate).inDays;
+    return days <= 0 ? 1 : days;
+  }
+
+  int get elapsedDays {
+    final raw = DateTime.now().difference(startDate).inDays + 1;
+    if (raw <= 0) return 0;
+    if (raw >= totalDurationDays) return totalDurationDays;
+    return raw;
+  }
+
+  int get remainingDays {
+    final raw = endDate.difference(DateTime.now()).inDays;
+    return raw <= 0 ? 1 : raw;
+  }
+
+  double get expectedProgressNow {
+    if (totalDurationDays <= 0) return 0;
+    return (elapsedDays / totalDurationDays).clamp(0, 1);
+  }
+
+  double get requiredPerDay => remainingAmount <= 0 ? 0 : remainingAmount / remainingDays;
+
+  double get requiredPerWeek {
+    if (remainingAmount <= 0) return 0;
+    final weeks = (remainingDays / 7).ceil();
+    return remainingAmount / (weeks <= 0 ? 1 : weeks);
+  }
+
+  double get requiredPerMonth {
+    if (remainingAmount <= 0) return 0;
+    final months = (remainingDays / 30).ceil();
+    return remainingAmount / (months <= 0 ? 1 : months);
+  }
+
+  DateTime get estimatedCompletionDate {
+    if (progressPercent >= 1) return DateTime.now();
+    if (currentAmount <= 0 || elapsedDays <= 0) return endDate;
+
+    final savedPerDay = currentAmount / elapsedDays;
+    if (savedPerDay <= 0) return endDate;
+
+    final daysNeeded = (remainingAmount / savedPerDay).ceil();
+    return DateTime.now().add(Duration(days: daysNeeded));
+  }
+
+  PlanHealth get health {
+    if (progressPercent >= 1) return PlanHealth.onTrack;
+
+    final delta = progressPercent - expectedProgressNow;
+    if (delta >= -0.08) return PlanHealth.onTrack;
+    if (delta >= -0.2) return PlanHealth.watch;
+    return PlanHealth.behind;
+  }
+
+  bool get isEstimatedToFinishOnTime =>
+      estimatedCompletionDate.isBefore(endDate) ||
+      estimatedCompletionDate.isAtSameMomentAs(endDate);
 
   String get frequencyLabel {
     switch (frequency) {
@@ -157,6 +221,7 @@ class SavingsPlan {
         'end_date': endDate.toIso8601String(),
         'penalty_policy': penaltyToApiString(penaltyPolicy),
         'goal_amount': goalAmount,
+        'current_amount': currentAmount,
         'is_secret': isSecret,
       };
 }

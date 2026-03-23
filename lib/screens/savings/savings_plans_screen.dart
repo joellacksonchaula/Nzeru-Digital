@@ -1,168 +1,84 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_animate/flutter_animate.dart';
-import '../../config/app_colors.dart';
+
 import '../../config/app_routes.dart';
-import '../../providers/savings_provider.dart';
-import '../../widgets/glass_card.dart';
-import '../../widgets/progress_ring.dart';
+import '../../providers/finance_overview_provider.dart';
 import '../../utils/currency_util.dart';
+import '../../widgets/dashboard_kit.dart';
 
 class SavingsPlansScreen extends StatelessWidget {
   const SavingsPlansScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final savings = context.watch<SavingsProvider>();
+    final finance = context.watch<FinanceOverviewProvider>();
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'SAVINGS PLANS',
-                    style: GoogleFonts.playfairDisplay(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.gold,
-                      letterSpacing: 3,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () =>
-                        Navigator.pushNamed(context, AppRoutes.createPlan),
-                    icon: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: AppColors.gold.withAlpha(20),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Icon(Icons.add, color: AppColors.gold, size: 22),
-                    ),
-                  ),
-                ],
-              ),
-            ).animate().fadeIn(duration: 400.ms),
-            Expanded(
-              child: savings.plans.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.savings_outlined,
-                              color: AppColors.textMuted, size: 64),
-                          const SizedBox(height: 16),
-                          Text(
-                            'No savings plans yet',
-                            style: GoogleFonts.inter(
-                              color: AppColors.textMuted,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  : ListView.builder(
-                      padding: const EdgeInsets.only(bottom: 20),
-                      itemCount: savings.plans.length,
-                      itemBuilder: (context, index) {
-                        final plan = savings.plans[index];
-                        return GlassCard(
-                          onTap: () => Navigator.pushNamed(
-                              context, AppRoutes.planDetail),
-                          child: Row(
-                            children: [
-                              ProgressRing(
-                                progress: plan.progressPercent,
-                                size: 80,
-                                strokeWidth: 8,
-                              ),
-                              const SizedBox(width: 20),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 3),
-                                      decoration: BoxDecoration(
-                                        color: plan.isActive
-                                            ? AppColors.success.withAlpha(20)
-                                            : AppColors.textMuted.withAlpha(20),
-                                        borderRadius: BorderRadius.circular(6),
-                                      ),
-                                      child: Text(
-                                        plan.isActive ? 'Active' : 'Inactive',
-                                        style: GoogleFonts.inter(
-                                          fontSize: 10,
-                                          color: plan.isActive
-                                              ? AppColors.success
-                                              : AppColors.textMuted,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      '${plan.frequencyLabel} Plan',
-                                      style: GoogleFonts.playfairDisplay(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.textPrimary,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      '${CurrencyUtil.format(plan.amountPerPeriod)} / ${plan.frequencyLabel.toLowerCase()}',
-                                      style: GoogleFonts.inter(
-                                        fontSize: 12,
-                                        color: AppColors.textMuted,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          CurrencyUtil.format(plan.currentAmount),
-                                          style: GoogleFonts.playfairDisplay(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w700,
-                                            color: AppColors.gold,
-                                          ),
-                                        ),
-                                        Text(
-                                          'of ${CurrencyUtil.format(plan.goalAmount)}',
-                                          style: GoogleFonts.inter(
-                                            fontSize: 12,
-                                            color: AppColors.textMuted,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ).animate().fadeIn(
-                              delay: Duration(milliseconds: 200 + index * 100),
-                            );
-                      },
-                    ),
+    return DashboardPage(
+      eyebrow: 'Savings',
+      title: 'Savings plans with live pacing',
+      subtitle:
+          'Every plan below updates its required monthly, weekly, and daily pace from your current saved amount and deadline.',
+      trailing: FilledButton.tonalIcon(
+        onPressed: () => Navigator.pushNamed(context, AppRoutes.createPlan),
+        icon: const Icon(Icons.add_rounded),
+        label: const Text('New Plan'),
+      ),
+      children: [
+        DashboardStatGrid(
+          items: [
+            DashboardStatItem(
+              label: 'Total saved',
+              value: CurrencyUtil.formatCompact(finance.totalSaved),
+              detail: 'Across ${finance.prioritizedPlans.length} active savings plans.',
+              icon: Icons.savings_rounded,
+              accent: const Color(0xFF876446),
+            ),
+            DashboardStatItem(
+              label: 'Goal total',
+              value: CurrencyUtil.formatCompact(finance.totalGoal),
+              detail: 'Combined target value for all active plans.',
+              icon: Icons.flag_circle_rounded,
+              accent: const Color(0xFF4C6A78),
+            ),
+            DashboardStatItem(
+              label: 'Needed monthly',
+              value: CurrencyUtil.formatCompact(finance.monthlyCommitment),
+              detail: 'To keep every plan on pace from today.',
+              icon: Icons.calendar_month_rounded,
+              accent: const Color(0xFF4B9957),
+            ),
+            DashboardStatItem(
+              label: 'Needed weekly',
+              value: CurrencyUtil.formatCompact(finance.weeklyCommitment),
+              detail: 'A weekly view of your total commitment.',
+              icon: Icons.date_range_rounded,
+              accent: const Color(0xFFC2545E),
             ),
           ],
         ),
-      ),
+        const SizedBox(height: 18),
+        DashboardSectionTitle(title: 'Top Priority Plans'),
+        const SizedBox(height: 10),
+        if (finance.prioritizedPlans.isEmpty)
+          const DashboardPanel(
+            child: Text('No active savings plans yet. Create one to start tracking progress.'),
+          )
+        else
+          DashboardPlanCarousel(
+            plans: finance.prioritizedPlans,
+            onTap: (_) => Navigator.pushNamed(context, AppRoutes.planDetail),
+          ),
+        const SizedBox(height: 18),
+        DashboardSectionTitle(title: 'All Plans'),
+        const SizedBox(height: 10),
+        for (final plan in finance.prioritizedPlans) ...[
+          DashboardSavingsPlanCard(
+            plan: plan,
+            onTap: () => Navigator.pushNamed(context, AppRoutes.planDetail),
+          ),
+          const SizedBox(height: 14),
+        ],
+      ],
     );
   }
 }
