@@ -123,18 +123,28 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
 
   @override
   Widget build(BuildContext context) {
-    final compact = MediaQuery.sizeOf(context).width < 760;
+    final width = MediaQuery.sizeOf(context).width;
+    final narrow = width < 760;
 
-    final formPanel = DashboardPanel(
+    return DashboardPanel(
       glowColor: _accentForFrequency(_frequency),
-      width: widget.embedded ? 420 : (compact ? 320 : 440),
+      width: double.infinity,
       child: Form(
         key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _sectionLabel('Plan Setup'),
-            const SizedBox(height: 14),
+            const SizedBox(height: 12),
+            Text(
+              'Set the target, deadline, and frequency in one place. The contribution amount updates instantly below just like the reference cards.',
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                height: 1.45,
+                color: const Color(0xFF6F665C),
+              ),
+            ),
+            const SizedBox(height: 18),
             TextFormField(
               controller: _titleController,
               textCapitalization: TextCapitalization.words,
@@ -209,11 +219,12 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
                 ),
               ),
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 16),
             _sectionLabel('Saving Frequency'),
             const SizedBox(height: 10),
-            DashboardHorizontalRail(
-              gap: 10,
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
               children: [
                 _FrequencyChip(
                   label: 'Daily',
@@ -235,93 +246,93 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
                 ),
               ],
             ),
+            const SizedBox(height: 18),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.72),
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(color: const Color(0xFFE6DAC7)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _sectionLabel('Smart Savings Engine'),
+                  const SizedBox(height: 10),
+                  Text(
+                    _selectedLabel,
+                    style: GoogleFonts.oswald(
+                      fontSize: narrow ? 28 : 32,
+                      height: 0.96,
+                      color: const Color(0xFF171412),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Saved amount starts at MK 0. The required contribution updates from your target and deadline automatically.',
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      height: 1.45,
+                      color: const Color(0xFF6F665C),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: [
+                      _InsightCard(
+                        label: 'Daily',
+                        value: CurrencyUtil.formatNoDecimal(_perDay),
+                        color: const Color(0xFFD55C4B),
+                      ),
+                      _InsightCard(
+                        label: 'Weekly',
+                        value: CurrencyUtil.formatNoDecimal(_perWeek),
+                        color: const Color(0xFF3B9D5D),
+                      ),
+                      _InsightCard(
+                        label: 'Monthly',
+                        value: CurrencyUtil.formatNoDecimal(_perMonth),
+                        color: const Color(0xFFB98A2D),
+                      ),
+                      _InsightCard(
+                        label: 'Starting saved',
+                        value: CurrencyUtil.formatNoDecimal(_currentAmount),
+                        color: const Color(0xFF537A8A),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  DashboardInfoRow(
+                    label: 'Target',
+                    value: CurrencyUtil.formatNoDecimal(_targetAmount),
+                  ),
+                  DashboardInfoRow(
+                    label: 'Saved amount',
+                    value: 'MK 0',
+                    valueColor: const Color(0xFF537A8A),
+                  ),
+                  DashboardInfoRow(
+                    label: 'Deadline',
+                    value: DateFormat('dd MMM yyyy').format(_deadline),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 18),
+            GoldButton(
+              label: 'CREATE SAVINGS PLAN',
+              icon: Icons.rocket_launch_rounded,
+              isLoading: _isProcessing,
+              width: double.infinity,
+              onPressed: _submit,
+            ),
           ],
         ),
       ),
-    );
-
-    final intelligencePanel = DashboardPanel(
-      glowColor: _accentForFrequency(_frequency),
-      width: widget.embedded ? 480 : (compact ? 320 : 560),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _sectionLabel('Smart Savings Engine'),
-          const SizedBox(height: 12),
-          Text(
-            _selectedLabel,
-            style: GoogleFonts.oswald(
-              fontSize: compact ? 26 : 30,
-              height: 0.96,
-              color: const Color(0xFF171412),
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            'Saved amount starts at MK 0. The required contribution updates instantly from your target, deadline, and chosen frequency.',
-            style: GoogleFonts.inter(
-              fontSize: 13,
-              height: 1.45,
-              color: const Color(0xFF6F665C),
-            ),
-          ),
-          const SizedBox(height: 14),
-          DashboardHorizontalRail(
-            children: [
-              _InsightCard(
-                label: 'Daily',
-                value: CurrencyUtil.formatNoDecimal(_perDay),
-                color: const Color(0xFFD55C4B),
-              ),
-              _InsightCard(
-                label: 'Weekly',
-                value: CurrencyUtil.formatNoDecimal(_perWeek),
-                color: const Color(0xFF3B9D5D),
-              ),
-              _InsightCard(
-                label: 'Monthly',
-                value: CurrencyUtil.formatNoDecimal(_perMonth),
-                color: const Color(0xFFB98A2D),
-              ),
-              _InsightCard(
-                label: 'Starting saved',
-                value: CurrencyUtil.formatNoDecimal(_currentAmount),
-                color: const Color(0xFF537A8A),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          DashboardInfoRow(
-            label: 'Target',
-            value: CurrencyUtil.formatNoDecimal(_targetAmount),
-          ),
-          DashboardInfoRow(
-            label: 'Saved amount',
-            value: 'MK 0',
-            valueColor: const Color(0xFF537A8A),
-          ),
-          DashboardInfoRow(
-            label: 'Deadline',
-            value: DateFormat('dd MMM yyyy').format(_deadline),
-          ),
-          const SizedBox(height: 14),
-          GoldButton(
-            label: 'CREATE SAVINGS PLAN',
-            icon: Icons.rocket_launch_rounded,
-            isLoading: _isProcessing,
-            width: double.infinity,
-            onPressed: _submit,
-          ),
-        ],
-      ),
-    );
-
-    return DashboardHorizontalRail(
-      children: [
-        formPanel,
-        intelligencePanel,
-      ],
     );
   }
 

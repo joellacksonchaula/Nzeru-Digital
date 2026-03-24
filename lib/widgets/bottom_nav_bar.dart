@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../config/app_colors.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class BottomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -16,20 +16,17 @@ class BottomNavBar extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFFFCFBF8),
-        border: Border(
-          top: BorderSide(color: AppColors.gold.withAlpha(60), width: 1),
-        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(24),
-            blurRadius: 22,
-            offset: const Offset(0, -4),
+            color: Colors.black.withValues(alpha: 0.10),
+            blurRadius: 24,
+            offset: const Offset(0, -6),
           ),
         ],
       ),
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -86,19 +83,26 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
       onTap: onTap,
-      behavior: HitTestBehavior.opaque,
+      borderRadius: BorderRadius.circular(26),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isActive
-              ? const Color(0xFFE0B449).withValues(alpha: 0.14)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(16),
+          color: isActive ? const Color(0xFFFFF6DB) : Colors.transparent,
+          borderRadius: BorderRadius.circular(26),
           border: isActive
-              ? Border.all(color: const Color(0xFFE0B449).withValues(alpha: 0.4))
+              ? Border.all(color: const Color(0xFFE7D39B))
+              : Border.all(color: Colors.transparent),
+          boxShadow: isActive
+              ? [
+                  BoxShadow(
+                    color: const Color(0xFFC89B38).withValues(alpha: 0.14),
+                    blurRadius: 18,
+                    offset: const Offset(0, 8),
+                  ),
+                ]
               : null,
         ),
         child: Column(
@@ -106,35 +110,18 @@ class _NavItem extends StatelessWidget {
           children: [
             Icon(
               icon,
-              color: isActive ? AppColors.gold : const Color(0xFF958A7A),
+              color: isActive ? const Color(0xFFB88616) : const Color(0xFF8E8374),
               size: 24,
             ),
             const SizedBox(height: 4),
             Text(
               label,
-              style: TextStyle(
+              style: GoogleFonts.inter(
                 fontSize: 10,
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-                color: isActive ? AppColors.gold : const Color(0xFF958A7A),
-                letterSpacing: 0.5,
+                fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+                color: isActive ? const Color(0xFFB88616) : const Color(0xFF6F665C),
               ),
             ),
-            if (isActive)
-              Container(
-                margin: const EdgeInsets.only(top: 4),
-                width: 24,
-                height: 3,
-                decoration: BoxDecoration(
-                  color: AppColors.goldLight,
-                  borderRadius: BorderRadius.circular(2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.gold.withAlpha(90),
-                      blurRadius: 10,
-                    ),
-                  ],
-                ),
-              ),
           ],
         ),
       ),
