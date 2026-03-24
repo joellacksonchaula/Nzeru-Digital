@@ -69,36 +69,25 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                 trailing: plans.isEmpty ? null : '${plans.length} active',
               ),
               const SizedBox(height: 14),
-              SizedBox(
-                height: 300,
-                child: plans.isEmpty
-                    ? const _EmptyCard(message: 'No savings plans yet.')
-                    : ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        physics: const BouncingScrollPhysics(),
-                        itemCount: plans.length,
-                        separatorBuilder: (_, __) => const SizedBox(width: 0),
-                        itemBuilder: (context, index) {
-                          return SizedBox(
-                            width: 238,
-                            child: _TopSavingsPlanCard(plan: plans[index]),
-                          );
-                        },
-                      ),
-              ),
-              const SizedBox(height: 24),
+              plans.isEmpty
+                  ? const SizedBox(
+                      height: 170,
+                      child: _EmptyCard(message: 'No savings plans yet.'),
+                    )
+                  : _TopPlansGrid(plans: plans.take(3).toList()),
+              const SizedBox(height: 18),
               _PerformanceCard(candles: candles),
-              const SizedBox(height: 24),
+              const SizedBox(height: 18),
               const _SectionRow(title: 'Quick Actions'),
               const SizedBox(height: 14),
               const _QuickActionsRow(),
-              const SizedBox(height: 24),
+              const SizedBox(height: 18),
               _SectionRow(
                 title: 'Recent Transactions',
                 trailing: DateFormat('dd MMM').format(DateTime.now()),
               ),
               const SizedBox(height: 14),
-              _TransactionsPanel(transactions: transactions),
+              _TransactionsPanel(transactions: transactions.take(3).toList()),
               if (dashboard.isLoading) ...[
                 const SizedBox(height: 20),
                 const Center(
@@ -284,161 +273,154 @@ class _TopSavingsPlanCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.88),
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(color: const Color(0xFFE8E0D3)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
+            blurRadius: 14,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    _displayTopTitle(plan.title),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.oswald(
+                      fontSize: 14,
+                      height: 0.95,
+                      color: const Color(0xFF111111),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 6),
+                SizedBox(
+                  width: 44,
+                  height: 44,
+                  child: Stack(
+                    fit: StackFit.expand,
                     children: [
-                      Expanded(
+                      CircularProgressIndicator(
+                        value: plan.progressPercent,
+                        strokeWidth: 4,
+                        backgroundColor: const Color(0xFFEAE3D9),
+                        valueColor: AlwaysStoppedAnimation<Color>(statusColor),
+                      ),
+                      Center(
                         child: Text(
-                          _displayTopTitle(plan.title),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
+                          '$percent%',
                           style: GoogleFonts.oswald(
-                            fontSize: 23,
-                            height: 0.95,
-                            color: const Color(0xFF111111),
+                            fontSize: 9,
+                            color: const Color(0xFF1F1F1F),
                           ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      SizedBox(
-                        width: 66,
-                        height: 66,
-                        child: Stack(
-                          fit: StackFit.expand,
-                          children: [
-                            CircularProgressIndicator(
-                              value: plan.progressPercent,
-                              strokeWidth: 5,
-                              backgroundColor: const Color(0xFFEAE3D9),
-                              valueColor: AlwaysStoppedAnimation<Color>(statusColor),
-                            ),
-                            Center(
-                              child: Text(
-                                '$percent%',
-                                style: GoogleFonts.oswald(
-                                  fontSize: 15,
-                                  color: const Color(0xFF1F1F1F),
-                                ),
-                              ),
-                            ),
-                          ],
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 6),
-                  Text(
-                    plan.progressPercent >= 1 ? 'Goal' : 'Target',
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      color: const Color(0xFF4A4A4A),
-                    ),
-                  ),
-                  Text(
-                    CurrencyUtil.formatNoDecimal(plan.goalAmount),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.inter(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF1A1A1A),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    rateLabel,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      color: const Color(0xFF2E2E2E),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'ETA',
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      color: const Color(0xFF4A4A4A),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(999),
-                    child: LinearProgressIndicator(
-                      value: plan.progressPercent,
-                      minHeight: 16,
-                      backgroundColor: const Color(0xFFEEF0EA),
-                      color: statusColor.withValues(alpha: 0.78),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFE6F1E9),
-                          borderRadius: BorderRadius.circular(999),
-                        ),
-                        child: Text(
-                          plan.isEstimatedToFinishOnTime ? 'On Fi' : 'Off Track',
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: const Color(0xFF427A54),
-                          ),
-                        ),
-                      ),
-                      const Spacer(),
-                      Text(
-                        progressLabel,
-                        style: GoogleFonts.oswald(
-                          fontSize: 18,
-                          color: statusColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const Spacer(),
-                  Text(
-                    'Deadline ${DateFormat('d MMM yyyy').format(plan.endDate)}',
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      color: const Color(0xFF3A3A3A),
-                    ),
-                  ),
-                ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              plan.progressPercent >= 1 ? 'Goal' : 'Target',
+              style: GoogleFonts.inter(
+                fontSize: 10,
+                color: const Color(0xFF4A4A4A),
               ),
             ),
-          ),
-          Container(
-            width: 1,
-            color: const Color(0xFFEEE7DB),
-          ),
-        ],
+            Text(
+              CurrencyUtil.formatNoDecimal(plan.goalAmount),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.inter(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF1A1A1A),
+                height: 1.2,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              rateLabel,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.inter(
+                fontSize: 10,
+                color: const Color(0xFF2E2E2E),
+                height: 1.15,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'ETA',
+              style: GoogleFonts.inter(
+                fontSize: 10,
+                color: const Color(0xFF4A4A4A),
+              ),
+            ),
+            const SizedBox(height: 6),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(999),
+              child: LinearProgressIndicator(
+                value: plan.progressPercent,
+                minHeight: 10,
+                backgroundColor: const Color(0xFFEEF0EA),
+                color: statusColor.withValues(alpha: 0.78),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE6F1E9),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    plan.isEstimatedToFinishOnTime ? 'On Fi' : 'Off',
+                    style: GoogleFonts.inter(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF427A54),
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                Text(
+                  progressLabel,
+                  style: GoogleFonts.oswald(
+                    fontSize: 12,
+                    color: statusColor,
+                  ),
+                ),
+              ],
+            ),
+            const Spacer(),
+            Text(
+              DateFormat('d MMM yyyy').format(plan.endDate),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.inter(
+                fontSize: 10,
+                color: const Color(0xFF3A3A3A),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -474,6 +456,31 @@ class _TopSavingsPlanCard extends StatelessWidget {
   }
 }
 
+class _TopPlansGrid extends StatelessWidget {
+  final List<SavingsPlan> plans;
+
+  const _TopPlansGrid({
+    required this.plans,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 188,
+      child: Row(
+        children: [
+          for (var i = 0; i < plans.length; i++) ...[
+            Expanded(
+              child: _TopSavingsPlanCard(plan: plans[i]),
+            ),
+            if (i != plans.length - 1) const SizedBox(width: 8),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
 class _PerformanceCard extends StatelessWidget {
   final List<CandleData> candles;
 
@@ -484,15 +491,15 @@ class _PerformanceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+      padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
       decoration: BoxDecoration(
         color: const Color(0xFF111721),
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(26),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.18),
-            blurRadius: 28,
-            offset: const Offset(0, 14),
+            blurRadius: 22,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
@@ -509,14 +516,14 @@ class _PerformanceCard extends StatelessWidget {
                     Text(
                       'Crypto Performance',
                       style: GoogleFonts.oswald(
-                        fontSize: 25,
+                        fontSize: 20,
                         color: Colors.white,
                       ),
                     ),
                     Text(
                       'BTC Price Performance',
                       style: GoogleFonts.inter(
-                        fontSize: 13,
+                        fontSize: 11,
                         color: const Color(0xFF8B95A5),
                       ),
                     ),
@@ -525,10 +532,10 @@ class _PerformanceCard extends StatelessWidget {
               ),
               Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 decoration: BoxDecoration(
                   color: const Color(0xFF202736),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(18),
                   border: Border.all(color: const Color(0xFF343C4F)),
                 ),
                 child: Column(
@@ -537,7 +544,7 @@ class _PerformanceCard extends StatelessWidget {
                     Text(
                       'ETH/MK',
                       style: GoogleFonts.inter(
-                        fontSize: 11,
+                        fontSize: 10,
                         color: const Color(0xFF8B95A5),
                       ),
                     ),
@@ -546,7 +553,7 @@ class _PerformanceCard extends StatelessWidget {
                         candles.isEmpty ? 0 : candles.last.close,
                       ),
                       style: GoogleFonts.oswald(
-                        fontSize: 20,
+                        fontSize: 17,
                         color: Colors.white,
                       ),
                     ),
@@ -561,8 +568,8 @@ class _PerformanceCard extends StatelessWidget {
             title: '',
             subtitle: '',
             darkMode: true,
-            height: 180,
-            borderRadius: BorderRadius.circular(22),
+            height: 130,
+            borderRadius: BorderRadius.circular(18),
           ),
         ],
       ),
@@ -589,7 +596,7 @@ class _QuickActionsRow extends StatelessWidget {
             child: GestureDetector(
               onTap: () => Navigator.pushNamed(context, items[i].route),
               child: Container(
-                height: 84,
+                height: 72,
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [
@@ -599,12 +606,12 @@ class _QuickActionsRow extends StatelessWidget {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
-                  borderRadius: BorderRadius.circular(22),
+                  borderRadius: BorderRadius.circular(18),
                   boxShadow: [
                     BoxShadow(
                       color: const Color(0xFFC89B38).withValues(alpha: 0.18),
-                      blurRadius: 18,
-                      offset: const Offset(0, 8),
+                      blurRadius: 14,
+                      offset: const Offset(0, 6),
                     ),
                   ],
                 ),
@@ -612,22 +619,23 @@ class _QuickActionsRow extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      width: 38,
-                      height: 38,
+                      width: 30,
+                      height: 30,
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.28),
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(10),
                       ),
                       child: Icon(
                         items[i].icon,
+                        size: 18,
                         color: const Color(0xFF6B520F),
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 6),
                     Text(
                       items[i].label,
                       style: GoogleFonts.inter(
-                        fontSize: 11,
+                        fontSize: 10,
                         fontWeight: FontWeight.w700,
                         color: const Color(0xFF4A3810),
                       ),
@@ -656,12 +664,12 @@ class _TransactionsPanel extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.88),
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 22,
-            offset: const Offset(0, 10),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -695,24 +703,25 @@ class _TransactionRow extends StatelessWidget {
     final color =
         txn.isCredit ? const Color(0xFF427A54) : const Color(0xFFD16C5E);
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       child: Row(
         children: [
           Container(
-            width: 44,
-            height: 44,
+            width: 38,
+            height: 38,
             decoration: BoxDecoration(
               color: const Color(0xFFF0F5EF),
-              borderRadius: BorderRadius.circular(22),
+              borderRadius: BorderRadius.circular(19),
             ),
             child: Icon(
               txn.isCredit
                   ? Icons.arrow_downward_rounded
                   : Icons.arrow_upward_rounded,
+              size: 20,
               color: color,
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -720,14 +729,14 @@ class _TransactionRow extends StatelessWidget {
                 Text(
                   txn.typeLabel,
                   style: GoogleFonts.oswald(
-                    fontSize: 20,
+                    fontSize: 17,
                     color: const Color(0xFF171412),
                   ),
                 ),
                 Text(
                   DateFormat('dd MMM yyyy, HH:mm').format(txn.date),
                   style: GoogleFonts.inter(
-                    fontSize: 12,
+                    fontSize: 10,
                     color: const Color(0xFF55504A),
                   ),
                 ),
@@ -737,7 +746,7 @@ class _TransactionRow extends StatelessWidget {
           Text(
             '${txn.isCredit ? '+' : '-'}${CurrencyUtil.formatNoDecimal(txn.amount)}',
             style: GoogleFonts.oswald(
-              fontSize: 22,
+              fontSize: 18,
               color: color,
             ),
           ),
