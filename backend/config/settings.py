@@ -18,6 +18,16 @@ def _csv_env(name: str) -> list[str]:
     raw = os.environ.get(name, '')
     return [item.strip() for item in raw.split(',') if item.strip()]
 
+
+DEFAULT_FRONTEND_ORIGINS = [
+    "https://glittering-cobbler-1d32f6.netlify.app",
+    "http://localhost:3000",
+    "http://localhost:8080",
+    "http://localhost:8081",
+    "http://127.0.0.1:8080",
+    "http://127.0.0.1:8081",
+]
+
 # ── Security ────────────────────────────────────────────────────────────────
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'super-long-secret-key-at-least-32-characters-very-secure')
 
@@ -33,7 +43,9 @@ ALLOWED_HOSTS = [
 CSRF_TRUSTED_ORIGINS = [
     "https://savingsutl-production.up.railway.app",
     "https://*.railway.app",
-] + _csv_env('EXTRA_CSRF_TRUSTED_ORIGINS')
+    "https://*.netlify.app",
+    "https://*.vercel.app",
+] + DEFAULT_FRONTEND_ORIGINS + _csv_env('EXTRA_CSRF_TRUSTED_ORIGINS')
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
@@ -159,12 +171,7 @@ SIMPLE_JWT = {
 # Flutter mobile apps don't send CORS preflight, but Flutter Web does.
 CORS_ALLOWED_ORIGINS = [
     "https://savingsutl-production.up.railway.app",
-    "https://glittering-cobbler-1d32f6.netlify.app",
-    "http://localhost:3000",
-    "http://localhost:8080",
-    "http://localhost:8081",
-    "http://127.0.0.1:8080",
-    "http://127.0.0.1:8081",
+    *DEFAULT_FRONTEND_ORIGINS,
 ] + _csv_env('EXTRA_CORS_ALLOWED_ORIGINS')
 
 CORS_ALLOWED_ORIGIN_REGEXES = [
@@ -184,6 +191,7 @@ else:
     CORS_ALLOW_ALL_ORIGINS = False
 
 CORS_ALLOW_CREDENTIALS = True
+CORS_URLS_REGEX = r"^/api/.*$|^/health/$"
 CORS_ALLOW_METHODS = ['DELETE', 'GET', 'OPTIONS', 'PATCH', 'POST', 'PUT']
 CORS_ALLOW_HEADERS = [
     "accept",
@@ -198,6 +206,10 @@ CORS_ALLOW_HEADERS = [
     "x-requested-with",
     "x-forwarded-for",
     "x-forwarded-proto",
+]
+CORS_EXPOSE_HEADERS = [
+    "content-type",
+    "authorization",
 ]
 
 
