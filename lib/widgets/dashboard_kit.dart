@@ -25,11 +25,13 @@ class DashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F4EE),
+      backgroundColor: isDark ? const Color(0xFF091018) : const Color(0xFFF7F4EE),
       body: Stack(
         children: [
-          const DashboardBackdrop(),
+          DashboardBackdrop(darkMode: isDark),
           SafeArea(
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
@@ -71,6 +73,8 @@ class DashboardHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -93,7 +97,7 @@ class DashboardHeader extends StatelessWidget {
                   fontSize: 34,
                   height: 0.96,
                   fontWeight: FontWeight.w600,
-                  color: const Color(0xFF171412),
+                  color: isDark ? Colors.white : const Color(0xFF171412),
                 ),
               ),
               const SizedBox(height: 8),
@@ -104,7 +108,8 @@ class DashboardHeader extends StatelessWidget {
                   style: GoogleFonts.inter(
                     fontSize: 14,
                     height: 1.45,
-                    color: const Color(0xFF6F665C),
+                    color:
+                        isDark ? const Color(0xFFD0D5DC) : const Color(0xFF6F665C),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -139,6 +144,8 @@ class DashboardPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return SizedBox(
       width: width,
       child: Container(
@@ -150,10 +157,12 @@ class DashboardPanel extends StatelessWidget {
             child: Container(
               padding: padding,
               decoration: BoxDecoration(
-                color: const Color(0xD9FFFFFF),
+                color: isDark ? const Color(0xD9111821) : const Color(0xD9FFFFFF),
                 borderRadius: BorderRadius.circular(26),
                 border: Border.all(
-                  color: glowColor.withValues(alpha: 0.25),
+                  color: isDark
+                      ? glowColor.withValues(alpha: 0.35)
+                      : glowColor.withValues(alpha: 0.25),
                 ),
                 boxShadow: [
                   BoxShadow(
@@ -218,6 +227,8 @@ class DashboardSectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Row(
       children: [
         Text(
@@ -225,7 +236,7 @@ class DashboardSectionTitle extends StatelessWidget {
           style: GoogleFonts.oswald(
             fontSize: 16,
             letterSpacing: 2,
-            color: const Color(0xFF171412),
+            color: isDark ? Colors.white : const Color(0xFF171412),
           ),
         ),
         const Spacer(),
@@ -294,6 +305,8 @@ class DashboardStatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return DashboardPanel(
       glowColor: item.accent,
       child: SizedBox(
@@ -318,7 +331,8 @@ class DashboardStatCard extends StatelessWidget {
                   style: GoogleFonts.oswald(
                     fontSize: 12,
                     letterSpacing: 1.4,
-                    color: const Color(0xFF6F665C),
+                    color:
+                        isDark ? const Color(0xFFD0D5DC) : const Color(0xFF6F665C),
                   ),
                 ),
               ],
@@ -329,7 +343,7 @@ class DashboardStatCard extends StatelessWidget {
               style: GoogleFonts.oswald(
                 fontSize: 30,
                 height: 0.95,
-                color: const Color(0xFF171412),
+                color: isDark ? Colors.white : const Color(0xFF171412),
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -339,7 +353,8 @@ class DashboardStatCard extends StatelessWidget {
               style: GoogleFonts.inter(
                 fontSize: 13,
                 height: 1.35,
-                color: const Color(0xFF6F665C),
+                color:
+                    isDark ? const Color(0xFFD0D5DC) : const Color(0xFF6F665C),
               ),
             ),
           ],
@@ -700,6 +715,8 @@ class DashboardInfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -709,7 +726,8 @@ class DashboardInfoRow extends StatelessWidget {
               label,
               style: GoogleFonts.inter(
                 fontSize: 13,
-                color: const Color(0xFF7E756A),
+                color:
+                    isDark ? const Color(0xFFD0D5DC) : const Color(0xFF7E756A),
               ),
             ),
           ),
@@ -717,7 +735,7 @@ class DashboardInfoRow extends StatelessWidget {
             value,
             style: GoogleFonts.oswald(
               fontSize: 15,
-              color: valueColor ?? const Color(0xFF171412),
+              color: valueColor ?? (isDark ? Colors.white : const Color(0xFF171412)),
             ),
           ),
         ],
@@ -727,15 +745,18 @@ class DashboardInfoRow extends StatelessWidget {
 }
 
 class DashboardBackdrop extends StatelessWidget {
-  final bool darkMode;
+  final bool? darkMode;
 
   const DashboardBackdrop({
     super.key,
-    this.darkMode = false,
+    this.darkMode,
   });
 
   @override
   Widget build(BuildContext context) {
+    final resolvedDarkMode =
+        darkMode ?? Theme.of(context).brightness == Brightness.dark;
+
     Widget orb(double size, Color color) => ImageFiltered(
           imageFilter: ImageFilter.blur(sigmaX: 38, sigmaY: 38),
           child: Container(
@@ -753,7 +774,7 @@ class DashboardBackdrop extends StatelessWidget {
         Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: darkMode
+              colors: resolvedDarkMode
                   ? const [
                       Color(0xFF06080C),
                       Color(0xFF0B1118),
@@ -769,21 +790,32 @@ class DashboardBackdrop extends StatelessWidget {
             ),
           ),
         ),
-        Positioned.fill(child: CustomPaint(painter: _GridGlowPainter(darkMode: darkMode))),
+        Positioned.fill(
+          child: CustomPaint(painter: _GridGlowPainter(darkMode: resolvedDarkMode)),
+        ),
         Positioned(
           top: -70,
           left: -40,
-          child: orb(220, darkMode ? const Color(0x143CFFB2) : const Color(0x148FD7A5)),
+          child: orb(
+            220,
+            resolvedDarkMode ? const Color(0x143CFFB2) : const Color(0x148FD7A5),
+          ),
         ),
         Positioned(
           top: 120,
           right: -40,
-          child: orb(220, darkMode ? const Color(0x12E0B449) : const Color(0x16E0B449)),
+          child: orb(
+            220,
+            resolvedDarkMode ? const Color(0x12E0B449) : const Color(0x16E0B449),
+          ),
         ),
         Positioned(
           bottom: 10,
           left: 100,
-          child: orb(240, darkMode ? const Color(0x12DA6C5B) : const Color(0x14DA6C5B)),
+          child: orb(
+            240,
+            resolvedDarkMode ? const Color(0x12DA6C5B) : const Color(0x14DA6C5B),
+          ),
         ),
       ],
     );

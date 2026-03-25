@@ -7,6 +7,7 @@ import 'providers/finance_overview_provider.dart';
 import 'providers/savings_provider.dart';
 import 'providers/loan_provider.dart';
 import 'providers/dashboard_provider.dart';
+import 'providers/theme_mode_provider.dart';
 import 'services/api_service.dart';
 
 Future<void> main() async {
@@ -31,6 +32,7 @@ class SavingsUTLApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => DashboardProvider()),
         ChangeNotifierProvider(create: (_) => SavingsProvider()),
         ChangeNotifierProvider(create: (_) => LoanProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeModeProvider()),
         ChangeNotifierProxyProvider3<AuthProvider, SavingsProvider, LoanProvider,
             FinanceOverviewProvider>(
           create: (_) => FinanceOverviewProvider(),
@@ -41,12 +43,18 @@ class SavingsUTLApp extends StatelessWidget {
           },
         ),
       ],
-      child: MaterialApp(
-        title: 'Savings UTL',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.lightTheme,
-        initialRoute: AppRoutes.splash,
-        routes: AppRoutes.routes,
+      child: Consumer<ThemeModeProvider>(
+        builder: (context, themeMode, _) {
+          return MaterialApp(
+            title: 'Savings UTL',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeMode.themeMode,
+            initialRoute: AppRoutes.splash,
+            routes: AppRoutes.routes,
+          );
+        },
       ),
     );
   }

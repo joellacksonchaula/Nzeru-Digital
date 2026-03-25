@@ -9,6 +9,7 @@ import '../../models/savings_transaction.dart';
 import '../../providers/dashboard_provider.dart';
 import '../../providers/finance_overview_provider.dart';
 import '../../providers/savings_provider.dart';
+import '../../providers/theme_mode_provider.dart';
 import '../../utils/currency_util.dart';
 import '../../widgets/candlestick_chart.dart';
 import '../../widgets/dashboard_kit.dart';
@@ -21,8 +22,6 @@ class DashboardScreenV2 extends StatefulWidget {
 }
 
 class _DashboardScreenV2State extends State<DashboardScreenV2> {
-  bool _darkMode = false;
-
   @override
   void initState() {
     super.initState();
@@ -36,6 +35,7 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
   Widget build(BuildContext context) {
     final finance = context.watch<FinanceOverviewProvider>();
     final dashboard = context.watch<DashboardProvider>();
+    final themeMode = context.watch<ThemeModeProvider>();
     final plans = finance.prioritizedPlans.isEmpty
         ? _fallbackPlans
         : finance.prioritizedPlans.take(5).toList();
@@ -44,12 +44,13 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
         : finance.recentTransactions.take(5).toList();
     final candles = _buildSavingsCandles(finance);
     final userName = _firstName(finance.user?.name);
+    final darkMode = themeMode.isDarkMode;
 
     return Scaffold(
-      backgroundColor: _darkMode ? const Color(0xFF091018) : const Color(0xFFF7F4EC),
+      backgroundColor: darkMode ? const Color(0xFF091018) : const Color(0xFFF7F4EC),
       body: Stack(
         children: [
-          DashboardBackdrop(darkMode: _darkMode),
+          DashboardBackdrop(darkMode: darkMode),
           SafeArea(
             child: RefreshIndicator(
               color: const Color(0xFFC89B38),
@@ -67,7 +68,7 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                 children: [
                   _PhoneHeader(
                     name: userName,
-                    darkMode: _darkMode,
+                    darkMode: darkMode,
                     onNotifications: () =>
                         Navigator.pushNamed(context, AppRoutes.notifications),
                   ),
@@ -75,7 +76,7 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                   _SectionRow(
                     title: 'Savings Plans',
                     trailing: plans.isEmpty ? null : '${plans.length} active',
-                    darkMode: _darkMode,
+                    darkMode: darkMode,
                   ),
                   const SizedBox(height: 14),
                   plans.isEmpty
@@ -87,14 +88,14 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                   const SizedBox(height: 18),
                   _PerformanceCard(candles: candles),
                   const SizedBox(height: 18),
-                  _SectionRow(title: 'Quick Actions', darkMode: _darkMode),
+                  _SectionRow(title: 'Quick Actions', darkMode: darkMode),
                   const SizedBox(height: 14),
                   const _QuickActionsRow(),
                   const SizedBox(height: 18),
                   _SectionRow(
                     title: 'Recent Transactions',
                     trailing: DateFormat('dd MMM').format(DateTime.now()),
-                    darkMode: _darkMode,
+                    darkMode: darkMode,
                   ),
                   const SizedBox(height: 14),
                   _TransactionsPanel(transactions: transactions.take(5).toList()),
@@ -108,7 +109,7 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                         style: GoogleFonts.inter(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
-                          color: _darkMode
+                          color: darkMode
                               ? const Color(0xFFE7C768)
                               : const Color(0xFF9B7B23),
                         ),
@@ -118,10 +119,10 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                   const SizedBox(height: 6),
                   Center(
                     child: FilledButton.icon(
-                      onPressed: () => setState(() => _darkMode = !_darkMode),
+                      onPressed: () => themeMode.toggle(),
                       style: FilledButton.styleFrom(
                         backgroundColor:
-                            _darkMode ? const Color(0xFF161F2A) : const Color(0xFF171717),
+                            darkMode ? const Color(0xFF161F2A) : const Color(0xFF171717),
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
                         shape: RoundedRectangleBorder(
@@ -129,11 +130,11 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                         ),
                       ),
                       icon: Icon(
-                        _darkMode
+                        darkMode
                             ? Icons.light_mode_rounded
                             : Icons.dark_mode_rounded,
                       ),
-                      label: Text(_darkMode ? 'White Mode' : 'Dark Mode'),
+                      label: Text(darkMode ? 'White Mode' : 'Dark Mode'),
                     ),
                   ),
                   if (dashboard.isLoading) ...[
