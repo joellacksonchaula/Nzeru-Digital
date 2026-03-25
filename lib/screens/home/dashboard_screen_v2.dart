@@ -11,6 +11,7 @@ import '../../providers/finance_overview_provider.dart';
 import '../../providers/savings_provider.dart';
 import '../../utils/currency_util.dart';
 import '../../widgets/candlestick_chart.dart';
+import '../../widgets/dashboard_kit.dart';
 
 class DashboardScreenV2 extends StatefulWidget {
   const DashboardScreenV2({super.key});
@@ -20,6 +21,8 @@ class DashboardScreenV2 extends StatefulWidget {
 }
 
 class _DashboardScreenV2State extends State<DashboardScreenV2> {
+  bool _darkMode = false;
+
   @override
   void initState() {
     super.initState();
@@ -43,60 +46,107 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
     final userName = _firstName(finance.user?.name);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F4EC),
-      body: SafeArea(
-        child: RefreshIndicator(
-          color: const Color(0xFFC89B38),
-          onRefresh: () async {
-            await Future.wait([
-              context.read<DashboardProvider>().loadDashboard(),
-              context.read<SavingsProvider>().loadData(),
-            ]);
-          },
-          child: ListView(
-            physics:
-                const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-            padding: const EdgeInsets.fromLTRB(16, 18, 16, 28),
-            children: [
-              _PhoneHeader(
-                name: userName,
-                onNotifications: () =>
-                    Navigator.pushNamed(context, AppRoutes.notifications),
-              ),
-              const SizedBox(height: 26),
-              _SectionRow(
-                title: 'Savings Plans',
-                trailing: plans.isEmpty ? null : '${plans.length} active',
-              ),
-              const SizedBox(height: 14),
-              plans.isEmpty
-                  ? const SizedBox(
-                      height: 170,
-                      child: _EmptyCard(message: 'No savings plans yet.'),
-                    )
-                  : _TopPlansRail(plans: plans.take(3).toList()),
-              const SizedBox(height: 18),
-              _PerformanceCard(candles: candles),
-              const SizedBox(height: 18),
-              const _SectionRow(title: 'Quick Actions'),
-              const SizedBox(height: 14),
-              const _QuickActionsRow(),
-              const SizedBox(height: 18),
-              _SectionRow(
-                title: 'Recent Transactions',
-                trailing: DateFormat('dd MMM').format(DateTime.now()),
-              ),
-              const SizedBox(height: 14),
-              _TransactionsPanel(transactions: transactions.take(3).toList()),
-              if (dashboard.isLoading) ...[
-                const SizedBox(height: 20),
-                const Center(
-                  child: CircularProgressIndicator(color: Color(0xFFC89B38)),
+      backgroundColor: _darkMode ? const Color(0xFF091018) : const Color(0xFFF7F4EC),
+      body: Stack(
+        children: [
+          DashboardBackdrop(darkMode: _darkMode),
+          SafeArea(
+            child: RefreshIndicator(
+              color: const Color(0xFFC89B38),
+              onRefresh: () async {
+                await Future.wait([
+                  context.read<DashboardProvider>().loadDashboard(),
+                  context.read<SavingsProvider>().loadData(),
+                ]);
+              },
+              child: ListView(
+                physics: const BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics(),
                 ),
-              ],
-            ],
+                padding: const EdgeInsets.fromLTRB(16, 18, 16, 28),
+                children: [
+                  _PhoneHeader(
+                    name: userName,
+                    darkMode: _darkMode,
+                    onNotifications: () =>
+                        Navigator.pushNamed(context, AppRoutes.notifications),
+                  ),
+                  const SizedBox(height: 26),
+                  _SectionRow(
+                    title: 'Savings Plans',
+                    trailing: plans.isEmpty ? null : '${plans.length} active',
+                    darkMode: _darkMode,
+                  ),
+                  const SizedBox(height: 14),
+                  plans.isEmpty
+                      ? const SizedBox(
+                          height: 170,
+                          child: _EmptyCard(message: 'No savings plans yet.'),
+                        )
+                      : _TopPlansRail(plans: plans.take(3).toList()),
+                  const SizedBox(height: 18),
+                  _PerformanceCard(candles: candles),
+                  const SizedBox(height: 18),
+                  _SectionRow(title: 'Quick Actions', darkMode: _darkMode),
+                  const SizedBox(height: 14),
+                  const _QuickActionsRow(),
+                  const SizedBox(height: 18),
+                  _SectionRow(
+                    title: 'Recent Transactions',
+                    trailing: DateFormat('dd MMM').format(DateTime.now()),
+                    darkMode: _darkMode,
+                  ),
+                  const SizedBox(height: 14),
+                  _TransactionsPanel(transactions: transactions.take(5).toList()),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () =>
+                          Navigator.pushNamed(context, AppRoutes.savingsPlans),
+                      child: Text(
+                        'See more',
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: _darkMode
+                              ? const Color(0xFFE7C768)
+                              : const Color(0xFF9B7B23),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Center(
+                    child: FilledButton.icon(
+                      onPressed: () => setState(() => _darkMode = !_darkMode),
+                      style: FilledButton.styleFrom(
+                        backgroundColor:
+                            _darkMode ? const Color(0xFF161F2A) : const Color(0xFF171717),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      icon: Icon(
+                        _darkMode
+                            ? Icons.light_mode_rounded
+                            : Icons.dark_mode_rounded,
+                      ),
+                      label: Text(_darkMode ? 'White Mode' : 'Dark Mode'),
+                    ),
+                  ),
+                  if (dashboard.isLoading) ...[
+                    const SizedBox(height: 20),
+                    const Center(
+                      child: CircularProgressIndicator(color: Color(0xFFC89B38)),
+                    ),
+                  ],
+                ],
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -104,10 +154,12 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
 
 class _PhoneHeader extends StatelessWidget {
   final String name;
+  final bool darkMode;
   final VoidCallback onNotifications;
 
   const _PhoneHeader({
     required this.name,
+    required this.darkMode,
     required this.onNotifications,
   });
 
@@ -158,7 +210,8 @@ class _PhoneHeader extends StatelessWidget {
                 'Welcome back',
                 style: GoogleFonts.inter(
                   fontSize: 13,
-                  color: const Color(0xFF4E4A44),
+                  color:
+                      darkMode ? const Color(0xFFD0D5DC) : const Color(0xFF4E4A44),
                 ),
               ),
               const SizedBox(height: 2),
@@ -167,7 +220,7 @@ class _PhoneHeader extends StatelessWidget {
                 style: GoogleFonts.oswald(
                   fontSize: 30,
                   height: 0.95,
-                  color: const Color(0xFF111111),
+                  color: darkMode ? Colors.white : const Color(0xFF111111),
                 ),
               ),
             ],
@@ -224,10 +277,12 @@ class _PhoneHeader extends StatelessWidget {
 class _SectionRow extends StatelessWidget {
   final String title;
   final String? trailing;
+  final bool darkMode;
 
   const _SectionRow({
     required this.title,
     this.trailing,
+    this.darkMode = false,
   });
 
   @override
@@ -238,7 +293,7 @@ class _SectionRow extends StatelessWidget {
           title,
           style: GoogleFonts.oswald(
             fontSize: 24,
-            color: const Color(0xFF111111),
+            color: darkMode ? Colors.white : const Color(0xFF111111),
           ),
         ),
         const Spacer(),

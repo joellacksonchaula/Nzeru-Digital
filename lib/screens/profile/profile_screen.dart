@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../config/app_routes.dart';
@@ -20,78 +21,76 @@ class ProfileScreen extends StatelessWidget {
       eyebrow: 'Profile',
       title: user?.name ?? 'Your profile',
       subtitle:
-          'Personal details, financial health, and account actions now sit inside the same dashboard system as the rest of the app.',
+          'A smaller profile dashboard with all main account tiles visible without horizontal scrolling.',
       children: [
-        DashboardStatGrid(
-          items: [
-            DashboardStatItem(
-              label: 'Health score',
+        DashboardFixedGrid(
+          mainAxisExtent: 132,
+          children: [
+            _ProfileCard(
+              label: 'Health',
               value: '${user?.financialScore ?? 0}/100',
-              detail: 'Snapshot of overall financial health.',
-              icon: Icons.favorite_rounded,
+              detail: 'Financial score',
               accent: const Color(0xFF4B9957),
+              icon: Icons.favorite_rounded,
             ),
-            DashboardStatItem(
+            _ProfileCard(
               label: 'Saved',
               value: CurrencyUtil.formatCompact(finance.totalSaved),
-              detail: 'Visible total from active savings plans.',
-              icon: Icons.savings_rounded,
+              detail: 'Active savings',
               accent: const Color(0xFF876446),
+              icon: Icons.savings_rounded,
             ),
-            DashboardStatItem(
-              label: 'Loan due',
+            _ProfileCard(
+              label: 'Loan Due',
               value: CurrencyUtil.formatCompact(finance.outstandingLoan),
-              detail: 'Outstanding balance linked from loans.',
-              icon: Icons.account_balance_wallet_rounded,
+              detail: 'Outstanding balance',
               accent: const Color(0xFFC2545E),
+              icon: Icons.account_balance_wallet_rounded,
             ),
-            DashboardStatItem(
-              label: 'Net position',
+            _ProfileCard(
+              label: 'Net',
               value: CurrencyUtil.formatCompact(finance.netWorth),
-              detail: 'Savings minus outstanding debt.',
-              icon: Icons.analytics_rounded,
+              detail: 'Net position',
               accent: const Color(0xFF4C6A78),
+              icon: Icons.analytics_rounded,
             ),
           ],
         ),
-        const SizedBox(height: 18),
-        DashboardSectionTitle(title: 'Priority Plans'),
-        const SizedBox(height: 10),
-        if (finance.prioritizedPlans.isNotEmpty)
-          DashboardPlanCarousel(plans: finance.prioritizedPlans)
-        else
-          const DashboardPanel(child: Text('Your savings plans will appear here once created.')),
-        const SizedBox(height: 18),
-        DashboardSectionTitle(title: 'Account Details'),
-        const SizedBox(height: 10),
-        DashboardPanel(
-          child: Column(
-            children: [
-              DashboardInfoRow(label: 'Name', value: user?.name ?? ''),
-              DashboardInfoRow(label: 'Email', value: user?.email ?? ''),
-              DashboardInfoRow(label: 'Phone', value: user?.phone ?? ''),
-              DashboardInfoRow(
-                label: 'Financial score',
-                value: '${user?.financialScore ?? 0}',
-                valueColor: const Color(0xFF4B9957),
-              ),
-            ],
-          ),
+        const SizedBox(height: 14),
+        DashboardFixedGrid(
+          mainAxisExtent: 132,
+          children: [
+            _ProfileCard(
+              label: 'Email',
+              value: user?.email ?? '',
+              detail: 'Primary email',
+              accent: const Color(0xFF4C6A78),
+              icon: Icons.email_outlined,
+            ),
+            _ProfileCard(
+              label: 'Phone',
+              value: user?.phone ?? '',
+              detail: 'Phone number',
+              accent: const Color(0xFFB98A2D),
+              icon: Icons.phone_rounded,
+            ),
+            _ProfileCard(
+              label: 'Security',
+              value: 'Enabled',
+              detail: 'Account protected',
+              accent: const Color(0xFF4B9957),
+              icon: Icons.security_rounded,
+            ),
+            _ProfileCard(
+              label: 'Support',
+              value: 'Help',
+              detail: 'Help and support',
+              accent: const Color(0xFF876446),
+              icon: Icons.help_outline_rounded,
+            ),
+          ],
         ),
-        const SizedBox(height: 18),
-        DashboardSectionTitle(title: 'Settings'),
-        const SizedBox(height: 10),
-        DashboardPanel(
-          child: Column(
-            children: const [
-              _SettingRow(icon: Icons.security_rounded, label: 'Security'),
-              _SettingRow(icon: Icons.notifications_outlined, label: 'Notifications'),
-              _SettingRow(icon: Icons.help_outline_rounded, label: 'Help & Support'),
-              _SettingRow(icon: Icons.info_outline_rounded, label: 'About'),
-            ],
-          ),
-        ),
-        const SizedBox(height: 18),
+        const SizedBox(height: 16),
         DashboardPanel(
           child: Center(
             child: OutlinedButton.icon(
@@ -109,25 +108,70 @@ class ProfileScreen extends StatelessWidget {
   }
 }
 
-class _SettingRow extends StatelessWidget {
-  final IconData icon;
+class _ProfileCard extends StatelessWidget {
   final String label;
+  final String value;
+  final String detail;
+  final Color accent;
+  final IconData icon;
 
-  const _SettingRow({
-    required this.icon,
+  const _ProfileCard({
     required this.label,
+    required this.value,
+    required this.detail,
+    required this.accent,
+    required this.icon,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Row(
+    return DashboardPanel(
+      glowColor: accent,
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: const Color(0xFF6A645C)),
-          const SizedBox(width: 12),
-          Expanded(child: Text(label)),
-          const Icon(Icons.chevron_right_rounded, color: Color(0xFF6A645C)),
+          Row(
+            children: [
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  color: accent.withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: accent, size: 18),
+              ),
+              const Spacer(),
+              Text(
+                label.toUpperCase(),
+                style: GoogleFonts.oswald(
+                  fontSize: 10,
+                  letterSpacing: 1.2,
+                  color: const Color(0xFF6F665C),
+                ),
+              ),
+            ],
+          ),
+          const Spacer(),
+          Text(
+            value.isEmpty ? '--' : value,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.oswald(
+              fontSize: 18,
+              height: 1,
+              color: const Color(0xFF171412),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            detail,
+            style: GoogleFonts.inter(
+              fontSize: 11,
+              color: const Color(0xFF6F665C),
+            ),
+          ),
         ],
       ),
     );

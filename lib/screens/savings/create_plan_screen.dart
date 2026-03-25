@@ -246,6 +246,42 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
                 ),
               ],
             ),
+            const SizedBox(height: 16),
+            _sectionLabel('Monetary Policy'),
+            const SizedBox(height: 10),
+            Text(
+              'After you miss your daily, weekly, or monthly target, there is a 3-day grace period before the selected penalty is applied.',
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                height: 1.45,
+                color: const Color(0xFF6F665C),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: [
+                _PolicyChip(
+                  label: 'Money Deduction',
+                  description: 'Deduct money after grace period',
+                  selected: _penaltyPolicy == PenaltyPolicy.monetaryDeduction,
+                  color: const Color(0xFFB98A2D),
+                  onTap: () => setState(
+                    () => _penaltyPolicy = PenaltyPolicy.monetaryDeduction,
+                  ),
+                ),
+                _PolicyChip(
+                  label: 'Phone Lock',
+                  description: 'Restrict app access after grace period',
+                  selected: _penaltyPolicy == PenaltyPolicy.appRestriction,
+                  color: const Color(0xFF4C6A78),
+                  onTap: () => setState(
+                    () => _penaltyPolicy = PenaltyPolicy.appRestriction,
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 18),
             Container(
               width: double.infinity,
@@ -481,6 +517,61 @@ class _FrequencyChip extends StatelessWidget {
             fontWeight: FontWeight.w700,
             color: selected ? color : const Color(0xFF6F665C),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PolicyChip extends StatelessWidget {
+  final String label;
+  final String description;
+  final bool selected;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _PolicyChip({
+    required this.label,
+    required this.description,
+    required this.selected,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(18),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 220),
+        width: 170,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: selected ? color.withValues(alpha: 0.12) : Colors.white.withValues(alpha: 0.65),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: selected ? color : const Color(0xFFE6DAC7)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: GoogleFonts.oswald(
+                fontSize: 14,
+                color: selected ? color : const Color(0xFF171412),
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              description,
+              style: GoogleFonts.inter(
+                fontSize: 11,
+                height: 1.35,
+                color: const Color(0xFF6F665C),
+              ),
+            ),
+          ],
         ),
       ),
     );

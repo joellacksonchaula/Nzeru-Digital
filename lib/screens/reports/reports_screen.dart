@@ -1,5 +1,5 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/finance_overview_provider.dart';
@@ -15,180 +15,148 @@ class ReportsScreen extends StatelessWidget {
 
     return DashboardPage(
       eyebrow: 'Reports',
-      title: 'A unified view of progress and pressure',
+      title: 'Financial Snapshot',
       subtitle:
-          'Savings, penalties, deposits, and loan obligations all feed the same reporting surface so trends stay meaningful.',
+          'Every key report block stays visible at once with a tighter 2 by 2 layout.',
       children: [
-        DashboardStatGrid(
-          items: [
-            DashboardStatItem(
+        DashboardFixedGrid(
+          mainAxisExtent: 132,
+          children: [
+            _ReportCard(
               label: 'Deposits',
               value: CurrencyUtil.formatCompact(finance.totalDeposits),
-              detail: 'All credited savings deposits recorded so far.',
-              icon: Icons.south_west_rounded,
+              detail: 'Money added',
               accent: const Color(0xFF4B9957),
+              icon: Icons.south_west_rounded,
             ),
-            DashboardStatItem(
+            _ReportCard(
               label: 'Withdrawals',
               value: CurrencyUtil.formatCompact(finance.totalWithdrawals),
-              detail: 'Money moved out of savings plans.',
-              icon: Icons.north_east_rounded,
+              detail: 'Money moved out',
               accent: const Color(0xFFC2545E),
+              icon: Icons.north_east_rounded,
             ),
-            DashboardStatItem(
+            _ReportCard(
               label: 'Penalties',
               value: CurrencyUtil.formatCompact(finance.totalPenalties),
-              detail: 'Penalty deductions now flow straight from savings data.',
-              icon: Icons.warning_amber_rounded,
+              detail: 'Charges applied',
               accent: const Color(0xFFB7821E),
+              icon: Icons.warning_amber_rounded,
             ),
-            DashboardStatItem(
+            _ReportCard(
               label: 'Interest',
               value: CurrencyUtil.formatCompact(finance.interestEarned),
-              detail: 'Interest rewards reflected alongside deposits.',
-              icon: Icons.trending_up_rounded,
+              detail: 'Rewards earned',
               accent: const Color(0xFF4C6A78),
+              icon: Icons.trending_up_rounded,
             ),
           ],
         ),
-        const SizedBox(height: 18),
-        DashboardSectionTitle(title: 'Plan Priorities'),
-        const SizedBox(height: 10),
-        if (finance.prioritizedPlans.isNotEmpty)
-          DashboardPlanCarousel(plans: finance.prioritizedPlans)
-        else
-          const DashboardPanel(child: Text('Create savings plans to unlock richer reporting.')),
-        const SizedBox(height: 18),
-        DashboardSectionTitle(title: 'Financial Mix'),
-        const SizedBox(height: 10),
-        DashboardPanel(
-          child: SizedBox(
-            height: 220,
-            child: PieChart(
-              PieChartData(
-                sectionsSpace: 4,
-                centerSpaceRadius: 46,
-                sections: [
-                  PieChartSectionData(
-                    value: finance.totalDeposits <= 0 ? 1 : finance.totalDeposits,
-                    title: '',
-                    color: const Color(0xFF876446),
-                    radius: 34,
-                  ),
-                  PieChartSectionData(
-                    value: finance.totalPenalties <= 0 ? 1 : finance.totalPenalties,
-                    title: '',
-                    color: const Color(0xFFC2545E),
-                    radius: 32,
-                  ),
-                  PieChartSectionData(
-                    value: finance.interestEarned <= 0 ? 1 : finance.interestEarned,
-                    title: '',
-                    color: const Color(0xFF4B9957),
-                    radius: 30,
-                  ),
-                  PieChartSectionData(
-                    value: finance.outstandingLoan <= 0 ? 1 : finance.outstandingLoan,
-                    title: '',
-                    color: const Color(0xFF4C6A78),
-                    radius: 28,
-                  ),
-                ],
-              ),
+        const SizedBox(height: 14),
+        DashboardFixedGrid(
+          mainAxisExtent: 132,
+          children: [
+            _ReportCard(
+              label: 'Saved',
+              value: CurrencyUtil.formatCompact(finance.totalSaved),
+              detail: 'Current savings',
+              accent: const Color(0xFF876446),
+              icon: Icons.savings_rounded,
             ),
-          ),
-        ),
-        const SizedBox(height: 18),
-        DashboardSectionTitle(title: 'Momentum'),
-        const SizedBox(height: 10),
-        DashboardPanel(
-          child: SizedBox(
-            height: 220,
-            child: BarChart(
-              BarChartData(
-                gridData: FlGridData(
-                  show: true,
-                  drawVerticalLine: false,
-                  getDrawingHorizontalLine: (_) => FlLine(
-                    color: Colors.black.withValues(alpha: 0.08),
-                    strokeWidth: 1,
-                  ),
-                ),
-                borderData: FlBorderData(show: false),
-                titlesData: FlTitlesData(
-                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      getTitlesWidget: (value, meta) {
-                        const labels = ['Saved', 'Needed', 'Loan', 'Net'];
-                        final index = value.toInt();
-                        if (index < 0 || index >= labels.length) {
-                          return const SizedBox.shrink();
-                        }
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 8),
-                          child: Text(labels[index]),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-                barGroups: [
-                  _bar(0, finance.totalSaved, const Color(0xFF876446)),
-                  _bar(1, finance.monthlyCommitment, const Color(0xFF4B9957)),
-                  _bar(2, finance.outstandingLoan, const Color(0xFFC2545E)),
-                  _bar(3, finance.netWorth < 0 ? 0 : finance.netWorth, const Color(0xFF4C6A78)),
-                ],
-              ),
+            _ReportCard(
+              label: 'Needed',
+              value: CurrencyUtil.formatCompact(finance.monthlyCommitment),
+              detail: 'Monthly pace',
+              accent: const Color(0xFF4B9957),
+              icon: Icons.calendar_month_rounded,
             ),
-          ),
-        ),
-        const SizedBox(height: 18),
-        DashboardPanel(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const DashboardSectionTitle(title: 'Financial Summary'),
-              const SizedBox(height: 8),
-              DashboardInfoRow(
-                label: 'Savings progress',
-                value: '${(finance.progress * 100).round()}%',
-              ),
-              DashboardInfoRow(
-                label: 'Plans on track',
-                value: '${finance.onTrackPlans}',
-                valueColor: const Color(0xFF4B9957),
-              ),
-              DashboardInfoRow(
-                label: 'Plans behind',
-                value: '${finance.behindPlans}',
-                valueColor: const Color(0xFFC2545E),
-              ),
-              DashboardInfoRow(
-                label: 'Net worth',
-                value: CurrencyUtil.formatNoDecimal(finance.netWorth),
-              ),
-            ],
-          ),
+            _ReportCard(
+              label: 'Loan',
+              value: CurrencyUtil.formatCompact(finance.outstandingLoan),
+              detail: 'Outstanding debt',
+              accent: const Color(0xFFC2545E),
+              icon: Icons.account_balance_wallet_rounded,
+            ),
+            _ReportCard(
+              label: 'Net Worth',
+              value: CurrencyUtil.formatCompact(finance.netWorth),
+              detail: 'Savings minus debt',
+              accent: const Color(0xFF4C6A78),
+              icon: Icons.analytics_rounded,
+            ),
+          ],
         ),
       ],
     );
   }
+}
 
-  BarChartGroupData _bar(int x, double y, Color color) {
-    return BarChartGroupData(
-      x: x,
-      barRods: [
-        BarChartRodData(
-          toY: y <= 0 ? 1 : y,
-          color: color,
-          width: 24,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
-        ),
-      ],
+class _ReportCard extends StatelessWidget {
+  final String label;
+  final String value;
+  final String detail;
+  final Color accent;
+  final IconData icon;
+
+  const _ReportCard({
+    required this.label,
+    required this.value,
+    required this.detail,
+    required this.accent,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return DashboardPanel(
+      glowColor: accent,
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  color: accent.withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: accent, size: 18),
+              ),
+              const Spacer(),
+              Text(
+                label.toUpperCase(),
+                style: GoogleFonts.oswald(
+                  fontSize: 10,
+                  letterSpacing: 1.2,
+                  color: const Color(0xFF6F665C),
+                ),
+              ),
+            ],
+          ),
+          const Spacer(),
+          Text(
+            value,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.oswald(
+              fontSize: 20,
+              height: 1,
+              color: const Color(0xFF171412),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            detail,
+            style: GoogleFonts.inter(
+              fontSize: 11,
+              color: const Color(0xFF6F665C),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

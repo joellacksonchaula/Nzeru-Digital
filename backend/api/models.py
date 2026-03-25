@@ -117,7 +117,7 @@ class SavingsPlan(models.Model):
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='savings_plans')
     title = models.CharField(max_length=120, default='Savings Plan')
-    amount_per_period = models.DecimalField(max_digits=10, decimal_places=2)
+    amount_per_period = models.DecimalField(max_digits=12, decimal_places=2)
     frequency = models.CharField(max_length=10, choices=FREQUENCY_CHOICES)
     duration_months = models.IntegerField()
     start_date = models.DateTimeField(default=timezone.now)

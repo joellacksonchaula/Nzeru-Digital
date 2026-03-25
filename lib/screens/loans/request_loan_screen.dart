@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_animate/flutter_animate.dart';
-import '../../config/app_colors.dart';
+
+import '../../models/loan.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/loan_provider.dart';
-import '../../models/loan.dart';
-import '../../widgets/gold_button.dart';
 import '../../utils/currency_util.dart';
+import '../../widgets/dashboard_kit.dart';
+import '../../widgets/gold_button.dart';
 
 class RequestLoanScreen extends StatefulWidget {
   const RequestLoanScreen({super.key});
@@ -26,219 +26,288 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
     final loans = context.watch<LoanProvider>();
-    final maxLoan =
-        loans.getLoanEligibility(auth.user?.savingsBalance ?? 0);
+    final maxLoan = loans.getLoanEligibility(auth.user?.savingsBalance ?? 0);
     final totalWithInterest = _loanAmount * (1 + _interestRate / 100);
     final monthlyPayment = totalWithInterest / _durationMonths;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: Text('REQUEST LOAN',
-            style: GoogleFonts.playfairDisplay(
-                fontSize: 16, letterSpacing: 2, color: AppColors.gold)),
-        backgroundColor: Colors.transparent,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: AppColors.gold),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Amount slider
-              Text('LOAN AMOUNT',
-                  style: GoogleFonts.playfairDisplay(
-                      fontSize: 11,
-                      color: AppColors.textMuted,
-                      letterSpacing: 2)),
-              const SizedBox(height: 20),
-              Center(
-                child: Text(
-                  CurrencyUtil.format(_loanAmount),
-                  style: GoogleFonts.playfairDisplay(
-                    fontSize: 34,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.gold,
-                  ),
-                ),
-              ).animate().fadeIn(duration: 500.ms),
-              const SizedBox(height: 10),
-              SliderTheme(
-                data: SliderThemeData(
-                  activeTrackColor: AppColors.gold,
-                  inactiveTrackColor: AppColors.cardBg,
-                  thumbColor: AppColors.gold,
-                  overlayColor: AppColors.gold.withAlpha(30),
-                ),
-                child: Slider(
-                  value: _loanAmount,
-                  min: 100,
-                  max: maxLoan > 100 ? maxLoan : 101,
-                  divisions: maxLoan > 100 ? ((maxLoan - 100) / 50).round() : 1,
-                  onChanged: (v) =>
-                      setState(() => _loanAmount = (v / 50).round() * 50.0),
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      backgroundColor: const Color(0xFFF7F4EE),
+      body: Stack(
+        children: [
+          const DashboardBackdrop(),
+          SafeArea(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(16, 18, 16, 28),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('MK 100',
-                      style: GoogleFonts.inter(
-                          fontSize: 11, color: AppColors.textMuted)),
-                  Text(CurrencyUtil.formatNoDecimal(maxLoan),
-                      style: GoogleFonts.inter(
-                          fontSize: 11, color: AppColors.textMuted)),
-                ],
-              ),
-
-              const SizedBox(height: 30),
-              // Duration
-              Text('REPAYMENT PERIOD',
-                  style: GoogleFonts.playfairDisplay(
-                      fontSize: 11,
-                      color: AppColors.textMuted,
-                      letterSpacing: 2)),
-              const SizedBox(height: 10),
-              SliderTheme(
-                data: SliderThemeData(
-                  activeTrackColor: AppColors.gold,
-                  inactiveTrackColor: AppColors.cardBg,
-                  thumbColor: AppColors.gold,
-                  overlayColor: AppColors.gold.withAlpha(30),
-                  valueIndicatorColor: AppColors.gold,
-                ),
-                child: Slider(
-                  value: _durationMonths.toDouble(),
-                  min: 1,
-                  max: 24,
-                  divisions: 23,
-                  label: '$_durationMonths months',
-                  onChanged: (v) =>
-                      setState(() => _durationMonths = v.round()),
-                ),
-              ),
-              Center(
-                child: Text('$_durationMonths months',
-                    style: GoogleFonts.playfairDisplay(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary)),
-              ),
-
-              const SizedBox(height: 30),
-
-              // Summary
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: AppColors.cardBg,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.gold.withAlpha(40)),
-                ),
-                child: Column(
-                  children: [
-                    _summaryRow('Loan Amount', CurrencyUtil.format(_loanAmount)),
-                    const Divider(color: AppColors.border, height: 24),
-                    _summaryRow('Interest Rate', '${_interestRate.toStringAsFixed(0)}%'),
-                    const Divider(color: AppColors.border, height: 24),
-                    _summaryRow('Total Interest',
-                        CurrencyUtil.format(_loanAmount * _interestRate / 100)),
-                    const Divider(color: AppColors.border, height: 24),
-                    _summaryRow('Total Repayment',
-                        CurrencyUtil.format(totalWithInterest)),
-                    const Divider(color: AppColors.border, height: 24),
-                    _summaryRow(
-                      'Monthly Payment',
-                      CurrencyUtil.format(monthlyPayment),
-                      valueColor: AppColors.gold,
-                    ),
-                    const Divider(color: AppColors.border, height: 24),
-                    // Interest distribution
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'LOANS',
+                              style: GoogleFonts.oswald(
+                                fontSize: 13,
+                                letterSpacing: 2.2,
+                                color: const Color(0xFFB98A2D),
+                              ),
+                            ),
+                            Text(
+                              'Request Loan',
+                              style: GoogleFonts.oswald(
+                                fontSize: 28,
+                                color: const Color(0xFF171412),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  DashboardPanel(
+                    glowColor: const Color(0x66B98A2D),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Your Interest Share',
-                            style: GoogleFonts.inter(
-                                fontSize: 12, color: AppColors.textMuted)),
                         Text(
-                            CurrencyUtil.format(
-                                _loanAmount * _interestRate / 100 / 2),
-                            style: GoogleFonts.playfairDisplay(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.success)),
+                          'Choose your amount',
+                          style: GoogleFonts.oswald(
+                            fontSize: 22,
+                            color: const Color(0xFF171412),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Center(
+                          child: Text(
+                            CurrencyUtil.format(_loanAmount),
+                            style: GoogleFonts.oswald(
+                              fontSize: 34,
+                              color: const Color(0xFFB98A2D),
+                            ),
+                          ),
+                        ),
+                        SliderTheme(
+                          data: SliderThemeData(
+                            activeTrackColor: const Color(0xFFB98A2D),
+                            inactiveTrackColor: const Color(0xFFE6DED3),
+                            thumbColor: const Color(0xFFB98A2D),
+                            overlayColor: const Color(0x33B98A2D),
+                          ),
+                          child: Slider(
+                            value: _loanAmount,
+                            min: 100,
+                            max: maxLoan > 100 ? maxLoan : 101,
+                            divisions: maxLoan > 100 ? ((maxLoan - 100) / 50).round() : 1,
+                            onChanged: (v) =>
+                                setState(() => _loanAmount = (v / 50).round() * 50.0),
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('MK 100', style: GoogleFonts.inter(fontSize: 11)),
+                            Text(
+                              CurrencyUtil.formatNoDecimal(maxLoan),
+                              style: GoogleFonts.inter(fontSize: 11),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 18),
+                        Text(
+                          'Repayment period',
+                          style: GoogleFonts.oswald(
+                            fontSize: 18,
+                            color: const Color(0xFF171412),
+                          ),
+                        ),
+                        SliderTheme(
+                          data: SliderThemeData(
+                            activeTrackColor: const Color(0xFF4C6A78),
+                            inactiveTrackColor: const Color(0xFFE6DED3),
+                            thumbColor: const Color(0xFF4C6A78),
+                          ),
+                          child: Slider(
+                            value: _durationMonths.toDouble(),
+                            min: 1,
+                            max: 24,
+                            divisions: 23,
+                            label: '$_durationMonths months',
+                            onChanged: (v) => setState(() => _durationMonths = v.round()),
+                          ),
+                        ),
+                        Center(
+                          child: Text(
+                            '$_durationMonths months',
+                            style: GoogleFonts.oswald(
+                              fontSize: 20,
+                              color: const Color(0xFF4C6A78),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
-                  ],
-                ),
-              ).animate().fadeIn(delay: 300.ms),
+                  ),
+                  const SizedBox(height: 16),
+                  DashboardPanel(
+                    glowColor: const Color(0x664B9957),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Repayment breakdown',
+                          style: GoogleFonts.oswald(
+                            fontSize: 22,
+                            color: const Color(0xFF171412),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        DashboardFixedGrid(
+                          mainAxisExtent: 112,
+                          children: [
+                            _RequestMetric(
+                              label: 'Interest',
+                              value: '${_interestRate.toStringAsFixed(0)}%',
+                              accent: const Color(0xFFB98A2D),
+                            ),
+                            _RequestMetric(
+                              label: 'Total interest',
+                              value: CurrencyUtil.formatCompact(
+                                _loanAmount * _interestRate / 100,
+                              ),
+                              accent: const Color(0xFFC2545E),
+                            ),
+                            _RequestMetric(
+                              label: 'Total repay',
+                              value: CurrencyUtil.formatCompact(totalWithInterest),
+                              accent: const Color(0xFF4C6A78),
+                            ),
+                            _RequestMetric(
+                              label: 'Monthly',
+                              value: CurrencyUtil.formatCompact(monthlyPayment),
+                              accent: const Color(0xFF4B9957),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        DashboardInfoRow(
+                          label: 'Your interest share',
+                          value: CurrencyUtil.formatNoDecimal(
+                            _loanAmount * _interestRate / 100 / 2,
+                          ),
+                          valueColor: const Color(0xFF4B9957),
+                        ),
+                        DashboardInfoRow(
+                          label: 'Platform share',
+                          value: CurrencyUtil.formatNoDecimal(
+                            _loanAmount * _interestRate / 100 / 2,
+                          ),
+                          valueColor: const Color(0xFF4C6A78),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  GoldButton(
+                    label: 'SUBMIT REQUEST',
+                    icon: Icons.send_rounded,
+                    isLoading: _isProcessing,
+                    width: double.infinity,
+                    onPressed: () async {
+                      setState(() => _isProcessing = true);
+                      final navigator = Navigator.of(context);
+                      final messenger = ScaffoldMessenger.of(context);
 
-              const SizedBox(height: 40),
+                      final success = await loans.requestLoan(
+                        Loan(
+                          id: '',
+                          userId: '',
+                          amount: _loanAmount,
+                          interestRate: _interestRate,
+                          durationMonths: _durationMonths,
+                          status: LoanStatus.pending,
+                          dueDate: DateTime.now().add(
+                            Duration(days: _durationMonths * 30),
+                          ),
+                        ),
+                      );
 
-              GoldButton(
-                label: 'SUBMIT REQUEST',
-                icon: Icons.send_rounded,
-                isLoading: _isProcessing,
-                width: double.infinity,
-                onPressed: () async {
-                  setState(() => _isProcessing = true);
-                  final navigator = Navigator.of(context);
-                  final messenger = ScaffoldMessenger.of(context);
-
-                  final success = await loans.requestLoan(Loan(
-                    id: '',
-                    userId: '',
-                    amount: _loanAmount,
-                    interestRate: _interestRate,
-                    durationMonths: _durationMonths,
-                    status: LoanStatus.pending,
-                    dueDate: DateTime.now()
-                        .add(Duration(days: _durationMonths * 30)),
-                  ));
-
-                  if (mounted) {
-                    setState(() => _isProcessing = false);
-                    if (success) {
-                      navigator.pop();
-                      messenger.showSnackBar(
-                        SnackBar(
+                      if (!mounted) return;
+                      setState(() => _isProcessing = false);
+                      if (success) {
+                        navigator.pop();
+                        messenger.showSnackBar(
+                          SnackBar(
                             content: Text(
-                                'Loan request for ${CurrencyUtil.format(_loanAmount)} submitted!')),
-                      );
-                    } else {
-                      messenger.showSnackBar(
-                        const SnackBar(
-                            content: Text('Failed to submit loan request.')),
-                      );
-                    }
-                  }
-                },
-              ).animate().fadeIn(delay: 400.ms),
-              const SizedBox(height: 30),
-            ],
+                              'Loan request for ${CurrencyUtil.format(_loanAmount)} submitted!',
+                            ),
+                          ),
+                        );
+                      } else {
+                        messenger.showSnackBar(
+                          SnackBar(
+                            content: Text(loans.error ?? 'Failed to submit loan request.'),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
+}
 
-  Widget _summaryRow(String label, String value, {Color? valueColor}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(label,
-            style: GoogleFonts.inter(
-                fontSize: 13, color: AppColors.textMuted)),
-        Text(value,
-            style: GoogleFonts.playfairDisplay(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: valueColor ?? AppColors.textPrimary)),
-      ],
+class _RequestMetric extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color accent;
+
+  const _RequestMetric({
+    required this.label,
+    required this.value,
+    required this.accent,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return DashboardPanel(
+      glowColor: accent,
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label.toUpperCase(),
+            style: GoogleFonts.oswald(
+              fontSize: 11,
+              letterSpacing: 1.2,
+              color: accent,
+            ),
+          ),
+          const Spacer(),
+          Text(
+            value,
+            style: GoogleFonts.oswald(
+              fontSize: 18,
+              color: const Color(0xFF171412),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

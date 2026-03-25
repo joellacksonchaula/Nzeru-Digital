@@ -7,6 +7,7 @@ import '../../config/app_routes.dart';
 import '../../models/savings_plan.dart';
 import '../../providers/finance_overview_provider.dart';
 import '../../utils/currency_util.dart';
+import '../../widgets/dashboard_kit.dart';
 import 'create_plan_screen.dart';
 
 class SavingsPlansScreen extends StatelessWidget {
@@ -20,76 +21,81 @@ class SavingsPlansScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF7F4EC),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(16, 18, 16, 28),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _SavingsHeader(
-                name: userName,
-                onNotifications: () =>
-                    Navigator.pushNamed(context, AppRoutes.notifications),
-              ),
-              const SizedBox(height: 26),
-              Text(
-                'Your Savings',
-                style: GoogleFonts.oswald(
-                  fontSize: 24,
-                  color: const Color(0xFF111111),
-                ),
-              ),
-              const SizedBox(height: 10),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: FilledButton.icon(
-                  onPressed: () =>
-                      Navigator.pushNamed(context, AppRoutes.createPlan),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xFFE0B449),
-                    foregroundColor: const Color(0xFF3E2F0D),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 10,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+      body: Stack(
+        children: [
+          const DashboardBackdrop(),
+          SafeArea(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(16, 18, 16, 28),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _SavingsHeader(
+                    name: userName,
+                    onNotifications: () =>
+                        Navigator.pushNamed(context, AppRoutes.notifications),
+                  ),
+                  const SizedBox(height: 26),
+                  Text(
+                    'Your Savings',
+                    style: GoogleFonts.oswald(
+                      fontSize: 24,
+                      color: const Color(0xFF111111),
                     ),
                   ),
-                  icon: const Icon(Icons.add_rounded, size: 18),
-                  label: Text(
-                    'New Plan',
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
+                  const SizedBox(height: 10),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: FilledButton.icon(
+                      onPressed: () =>
+                          Navigator.pushNamed(context, AppRoutes.createPlan),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: const Color(0xFFE0B449),
+                        foregroundColor: const Color(0xFF3E2F0D),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 10,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      icon: const Icon(Icons.add_rounded, size: 18),
+                      label: Text(
+                        'New Plan',
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 14),
-              if (plans.isEmpty)
-                const _EmptySavingsState()
-              else
-                ...plans.map(
-                  (plan) => Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: _SavingsListCard(plan: plan),
+                  const SizedBox(height: 14),
+                  if (plans.isEmpty)
+                    const _EmptySavingsState()
+                  else
+                    ...plans.map(
+                      (plan) => Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: _SavingsListCard(plan: plan),
+                      ),
+                    ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Plan Setup',
+                    style: GoogleFonts.oswald(
+                      fontSize: 24,
+                      color: const Color(0xFF111111),
+                    ),
                   ),
-                ),
-              const SizedBox(height: 10),
-              Text(
-                'Plan Setup',
-                style: GoogleFonts.oswald(
-                  fontSize: 24,
-                  color: const Color(0xFF111111),
-                ),
+                  const SizedBox(height: 14),
+                  const SavingsPlanComposer(embedded: true),
+                ],
               ),
-              const SizedBox(height: 14),
-              const SavingsPlanComposer(embedded: true),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

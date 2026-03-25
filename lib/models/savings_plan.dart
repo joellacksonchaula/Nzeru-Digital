@@ -185,6 +185,8 @@ class SavingsPlan {
     return 0.0;
   }
 
+  static String _formatMoney(double value) => value.toStringAsFixed(2);
+
   // ─── Serialization ─────────────────────────────────────────────
 
   factory SavingsPlan.fromJson(Map<String, dynamic> json) {
@@ -214,14 +216,14 @@ class SavingsPlan {
 
   Map<String, dynamic> toJson() => {
         'title': title,
-        'amount_per_period': amountPerPeriod,
+        'amount_per_period': _formatMoney(amountPerPeriod),
         'frequency': frequencyToApiString(frequency),
         'duration_months': durationMonths,
         'start_date': startDate.toIso8601String(),
         'end_date': endDate.toIso8601String(),
         'penalty_policy': penaltyToApiString(penaltyPolicy),
-        'goal_amount': goalAmount,
-        'current_amount': currentAmount,
+        'goal_amount': _formatMoney(goalAmount),
+        'current_amount': _formatMoney(currentAmount),
         'is_secret': isSecret,
       };
 }

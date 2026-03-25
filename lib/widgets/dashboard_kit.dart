@@ -29,7 +29,7 @@ class DashboardPage extends StatelessWidget {
       backgroundColor: const Color(0xFFF7F4EE),
       body: Stack(
         children: [
-          const _DashboardBackdrop(),
+          const DashboardBackdrop(),
           SafeArea(
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
@@ -726,8 +726,13 @@ class DashboardInfoRow extends StatelessWidget {
   }
 }
 
-class _DashboardBackdrop extends StatelessWidget {
-  const _DashboardBackdrop();
+class DashboardBackdrop extends StatelessWidget {
+  final bool darkMode;
+
+  const DashboardBackdrop({
+    super.key,
+    this.darkMode = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -746,32 +751,56 @@ class _DashboardBackdrop extends StatelessWidget {
     return Stack(
       children: [
         Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [
-                Color(0xFFF9F7F1),
-                Color(0xFFF4F0E6),
-                Color(0xFFF8F5EE),
-              ],
+              colors: darkMode
+                  ? const [
+                      Color(0xFF06080C),
+                      Color(0xFF0B1118),
+                      Color(0xFF12161F),
+                    ]
+                  : const [
+                      Color(0xFFF9F7F1),
+                      Color(0xFFF4F0E6),
+                      Color(0xFFF8F5EE),
+                    ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
           ),
         ),
-        Positioned.fill(child: CustomPaint(painter: _GridGlowPainter())),
-        Positioned(top: -70, left: -40, child: orb(220, const Color(0x148FD7A5))),
-        Positioned(top: 120, right: -40, child: orb(220, const Color(0x16E0B449))),
-        Positioned(bottom: 10, left: 100, child: orb(240, const Color(0x14DA6C5B))),
+        Positioned.fill(child: CustomPaint(painter: _GridGlowPainter(darkMode: darkMode))),
+        Positioned(
+          top: -70,
+          left: -40,
+          child: orb(220, darkMode ? const Color(0x143CFFB2) : const Color(0x148FD7A5)),
+        ),
+        Positioned(
+          top: 120,
+          right: -40,
+          child: orb(220, darkMode ? const Color(0x12E0B449) : const Color(0x16E0B449)),
+        ),
+        Positioned(
+          bottom: 10,
+          left: 100,
+          child: orb(240, darkMode ? const Color(0x12DA6C5B) : const Color(0x14DA6C5B)),
+        ),
       ],
     );
   }
 }
 
 class _GridGlowPainter extends CustomPainter {
+  final bool darkMode;
+
+  _GridGlowPainter({
+    this.darkMode = false,
+  });
+
   @override
   void paint(Canvas canvas, Size size) {
     final linePaint = Paint()
-      ..color = const Color(0xFFE8E1D5)
+      ..color = darkMode ? const Color(0x22DDE7F4) : const Color(0xFFE8E1D5)
       ..strokeWidth = 1;
 
     for (var i = 0; i <= 12; i++) {
@@ -787,4 +816,31 @@ class _GridGlowPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class DashboardFixedGrid extends StatelessWidget {
+  final List<Widget> children;
+  final double mainAxisExtent;
+  final double spacing;
+
+  const DashboardFixedGrid({
+    super.key,
+    required this.children,
+    this.mainAxisExtent = 150,
+    this.spacing = 12,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.count(
+      crossAxisCount: 2,
+      crossAxisSpacing: spacing,
+      mainAxisSpacing: spacing,
+      childAspectRatio: 1,
+      mainAxisExtent: mainAxisExtent,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      children: children,
+    );
+  }
 }
