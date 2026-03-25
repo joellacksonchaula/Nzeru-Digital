@@ -279,31 +279,36 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
                     ),
                   ),
                   const SizedBox(height: 14),
-                  Wrap(
-                    spacing: 10,
-                    runSpacing: 10,
-                    children: [
-                      _InsightCard(
-                        label: 'Daily',
-                        value: CurrencyUtil.formatNoDecimal(_perDay),
-                        color: const Color(0xFFD55C4B),
-                      ),
-                      _InsightCard(
-                        label: 'Weekly',
-                        value: CurrencyUtil.formatNoDecimal(_perWeek),
-                        color: const Color(0xFF3B9D5D),
-                      ),
-                      _InsightCard(
-                        label: 'Monthly',
-                        value: CurrencyUtil.formatNoDecimal(_perMonth),
-                        color: const Color(0xFFB98A2D),
-                      ),
-                      _InsightCard(
-                        label: 'Starting saved',
-                        value: CurrencyUtil.formatNoDecimal(_currentAmount),
-                        color: const Color(0xFF537A8A),
-                      ),
-                    ],
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    physics: const BouncingScrollPhysics(),
+                    child: Row(
+                      children: [
+                        _InsightCard(
+                          label: 'Daily',
+                          value: CurrencyUtil.formatNoDecimal(_perDay),
+                          color: const Color(0xFFD55C4B),
+                        ),
+                        const SizedBox(width: 8),
+                        _InsightCard(
+                          label: 'Weekly',
+                          value: CurrencyUtil.formatNoDecimal(_perWeek),
+                          color: const Color(0xFF3B9D5D),
+                        ),
+                        const SizedBox(width: 8),
+                        _InsightCard(
+                          label: 'Monthly',
+                          value: CurrencyUtil.formatNoDecimal(_perMonth),
+                          color: const Color(0xFFB98A2D),
+                        ),
+                        const SizedBox(width: 8),
+                        _InsightCard(
+                          label: 'Starting saved',
+                          value: CurrencyUtil.formatNoDecimal(_currentAmount),
+                          color: const Color(0xFF537A8A),
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 14),
                   DashboardInfoRow(
@@ -496,19 +501,19 @@ class _InsightCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DashboardPanel(
-      width: 150,
+      width: 118,
       glowColor: color,
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(10),
       child: SizedBox(
-        height: 108,
+        height: 78,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               label.toUpperCase(),
               style: GoogleFonts.oswald(
-                fontSize: 12,
-                letterSpacing: 1.4,
+                fontSize: 10,
+                letterSpacing: 1.1,
                 color: color,
               ),
             ),
@@ -516,7 +521,7 @@ class _InsightCard extends StatelessWidget {
             Text(
               value,
               style: GoogleFonts.oswald(
-                fontSize: 22,
+                fontSize: 16,
                 color: const Color(0xFF171412),
               ),
             ),

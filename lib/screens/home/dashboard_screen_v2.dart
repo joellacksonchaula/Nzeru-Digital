@@ -74,7 +74,7 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                       height: 170,
                       child: _EmptyCard(message: 'No savings plans yet.'),
                     )
-                  : _TopPlansGrid(plans: plans.take(3).toList()),
+                  : _TopPlansRail(plans: plans.take(3).toList()),
               const SizedBox(height: 18),
               _PerformanceCard(candles: candles),
               const SizedBox(height: 18),
@@ -456,26 +456,28 @@ class _TopSavingsPlanCard extends StatelessWidget {
   }
 }
 
-class _TopPlansGrid extends StatelessWidget {
+class _TopPlansRail extends StatelessWidget {
   final List<SavingsPlan> plans;
 
-  const _TopPlansGrid({
+  const _TopPlansRail({
     required this.plans,
   });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 188,
-      child: Row(
-        children: [
-          for (var i = 0; i < plans.length; i++) ...[
-            Expanded(
-              child: _TopSavingsPlanCard(plan: plans[i]),
-            ),
-            if (i != plans.length - 1) const SizedBox(width: 8),
-          ],
-        ],
+      height: 196,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        itemCount: plans.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 10),
+        itemBuilder: (context, index) {
+          return SizedBox(
+            width: 156,
+            child: _TopSavingsPlanCard(plan: plans[index]),
+          );
+        },
       ),
     );
   }
