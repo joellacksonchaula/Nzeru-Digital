@@ -9,6 +9,7 @@ import '../../providers/savings_provider.dart';
 import '../../utils/currency_util.dart';
 import '../../widgets/dashboard_kit.dart';
 import '../../widgets/gold_button.dart';
+import 'deposit_screen.dart';
 
 class CreatePlanScreen extends StatelessWidget {
   const CreatePlanScreen({super.key});
@@ -17,9 +18,9 @@ class CreatePlanScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return const DashboardPage(
       eyebrow: 'Savings Planner',
-      title: 'Create a plan from the target backward',
+      title: 'Create a plan and fund it first',
       subtitle:
-          'Choose the goal amount, deadline, and rhythm. The dashboard starts the plan at zero and calculates the saving rate automatically.',
+          'Choose the title, target, and first deposit. The app now sends you straight to the deposit step before setup is complete.',
       children: [
         SavingsPlanComposer(),
       ],
@@ -42,6 +43,7 @@ class SavingsPlanComposer extends StatefulWidget {
 class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
   final _titleController = TextEditingController();
   final _targetAmountController = TextEditingController();
+  final _startingAmountController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   PenaltyPolicy _penaltyPolicy = PenaltyPolicy.monetaryDeduction;
   PlanFrequency _frequency = PlanFrequency.weekly;
@@ -53,12 +55,21 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
   void dispose() {
     _titleController.dispose();
     _targetAmountController.dispose();
+    _startingAmountController.dispose();
     super.dispose();
   }
 
   double get _targetAmount => double.tryParse(_targetAmountController.text.trim()) ?? 0;
 
-  double get _currentAmount => 0;
+  double get _startingAmount =>
+      double.tryParse(_startingAmountController.text.trim()) ?? 0;
+
+  double get _remainingTarget {
+    final remaining = _targetAmount - _startingAmount;
+    return remaining <= 0 ? 0 : remaining;
+  }
+
+  double get _currentAmount => _startingAmount;
 
   int get _remainingDays {
     final days = _deadline.difference(DateTime.now()).inDays;
@@ -70,18 +81,18 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
     return months <= 0 ? 1 : months;
   }
 
-  double get _perDay => _targetAmount <= 0 ? 0 : _targetAmount / _remainingDays;
+  double get _perDay => _remainingTarget <= 0 ? 0 : _remainingTarget / _remainingDays;
 
   double get _perWeek {
-    if (_targetAmount <= 0) return 0;
+    if (_remainingTarget <= 0) return 0;
     final weeks = (_remainingDays / 7).ceil();
-    return _targetAmount / (weeks <= 0 ? 1 : weeks);
+    return _remainingTarget / (weeks <= 0 ? 1 : weeks);
   }
 
   double get _perMonth {
-    if (_targetAmount <= 0) return 0;
+    if (_remainingTarget <= 0) return 0;
     final months = (_remainingDays / 30).ceil();
-    return _targetAmount / (months <= 0 ? 1 : months);
+    return _remainingTarget / (months <= 0 ? 1 : months);
   }
 
   double get _selectedAmount {
@@ -169,6 +180,22 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
               validator: (value) {
                 final parsed = double.tryParse((value ?? '').trim());
                 if (parsed == null || parsed <= 0) return 'Enter target amount';
+                return null;
+              },
+            ),
+            const SizedBox(height: 12),
+            _moneyField(
+              controller: _startingAmountController,
+              hint: 'Starting saving amount',
+              onChanged: (_) => setState(() {}),
+              validator: (value) {
+                final parsed = double.tryParse((value ?? '').trim());
+                if (parsed == null || parsed <= 0) {
+                  return 'Enter starting deposit amount';
+                }
+                if (_targetAmount > 0 && parsed > _targetAmount) {
+                  return 'Starting amount cannot be more than target';
+                }
                 return null;
               },
             ),
@@ -307,7 +334,7 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Saved amount starts at MK 0. The required contribution updates from your target and deadline automatically.',
+                    'Your first deposit is required before setup is complete. The remaining contribution updates after that starting amount.',
                     style: GoogleFonts.inter(
                       fontSize: 13,
                       height: 1.45,
@@ -353,8 +380,12 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
                   ),
                   DashboardInfoRow(
                     label: 'Saved amount',
-                    value: 'MK 0',
+                    value: CurrencyUtil.formatNoDecimal(_currentAmount),
                     valueColor: const Color(0xFF537A8A),
+                  ),
+                  DashboardInfoRow(
+                    label: 'Still needed',
+                    value: CurrencyUtil.formatNoDecimal(_remainingTarget),
                   ),
                   DashboardInfoRow(
                     label: 'Deadline',
@@ -365,7 +396,7 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
             ),
             const SizedBox(height: 18),
             GoldButton(
-              label: 'CREATE SAVINGS PLAN',
+              label: 'CREATE PLAN & GO TO DEPOSIT',
               icon: Icons.rocket_launch_rounded,
               isLoading: _isProcessing,
               width: double.infinity,
@@ -449,7 +480,7 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
     final savings = context.read<SavingsProvider>();
     final messenger = ScaffoldMessenger.of(context);
 
-    final success = await savings.addPlan(
+    final createdPlan = await savings.addPlan(
       SavingsPlan(
         id: '',
         userId: auth.user?.id ?? '',
@@ -469,12 +500,30 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
 
     setState(() => _isProcessing = false);
 
-    if (success) {
-      if (!widget.embedded) {
-        Navigator.of(context).pop();
+    if (createdPlan != null) {
+      final route = MaterialPageRoute<void>(
+        builder: (_) => const DepositScreen(),
+        settings: RouteSettings(
+          arguments: DepositScreenArgs(
+            planId: createdPlan.id,
+            initialAmount: _startingAmount,
+            lockPlan: true,
+            requireDeposit: true,
+            planTitle: createdPlan.title,
+          ),
+        ),
+      );
+      if (widget.embedded) {
+        Navigator.of(context).push(route);
+      } else {
+        Navigator.of(context).pushReplacement(route);
       }
       messenger.showSnackBar(
-        SnackBar(content: Text('Plan created. $_selectedLabel.')),
+        SnackBar(
+          content: Text(
+            'Plan created for ${createdPlan.title}. Make the first deposit to continue.',
+          ),
+        ),
       );
     } else {
       messenger.showSnackBar(

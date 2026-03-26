@@ -64,16 +64,16 @@ class SavingsProvider with ChangeNotifier {
   }
 
   /// ─── Add a new savings plan ────────────────────
-  Future<bool> addPlan(SavingsPlan plan) async {
+  Future<SavingsPlan?> addPlan(SavingsPlan plan) async {
     try {
       final data = plan.toJson();
-      await _api.createSavingsPlan(data);
+      final created = await _api.createSavingsPlan(data);
       await loadData();
-      return true;
+      return SavingsPlan.fromJson(_normalizeKeys(created));
     } catch (e) {
       _error = 'Failed to create savings plan: $e';
       notifyListeners();
-      return false;
+      return null;
     }
   }
 

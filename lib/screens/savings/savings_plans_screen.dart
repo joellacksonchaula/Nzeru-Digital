@@ -260,7 +260,7 @@ class _SavingsListCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _savingsTitle(plan.title),
+                      _displayTitle(plan.title),
                       style: GoogleFonts.oswald(
                         fontSize: 22,
                         height: 0.96,
@@ -400,11 +400,9 @@ class _SavingsListCard extends StatelessWidget {
     return Icons.savings_rounded;
   }
 
-  static String _savingsTitle(String title) {
-    if (title.trim().isEmpty) return 'Savings Plan';
-    if (title.toLowerCase() == 'go') return 'Savings Plan - Go';
-    if (title.toLowerCase().contains('phone')) return 'phone';
-    return title.toLowerCase().contains('savings plan') ? title : 'Savings Plan';
+  static String _displayTitle(String title) {
+    final trimmed = title.trim();
+    return trimmed.isEmpty ? 'Savings Plan' : trimmed;
   }
 
   static String _saveLabel(SavingsPlan plan) {

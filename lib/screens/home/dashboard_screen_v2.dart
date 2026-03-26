@@ -482,9 +482,8 @@ class _TopSavingsPlanCard extends StatelessWidget {
   }
 
   static String _displayTopTitle(String title) {
-    if (title.trim().isEmpty) return 'Savings';
-    final words = title.trim().split(RegExp(r'\s+'));
-    return words.length > 1 ? words.first : title;
+    final trimmed = title.trim();
+    return trimmed.isEmpty ? 'Savings' : trimmed;
   }
 
   static String _topRateLabel(SavingsPlan plan) {
