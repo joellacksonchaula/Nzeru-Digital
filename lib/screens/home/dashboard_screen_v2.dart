@@ -84,7 +84,10 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                           height: 170,
                           child: _EmptyCard(message: 'No savings plans yet.'),
                         )
-                      : _TopPlansRail(plans: plans.take(3).toList()),
+                      : _TopPlansRail(
+                          plans: plans.take(3).toList(),
+                          darkMode: darkMode,
+                        ),
                   const SizedBox(height: 18),
                   _PerformanceCard(candles: candles),
                   const SizedBox(height: 18),
@@ -106,7 +109,7 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                           Navigator.pushNamed(context, AppRoutes.savingsPlans),
                       child: Text(
                         'See more',
-                        style: GoogleFonts.inter(
+                        style: GoogleFonts.montserrat(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
                           color: darkMode
@@ -168,109 +171,151 @@ class _PhoneHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final initial = name.isEmpty ? 'U' : name[0].toUpperCase();
 
-    return Row(
-      children: [
-        Container(
-          width: 62,
-          height: 62,
-          decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: LinearGradient(
-              colors: [
-                Color(0xFFFFF5D7),
-                Color(0xFFF5E6AA),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Color(0x1AC89B38),
-                blurRadius: 24,
-                offset: Offset(0, 10),
-              ),
-            ],
-          ),
-          child: Center(
-            child: Text(
-              initial,
-              style: GoogleFonts.oswald(
-                fontSize: 28,
-                color: const Color(0xFFB88616),
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 10),
+      decoration: BoxDecoration(
+        color: darkMode
+            ? const Color(0xCC111A24)
+            : Colors.white.withValues(alpha: 0.76),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: darkMode
+              ? const Color(0x335F6E80)
+              : const Color(0xFFE3DACC),
         ),
-        const SizedBox(width: 14),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: darkMode ? 0.18 : 0.08),
+            blurRadius: 24,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
             children: [
-              Text(
-                'Welcome back',
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  color:
-                      darkMode ? const Color(0xFFD0D5DC) : const Color(0xFF4E4A44),
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                name,
-                style: GoogleFonts.oswald(
-                  fontSize: 30,
-                  height: 0.95,
-                  color: darkMode ? Colors.white : const Color(0xFF111111),
-                ),
-              ),
-            ],
-          ),
-        ),
-        GestureDetector(
-          onTap: onNotifications,
-          child: Container(
-            width: 58,
-            height: 58,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.08),
-                  blurRadius: 18,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                const Center(
-                  child: Icon(
-                    Icons.notifications_none_rounded,
-                    size: 31,
-                    color: Color(0xFF171412),
+              Container(
+                width: 62,
+                height: 62,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xFFFFF5D7),
+                      Color(0xFFF5E6AA),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0x1AC89B38),
+                      blurRadius: 24,
+                      offset: Offset(0, 10),
+                    ),
+                  ],
                 ),
-                Positioned(
-                  top: 13,
-                  right: 15,
-                  child: Container(
-                    width: 11,
-                    height: 11,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE86161),
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2),
+                child: Center(
+                  child: Text(
+                    initial,
+                    style: GoogleFonts.poppins(
+                      fontSize: 28,
+                      color: const Color(0xFFB88616),
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
-              ],
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Welcome back',
+                      style: GoogleFonts.montserrat(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: darkMode
+                            ? const Color(0xFFD8E0EB)
+                            : const Color(0xFF4E4A44),
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      name,
+                      style: GoogleFonts.poppins(
+                        fontSize: 30,
+                        height: 0.95,
+                        fontWeight: FontWeight.w700,
+                        color: darkMode ? Colors.white : const Color(0xFF111111),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              GestureDetector(
+                onTap: onNotifications,
+                child: Container(
+                  width: 58,
+                  height: 58,
+                  decoration: BoxDecoration(
+                    color: darkMode
+                        ? const Color(0xFFF4F2EC)
+                        : Colors.white,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.08),
+                        blurRadius: 18,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      const Center(
+                        child: Icon(
+                          Icons.notifications_none_rounded,
+                          size: 31,
+                          color: Color(0xFF171412),
+                        ),
+                      ),
+                      Positioned(
+                        top: 13,
+                        right: 15,
+                        child: Container(
+                          width: 11,
+                          height: 11,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFE86161),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 2),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Container(
+            height: 4,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(999),
+              gradient: LinearGradient(
+                colors: darkMode
+                    ? const [Color(0xFFE7C768), Color(0x6673C7A3)]
+                    : const [Color(0xFFD0AE56), Color(0x66B6D5C4)],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -288,25 +333,46 @@ class _SectionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          title,
-          style: GoogleFonts.oswald(
-            fontSize: 24,
-            color: darkMode ? Colors.white : const Color(0xFF111111),
-          ),
+        Row(
+          children: [
+            Text(
+              title,
+              style: GoogleFonts.poppins(
+                fontSize: 24,
+                fontWeight: FontWeight.w700,
+                color: darkMode ? Colors.white : const Color(0xFF111111),
+              ),
+            ),
+            const Spacer(),
+            if (trailing != null)
+              Text(
+                trailing!,
+                style: GoogleFonts.montserrat(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: darkMode
+                      ? const Color(0xFFE7C768)
+                      : const Color(0xFF9B7B23),
+                ),
+              ),
+          ],
         ),
-        const Spacer(),
-        if (trailing != null)
-          Text(
-            trailing!,
-            style: GoogleFonts.inter(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: const Color(0xFF9B7B23),
+        const SizedBox(height: 8),
+        Container(
+          height: 3,
+          width: 110,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(999),
+            gradient: LinearGradient(
+              colors: darkMode
+                  ? const [Color(0xFFE7C768), Color(0x6673C7A3)]
+                  : const [Color(0xFFCAA13B), Color(0x66CFE5D7)],
             ),
           ),
+        ),
       ],
     );
   }
@@ -314,9 +380,11 @@ class _SectionRow extends StatelessWidget {
 
 class _TopSavingsPlanCard extends StatelessWidget {
   final SavingsPlan plan;
+  final bool darkMode;
 
   const _TopSavingsPlanCard({
     required this.plan,
+    required this.darkMode,
   });
 
   @override
@@ -328,9 +396,13 @@ class _TopSavingsPlanCard extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.88),
+        color: darkMode
+            ? const Color(0xE61B2430)
+            : Colors.white.withValues(alpha: 0.88),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFE8E0D3)),
+        border: Border.all(
+          color: darkMode ? const Color(0x334D5B6C) : const Color(0xFFE8E0D3),
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.06),
@@ -352,10 +424,11 @@ class _TopSavingsPlanCard extends StatelessWidget {
                     _displayTopTitle(plan.title),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.oswald(
+                    style: GoogleFonts.poppins(
                       fontSize: 14,
                       height: 0.95,
-                      color: const Color(0xFF111111),
+                      fontWeight: FontWeight.w700,
+                      color: darkMode ? Colors.white : const Color(0xFF111111),
                     ),
                   ),
                 ),
@@ -375,9 +448,12 @@ class _TopSavingsPlanCard extends StatelessWidget {
                       Center(
                         child: Text(
                           '$percent%',
-                          style: GoogleFonts.oswald(
+                          style: GoogleFonts.poppins(
                             fontSize: 9,
-                            color: const Color(0xFF1F1F1F),
+                            fontWeight: FontWeight.w600,
+                            color: darkMode
+                                ? const Color(0xFFF3F4F6)
+                                : const Color(0xFF1F1F1F),
                           ),
                         ),
                       ),
@@ -389,19 +465,23 @@ class _TopSavingsPlanCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               plan.progressPercent >= 1 ? 'Goal' : 'Target',
-              style: GoogleFonts.inter(
+              style: GoogleFonts.montserrat(
                 fontSize: 10,
-                color: const Color(0xFF4A4A4A),
+                color: darkMode
+                    ? const Color(0xFFBBC6D3)
+                    : const Color(0xFF4A4A4A),
               ),
             ),
             Text(
               CurrencyUtil.formatNoDecimal(plan.goalAmount),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.inter(
+              style: GoogleFonts.montserrat(
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
-                color: const Color(0xFF1A1A1A),
+                color: darkMode
+                    ? const Color(0xFFF3F4F6)
+                    : const Color(0xFF1A1A1A),
                 height: 1.2,
               ),
             ),
@@ -410,18 +490,22 @@ class _TopSavingsPlanCard extends StatelessWidget {
               rateLabel,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.inter(
+              style: GoogleFonts.montserrat(
                 fontSize: 10,
-                color: const Color(0xFF2E2E2E),
+                color: darkMode
+                    ? const Color(0xFFD8E0EB)
+                    : const Color(0xFF2E2E2E),
                 height: 1.15,
               ),
             ),
             const SizedBox(height: 8),
             Text(
               'ETA',
-              style: GoogleFonts.inter(
+              style: GoogleFonts.montserrat(
                 fontSize: 10,
-                color: const Color(0xFF4A4A4A),
+                color: darkMode
+                    ? const Color(0xFFBBC6D3)
+                    : const Color(0xFF4A4A4A),
               ),
             ),
             const SizedBox(height: 6),
@@ -448,7 +532,7 @@ class _TopSavingsPlanCard extends StatelessWidget {
                   ),
                   child: Text(
                     plan.isEstimatedToFinishOnTime ? 'On Fi' : 'Off',
-                    style: GoogleFonts.inter(
+                    style: GoogleFonts.montserrat(
                       fontSize: 9,
                       fontWeight: FontWeight.w600,
                       color: const Color(0xFF427A54),
@@ -458,8 +542,9 @@ class _TopSavingsPlanCard extends StatelessWidget {
                 const Spacer(),
                 Text(
                   progressLabel,
-                  style: GoogleFonts.oswald(
+                  style: GoogleFonts.poppins(
                     fontSize: 12,
+                    fontWeight: FontWeight.w700,
                     color: statusColor,
                   ),
                 ),
@@ -470,9 +555,11 @@ class _TopSavingsPlanCard extends StatelessWidget {
               DateFormat('d MMM yyyy').format(plan.endDate),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.inter(
+              style: GoogleFonts.montserrat(
                 fontSize: 10,
-                color: const Color(0xFF3A3A3A),
+                color: darkMode
+                    ? const Color(0xFFD8E0EB)
+                    : const Color(0xFF3A3A3A),
               ),
             ),
           ],
@@ -513,9 +600,11 @@ class _TopSavingsPlanCard extends StatelessWidget {
 
 class _TopPlansRail extends StatelessWidget {
   final List<SavingsPlan> plans;
+  final bool darkMode;
 
   const _TopPlansRail({
     required this.plans,
+    required this.darkMode,
   });
 
   @override
@@ -530,7 +619,10 @@ class _TopPlansRail extends StatelessWidget {
         itemBuilder: (context, index) {
           return SizedBox(
             width: 156,
-            child: _TopSavingsPlanCard(plan: plans[index]),
+            child: _TopSavingsPlanCard(
+              plan: plans[index],
+              darkMode: darkMode,
+            ),
           );
         },
       ),
@@ -571,15 +663,16 @@ class _PerformanceCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Crypto Performance',
-                      style: GoogleFonts.oswald(
+                      'Savings Performance',
+                      style: GoogleFonts.poppins(
                         fontSize: 20,
+                        fontWeight: FontWeight.w700,
                         color: Colors.white,
                       ),
                     ),
                     Text(
-                      'BTC Price Performance',
-                      style: GoogleFonts.inter(
+                      'Savings Analytics',
+                      style: GoogleFonts.montserrat(
                         fontSize: 11,
                         color: const Color(0xFF8B95A5),
                       ),
@@ -599,8 +692,8 @@ class _PerformanceCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      'ETH/MK',
-                      style: GoogleFonts.inter(
+                      'TOTAL SAVED',
+                      style: GoogleFonts.montserrat(
                         fontSize: 10,
                         color: const Color(0xFF8B95A5),
                       ),
@@ -609,8 +702,9 @@ class _PerformanceCard extends StatelessWidget {
                       CurrencyUtil.formatCompact(
                         candles.isEmpty ? 0 : candles.last.close,
                       ),
-                      style: GoogleFonts.oswald(
+                      style: GoogleFonts.poppins(
                         fontSize: 17,
+                        fontWeight: FontWeight.w700,
                         color: Colors.white,
                       ),
                     ),
@@ -691,7 +785,7 @@ class _QuickActionsRow extends StatelessWidget {
                     const SizedBox(height: 6),
                     Text(
                       items[i].label,
-                      style: GoogleFonts.inter(
+                      style: GoogleFonts.montserrat(
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
                         color: const Color(0xFF4A3810),
@@ -785,14 +879,15 @@ class _TransactionRow extends StatelessWidget {
               children: [
                 Text(
                   txn.typeLabel,
-                  style: GoogleFonts.oswald(
+                  style: GoogleFonts.poppins(
                     fontSize: 17,
+                    fontWeight: FontWeight.w700,
                     color: const Color(0xFF171412),
                   ),
                 ),
                 Text(
                   DateFormat('dd MMM yyyy, HH:mm').format(txn.date),
-                  style: GoogleFonts.inter(
+                  style: GoogleFonts.montserrat(
                     fontSize: 10,
                     color: const Color(0xFF55504A),
                   ),
@@ -802,8 +897,9 @@ class _TransactionRow extends StatelessWidget {
           ),
           Text(
             '${txn.isCredit ? '+' : '-'}${CurrencyUtil.formatNoDecimal(txn.amount)}',
-            style: GoogleFonts.oswald(
+            style: GoogleFonts.poppins(
               fontSize: 18,
+              fontWeight: FontWeight.w700,
               color: color,
             ),
           ),
@@ -831,7 +927,7 @@ class _EmptyCard extends StatelessWidget {
       child: Center(
         child: Text(
           message,
-          style: GoogleFonts.inter(
+          style: GoogleFonts.montserrat(
             fontSize: 14,
             color: const Color(0xFF55504A),
           ),

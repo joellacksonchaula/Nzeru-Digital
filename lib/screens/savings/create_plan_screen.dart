@@ -136,6 +136,13 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
     final narrow = width < 760;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final titleColor = isDark ? Colors.white : const Color(0xFF171412);
+    final bodyColor = isDark ? const Color(0xFFD8E0EB) : const Color(0xFF6F665C);
+    final fieldFill = isDark
+        ? const Color(0xAA131C27)
+        : Colors.white.withValues(alpha: 0.7);
+    final fieldBorder = isDark ? const Color(0x335F6E80) : const Color(0xFFE6DAC7);
 
     return DashboardPanel(
       glowColor: _accentForFrequency(_frequency),
@@ -149,10 +156,10 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
             const SizedBox(height: 12),
             Text(
               'Set the target, deadline, and frequency in one place. The contribution amount updates instantly below just like the reference cards.',
-              style: GoogleFonts.inter(
+              style: GoogleFonts.montserrat(
                 fontSize: 13,
                 height: 1.45,
-                color: const Color(0xFF6F665C),
+                color: bodyColor,
               ),
             ),
             const SizedBox(height: 18),
@@ -160,10 +167,15 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
               controller: _titleController,
               textCapitalization: TextCapitalization.words,
               onChanged: (_) => setState(() {}),
-              style: GoogleFonts.inter(color: const Color(0xFF171412)),
+              style: GoogleFonts.montserrat(color: titleColor),
               decoration: _fieldDecoration(
                 'Savings title',
                 icon: Icons.bookmark_border_rounded,
+                fillColor: fieldFill,
+                borderColor: fieldBorder,
+                hintColor: isDark
+                    ? const Color(0xFF9BA8B7)
+                    : const Color(0xFF8B7E6B),
               ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
@@ -206,9 +218,9 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
               child: Ink(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.7),
+                  color: fieldFill,
                   borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: const Color(0xFFE6DAC7)),
+                  border: Border.all(color: fieldBorder),
                 ),
                 child: Row(
                   children: [
@@ -220,16 +232,17 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
                         children: [
                           Text(
                             DateFormat('dd MMM yyyy').format(_deadline),
-                            style: GoogleFonts.oswald(
+                            style: GoogleFonts.poppins(
                               fontSize: 20,
-                              color: const Color(0xFF171412),
+                              fontWeight: FontWeight.w700,
+                              color: titleColor,
                             ),
                           ),
                           Text(
                             '$_remainingDays days remaining',
-                            style: GoogleFonts.inter(
+                            style: GoogleFonts.montserrat(
                               fontSize: 13,
-                              color: const Color(0xFF6F665C),
+                              color: bodyColor,
                             ),
                           ),
                         ],
@@ -237,8 +250,9 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
                     ),
                     Text(
                       'Deadline',
-                      style: GoogleFonts.oswald(
+                      style: GoogleFonts.poppins(
                         fontSize: 14,
+                        fontWeight: FontWeight.w700,
                         color: const Color(0xFFB98A2D),
                       ),
                     ),
@@ -278,10 +292,10 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
             const SizedBox(height: 10),
             Text(
               'After you miss your daily, weekly, or monthly target, there is a 3-day grace period before the selected penalty is applied.',
-              style: GoogleFonts.inter(
+              style: GoogleFonts.montserrat(
                 fontSize: 12,
                 height: 1.45,
-                color: const Color(0xFF6F665C),
+                color: bodyColor,
               ),
             ),
             const SizedBox(height: 10),
@@ -314,9 +328,11 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.72),
+                color: isDark
+                    ? const Color(0xCC131C27)
+                    : Colors.white.withValues(alpha: 0.72),
                 borderRadius: BorderRadius.circular(22),
-                border: Border.all(color: const Color(0xFFE6DAC7)),
+                border: Border.all(color: fieldBorder),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -325,20 +341,20 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
                   const SizedBox(height: 10),
                   Text(
                     _selectedLabel,
-                    style: GoogleFonts.oswald(
+                    style: GoogleFonts.poppins(
                       fontSize: narrow ? 28 : 32,
                       height: 0.96,
-                      color: const Color(0xFF171412),
+                      color: titleColor,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Your first deposit is required before setup is complete. The remaining contribution updates after that starting amount.',
-                    style: GoogleFonts.inter(
+                    style: GoogleFonts.montserrat(
                       fontSize: 13,
                       height: 1.45,
-                      color: const Color(0xFF6F665C),
+                      color: bodyColor,
                     ),
                   ),
                   const SizedBox(height: 14),
@@ -351,24 +367,28 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
                           label: 'Daily',
                           value: CurrencyUtil.formatNoDecimal(_perDay),
                           color: const Color(0xFFD55C4B),
+                          darkMode: isDark,
                         ),
                         const SizedBox(width: 8),
                         _InsightCard(
                           label: 'Weekly',
                           value: CurrencyUtil.formatNoDecimal(_perWeek),
                           color: const Color(0xFF3B9D5D),
+                          darkMode: isDark,
                         ),
                         const SizedBox(width: 8),
                         _InsightCard(
                           label: 'Monthly',
                           value: CurrencyUtil.formatNoDecimal(_perMonth),
                           color: const Color(0xFFB98A2D),
+                          darkMode: isDark,
                         ),
                         const SizedBox(width: 8),
                         _InsightCard(
                           label: 'Starting saved',
                           value: CurrencyUtil.formatNoDecimal(_currentAmount),
                           color: const Color(0xFF537A8A),
+                          darkMode: isDark,
                         ),
                       ],
                     ),
@@ -408,16 +428,22 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
     );
   }
 
-  InputDecoration _fieldDecoration(String hint, {required IconData icon}) {
+  InputDecoration _fieldDecoration(
+    String hint, {
+    required IconData icon,
+    required Color fillColor,
+    required Color borderColor,
+    required Color hintColor,
+  }) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: GoogleFonts.inter(color: const Color(0xFF8B7E6B)),
-      prefixIcon: Icon(icon, color: const Color(0xFF8B7E6B)),
+      hintStyle: GoogleFonts.montserrat(color: hintColor),
+      prefixIcon: Icon(icon, color: hintColor),
       filled: true,
-      fillColor: Colors.white.withValues(alpha: 0.7),
+      fillColor: fillColor,
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
-        borderSide: const BorderSide(color: Color(0xFFE6DAC7)),
+        borderSide: BorderSide(color: borderColor),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
@@ -432,16 +458,31 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
     required ValueChanged<String> onChanged,
     required String? Function(String?) validator,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return TextFormField(
       controller: controller,
-      style: GoogleFonts.inter(color: const Color(0xFF171412)),
+      style: GoogleFonts.montserrat(
+        color: isDark ? Colors.white : const Color(0xFF171412),
+      ),
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       onChanged: onChanged,
       validator: validator,
-      decoration: _fieldDecoration(hint, icon: Icons.attach_money_rounded).copyWith(
+      decoration: _fieldDecoration(
+        hint,
+        icon: Icons.attach_money_rounded,
+        fillColor: isDark
+            ? const Color(0xAA131C27)
+            : Colors.white.withValues(alpha: 0.7),
+        borderColor:
+            isDark ? const Color(0x335F6E80) : const Color(0xFFE6DAC7),
+        hintColor:
+            isDark ? const Color(0xFF9BA8B7) : const Color(0xFF8B7E6B),
+      ).copyWith(
         prefixText: 'MK ',
-        prefixStyle: GoogleFonts.oswald(
+        prefixStyle: GoogleFonts.poppins(
           fontSize: 18,
+          fontWeight: FontWeight.w700,
           color: const Color(0xFFB98A2D),
         ),
       ),
@@ -451,9 +492,10 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
   Widget _sectionLabel(String text) {
     return Text(
       text.toUpperCase(),
-      style: GoogleFonts.oswald(
+      style: GoogleFonts.poppins(
         fontSize: 14,
         letterSpacing: 1.8,
+        fontWeight: FontWeight.w700,
         color: const Color(0xFFB98A2D),
       ),
     );
@@ -548,6 +590,8 @@ class _FrequencyChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
@@ -555,16 +599,30 @@ class _FrequencyChip extends StatelessWidget {
         duration: const Duration(milliseconds: 220),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: selected ? color.withValues(alpha: 0.12) : Colors.white.withValues(alpha: 0.65),
+          color: selected
+              ? color.withValues(alpha: 0.12)
+              : isDark
+                  ? const Color(0xAA131C27)
+                  : Colors.white.withValues(alpha: 0.65),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: selected ? color : const Color(0xFFE6DAC7)),
+          border: Border.all(
+            color: selected
+                ? color
+                : isDark
+                    ? const Color(0x335F6E80)
+                    : const Color(0xFFE6DAC7),
+          ),
         ),
         child: Text(
           label,
-          style: GoogleFonts.inter(
+          style: GoogleFonts.montserrat(
             fontSize: 13,
             fontWeight: FontWeight.w700,
-            color: selected ? color : const Color(0xFF6F665C),
+            color: selected
+                ? color
+                : isDark
+                    ? const Color(0xFFD8E0EB)
+                    : const Color(0xFF6F665C),
           ),
         ),
       ),
@@ -589,6 +647,8 @@ class _PolicyChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(18),
@@ -597,27 +657,44 @@ class _PolicyChip extends StatelessWidget {
         width: 170,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: selected ? color.withValues(alpha: 0.12) : Colors.white.withValues(alpha: 0.65),
+          color: selected
+              ? color.withValues(alpha: 0.12)
+              : isDark
+                  ? const Color(0xAA131C27)
+                  : Colors.white.withValues(alpha: 0.65),
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: selected ? color : const Color(0xFFE6DAC7)),
+          border: Border.all(
+            color: selected
+                ? color
+                : isDark
+                    ? const Color(0x335F6E80)
+                    : const Color(0xFFE6DAC7),
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               label,
-              style: GoogleFonts.oswald(
+              style: GoogleFonts.poppins(
                 fontSize: 14,
-                color: selected ? color : const Color(0xFF171412),
+                fontWeight: FontWeight.w700,
+                color: selected
+                    ? color
+                    : isDark
+                        ? Colors.white
+                        : const Color(0xFF171412),
               ),
             ),
             const SizedBox(height: 4),
             Text(
               description,
-              style: GoogleFonts.inter(
+              style: GoogleFonts.montserrat(
                 fontSize: 11,
                 height: 1.35,
-                color: const Color(0xFF6F665C),
+                color: isDark
+                    ? const Color(0xFFD8E0EB)
+                    : const Color(0xFF6F665C),
               ),
             ),
           ],
@@ -631,11 +708,13 @@ class _InsightCard extends StatelessWidget {
   final String label;
   final String value;
   final Color color;
+  final bool darkMode;
 
   const _InsightCard({
     required this.label,
     required this.value,
     required this.color,
+    required this.darkMode,
   });
 
   @override
@@ -651,18 +730,20 @@ class _InsightCard extends StatelessWidget {
           children: [
             Text(
               label.toUpperCase(),
-              style: GoogleFonts.oswald(
+              style: GoogleFonts.poppins(
                 fontSize: 10,
                 letterSpacing: 1.1,
+                fontWeight: FontWeight.w700,
                 color: color,
               ),
             ),
             const Spacer(),
             Text(
               value,
-              style: GoogleFonts.oswald(
+              style: GoogleFonts.poppins(
                 fontSize: 16,
-                color: const Color(0xFF171412),
+                fontWeight: FontWeight.w700,
+                color: darkMode ? Colors.white : const Color(0xFF171412),
               ),
             ),
           ],

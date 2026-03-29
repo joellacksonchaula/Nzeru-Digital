@@ -18,12 +18,13 @@ class SavingsPlansScreen extends StatelessWidget {
     final finance = context.watch<FinanceOverviewProvider>();
     final plans = finance.prioritizedPlans;
     final userName = _firstName(finance.user?.name);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F4EC),
+      backgroundColor: isDark ? const Color(0xFF091018) : const Color(0xFFF7F4EC),
       body: Stack(
         children: [
-          const DashboardBackdrop(),
+          DashboardBackdrop(darkMode: isDark),
           SafeArea(
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
@@ -33,15 +34,30 @@ class SavingsPlansScreen extends StatelessWidget {
                 children: [
                   _SavingsHeader(
                     name: userName,
-                    onNotifications: () =>
-                        Navigator.pushNamed(context, AppRoutes.notifications),
+                    darkMode: isDark,
+                    onCreatePlan: () =>
+                        Navigator.pushNamed(context, AppRoutes.createPlan),
                   ),
                   const SizedBox(height: 26),
                   Text(
                     'Your Savings',
-                    style: GoogleFonts.oswald(
+                    style: GoogleFonts.poppins(
                       fontSize: 24,
-                      color: const Color(0xFF111111),
+                      fontWeight: FontWeight.w700,
+                      color: isDark ? Colors.white : const Color(0xFF111111),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    height: 3,
+                    width: 118,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(999),
+                      gradient: LinearGradient(
+                        colors: isDark
+                            ? const [Color(0xFFE7C768), Color(0x6673C7A3)]
+                            : const [Color(0xFFCAA13B), Color(0x66CFE5D7)],
+                      ),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -64,7 +80,7 @@ class SavingsPlansScreen extends StatelessWidget {
                       icon: const Icon(Icons.add_rounded, size: 18),
                       label: Text(
                         'New Plan',
-                        style: GoogleFonts.inter(
+                        style: GoogleFonts.montserrat(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
                         ),
@@ -84,9 +100,23 @@ class SavingsPlansScreen extends StatelessWidget {
                   const SizedBox(height: 10),
                   Text(
                     'Plan Setup',
-                    style: GoogleFonts.oswald(
+                    style: GoogleFonts.poppins(
                       fontSize: 24,
-                      color: const Color(0xFF111111),
+                      fontWeight: FontWeight.w700,
+                      color: isDark ? Colors.white : const Color(0xFF111111),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    height: 3,
+                    width: 108,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(999),
+                      gradient: LinearGradient(
+                        colors: isDark
+                            ? const [Color(0xFFE7C768), Color(0x6673C7A3)]
+                            : const [Color(0xFFCAA13B), Color(0x66CFE5D7)],
+                      ),
                     ),
                   ),
                   const SizedBox(height: 14),
@@ -103,111 +133,134 @@ class SavingsPlansScreen extends StatelessWidget {
 
 class _SavingsHeader extends StatelessWidget {
   final String name;
-  final VoidCallback onNotifications;
+  final bool darkMode;
+  final VoidCallback onCreatePlan;
 
   const _SavingsHeader({
     required this.name,
-    required this.onNotifications,
+    required this.darkMode,
+    required this.onCreatePlan,
   });
 
   @override
   Widget build(BuildContext context) {
     final initial = name.isEmpty ? 'U' : name[0].toUpperCase();
 
-    return Row(
-      children: [
-        Container(
-          width: 62,
-          height: 62,
-          decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: LinearGradient(
-              colors: [
-                Color(0xFFFFF5D7),
-                Color(0xFFF5E6AA),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-          child: Center(
-            child: Text(
-              initial,
-              style: GoogleFonts.oswald(
-                fontSize: 28,
-                color: const Color(0xFFB88616),
-              ),
-            ),
-          ),
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 10),
+      decoration: BoxDecoration(
+        color: darkMode
+            ? const Color(0xCC111A24)
+            : Colors.white.withValues(alpha: 0.76),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: darkMode
+              ? const Color(0x335F6E80)
+              : const Color(0xFFE3DACC),
         ),
-        const SizedBox(width: 14),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: darkMode ? 0.18 : 0.08),
+            blurRadius: 24,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
             children: [
-              Text(
-                'Welcome back',
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  color: const Color(0xFF4E4A44),
+              Container(
+                width: 62,
+                height: 62,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xFFFFF5D7),
+                      Color(0xFFF5E6AA),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    initial,
+                    style: GoogleFonts.poppins(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFFB88616),
+                    ),
+                  ),
                 ),
               ),
-              const SizedBox(height: 2),
-              Text(
-                name,
-                style: GoogleFonts.oswald(
-                  fontSize: 30,
-                  height: 0.95,
-                  color: const Color(0xFF111111),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Welcome back',
+                      style: GoogleFonts.montserrat(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: darkMode
+                            ? const Color(0xFFD8E0EB)
+                            : const Color(0xFF4E4A44),
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      name,
+                      style: GoogleFonts.poppins(
+                        fontSize: 30,
+                        height: 0.95,
+                        fontWeight: FontWeight.w700,
+                        color: darkMode ? Colors.white : const Color(0xFF111111),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              FilledButton.icon(
+                onPressed: onCreatePlan,
+                style: FilledButton.styleFrom(
+                  backgroundColor: const Color(0xFFE0B449),
+                  foregroundColor: const Color(0xFF3E2F0D),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                ),
+                icon: const Icon(Icons.add_rounded, size: 18),
+                label: Text(
+                  'Create Plan',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ],
           ),
-        ),
-        GestureDetector(
-          onTap: onNotifications,
-          child: Container(
-            width: 58,
-            height: 58,
+          const SizedBox(height: 10),
+          Container(
+            height: 4,
             decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.08),
-                  blurRadius: 18,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                const Center(
-                  child: Icon(
-                    Icons.notifications_none_rounded,
-                    size: 31,
-                    color: Color(0xFF171412),
-                  ),
-                ),
-                Positioned(
-                  top: 13,
-                  right: 15,
-                  child: Container(
-                    width: 11,
-                    height: 11,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE86161),
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2),
-                    ),
-                  ),
-                ),
-              ],
+              borderRadius: BorderRadius.circular(999),
+              gradient: LinearGradient(
+                colors: darkMode
+                    ? const [Color(0xFFE7C768), Color(0x6673C7A3)]
+                    : const [Color(0xFFD0AE56), Color(0x66B6D5C4)],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -222,13 +275,18 @@ class _SavingsListCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final statusColor = _statusColor(plan.health);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.9),
+        color: isDark
+            ? const Color(0xE61B2430)
+            : Colors.white.withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: const Color(0xFFE8E0D3)),
+        border: Border.all(
+          color: isDark ? const Color(0x334D5B6C) : const Color(0xFFE8E0D3),
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.06),
@@ -261,16 +319,17 @@ class _SavingsListCard extends StatelessWidget {
                   children: [
                     Text(
                       _displayTitle(plan.title),
-                      style: GoogleFonts.oswald(
+                      style: GoogleFonts.poppins(
                         fontSize: 22,
                         height: 0.96,
-                        color: const Color(0xFF111111),
+                        fontWeight: FontWeight.w700,
+                        color: isDark ? Colors.white : const Color(0xFF111111),
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       _saveLabel(plan),
-                      style: GoogleFonts.inter(
+                      style: GoogleFonts.montserrat(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
                         color: const Color(0xFF3F7454),
@@ -293,7 +352,7 @@ class _SavingsListCard extends StatelessWidget {
                     ),
                     child: Text(
                       _statusLabel(plan.health),
-                      style: GoogleFonts.inter(
+                      style: GoogleFonts.montserrat(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: statusColor,
@@ -303,9 +362,11 @@ class _SavingsListCard extends StatelessWidget {
                   const SizedBox(height: 10),
                   Text(
                     DateFormat('d MMM yyyy').format(plan.endDate),
-                    style: GoogleFonts.inter(
+                    style: GoogleFonts.montserrat(
                       fontSize: 12,
-                      color: const Color(0xFF232323),
+                      color: isDark
+                          ? const Color(0xFFD8E0EB)
+                          : const Color(0xFF232323),
                     ),
                   ),
                 ],
@@ -330,9 +391,10 @@ class _SavingsListCard extends StatelessWidget {
                     Center(
                       child: Text(
                         '${(plan.progressPercent * 100).round()}%',
-                        style: GoogleFonts.oswald(
+                        style: GoogleFonts.poppins(
                           fontSize: 22,
-                          color: const Color(0xFF111111),
+                          fontWeight: FontWeight.w700,
+                          color: isDark ? Colors.white : const Color(0xFF111111),
                         ),
                       ),
                     ),
@@ -451,24 +513,29 @@ class _MetricLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Row(
       children: [
         SizedBox(
           width: 54,
           child: Text(
             label,
-            style: GoogleFonts.inter(
+            style: GoogleFonts.montserrat(
               fontSize: 13,
-              color: const Color(0xFF55504A),
+              color: isDark
+                  ? const Color(0xFFBBC6D3)
+                  : const Color(0xFF55504A),
             ),
           ),
         ),
         Expanded(
           child: Text(
             value,
-            style: GoogleFonts.oswald(
+            style: GoogleFonts.poppins(
               fontSize: 18,
-              color: const Color(0xFF111111),
+              fontWeight: FontWeight.w700,
+              color: isDark ? Colors.white : const Color(0xFF111111),
             ),
           ),
         ),
@@ -499,7 +566,7 @@ class _RateBadge extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: GoogleFonts.inter(
+        style: GoogleFonts.montserrat(
           fontSize: 12,
           fontWeight: FontWeight.w600,
           color: color,
@@ -514,19 +581,23 @@ class _EmptySavingsState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? const Color(0xE61B2430) : Colors.white,
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: const Color(0xFFE8E0D3)),
+        border: Border.all(
+          color: isDark ? const Color(0x334D5B6C) : const Color(0xFFE8E0D3),
+        ),
       ),
       child: Text(
         'No savings plans yet. Create your first one below.',
-        style: GoogleFonts.inter(
+        style: GoogleFonts.montserrat(
           fontSize: 14,
-          color: const Color(0xFF55504A),
+          color: isDark ? const Color(0xFFD8E0EB) : const Color(0xFF55504A),
         ),
       ),
     );
