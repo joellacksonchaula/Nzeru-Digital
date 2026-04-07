@@ -46,7 +46,7 @@ class SavingsUTLApp extends StatelessWidget {
       child: Consumer<ThemeModeProvider>(
         builder: (context, themeMode, _) {
           return MaterialApp(
-            title: 'Savings UTL',
+            title: 'Nzelu',
             debugShowCheckedModeBanner: false,
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,

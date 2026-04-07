@@ -54,11 +54,11 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'LOANS',
+                              'NZELU LOANS',
                               style: GoogleFonts.oswald(
                                 fontSize: 13,
                                 letterSpacing: 2.2,
-                                color: const Color(0xFFB98A2D),
+                                color: const Color(0xFF0ABAB5),
                               ),
                             ),
                             Text(
@@ -75,7 +75,7 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
                   ),
                   const SizedBox(height: 16),
                   DashboardPanel(
-                    glowColor: const Color(0x66B98A2D),
+                    glowColor: const Color(0x660ABAB5),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -92,16 +92,16 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
                             CurrencyUtil.format(_loanAmount),
                             style: GoogleFonts.oswald(
                               fontSize: 34,
-                              color: const Color(0xFFB98A2D),
+                              color: const Color(0xFF0ABAB5),
                             ),
                           ),
                         ),
                         SliderTheme(
                           data: SliderThemeData(
-                            activeTrackColor: const Color(0xFFB98A2D),
+                            activeTrackColor: const Color(0xFF0ABAB5),
                             inactiveTrackColor: const Color(0xFFE6DED3),
-                            thumbColor: const Color(0xFFB98A2D),
-                            overlayColor: const Color(0x33B98A2D),
+                            thumbColor: const Color(0xFF0ABAB5),
+                            overlayColor: const Color(0x330ABAB5),
                           ),
                           child: Slider(
                             value: _loanAmount,
@@ -177,7 +177,7 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
                             _RequestMetric(
                               label: 'Interest',
                               value: '${_interestRate.toStringAsFixed(0)}%',
-                              accent: const Color(0xFFB98A2D),
+                              accent: const Color(0xFFD4AF37),
                             ),
                             _RequestMetric(
                               label: 'Total interest',

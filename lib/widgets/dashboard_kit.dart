@@ -87,7 +87,7 @@ class DashboardHeader extends StatelessWidget {
                 style: GoogleFonts.oswald(
                   fontSize: 14,
                   letterSpacing: 2.8,
-                  color: const Color(0xFFB98A2D),
+                  color: const Color(0xFF0ABAB5),
                 ),
               ),
               const SizedBox(height: 6),
@@ -138,7 +138,7 @@ class DashboardPanel extends StatelessWidget {
     required this.child,
     this.padding = const EdgeInsets.all(18),
     this.margin,
-    this.glowColor = const Color(0x33E0B449),
+    this.glowColor = const Color(0x330ABAB5),
     this.width,
   });
 
@@ -247,7 +247,7 @@ class DashboardSectionTitle extends StatelessWidget {
               actionLabel!,
               style: GoogleFonts.oswald(
                 fontSize: 14,
-                color: const Color(0xFFB98A2D),
+                color: const Color(0xFF0ABAB5),
               ),
             ),
           ),
@@ -798,7 +798,7 @@ class DashboardBackdrop extends StatelessWidget {
           left: -40,
           child: orb(
             220,
-            resolvedDarkMode ? const Color(0x143CFFB2) : const Color(0x148FD7A5),
+            resolvedDarkMode ? const Color(0x140ABAB5) : const Color(0x148FD7A5),
           ),
         ),
         Positioned(
@@ -806,7 +806,7 @@ class DashboardBackdrop extends StatelessWidget {
           right: -40,
           child: orb(
             220,
-            resolvedDarkMode ? const Color(0x12E0B449) : const Color(0x16E0B449),
+            resolvedDarkMode ? const Color(0x12D4AF37) : const Color(0x16D4AF37),
           ),
         ),
         Positioned(
@@ -814,7 +814,7 @@ class DashboardBackdrop extends StatelessWidget {
           left: 100,
           child: orb(
             240,
-            resolvedDarkMode ? const Color(0x12DA6C5B) : const Color(0x14DA6C5B),
+            resolvedDarkMode ? const Color(0x12801818) : const Color(0x14801818),
           ),
         ),
       ],

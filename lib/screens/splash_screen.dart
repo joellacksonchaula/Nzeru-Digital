@@ -21,7 +21,6 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _checkAuthAndNavigate() async {
-    // Show splash for at least 2 seconds while checking auth
     final futures = await Future.wait([
       context.read<AuthProvider>().tryRestoreSession(),
       Future.delayed(const Duration(seconds: 2)),
@@ -31,10 +30,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
     final isAuthenticated = futures[0] as bool;
     if (isAuthenticated) {
-      // ✅ User has a valid saved session — go straight to the main dashboard
       Navigator.pushReplacementNamed(context, AppRoutes.mainShell);
     } else {
-      // ❌ No session — show onboarding / login
       Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
     }
   }
@@ -47,16 +44,16 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Logo icon
+            // Logo icon — Tiffany Blue gradient
             Container(
               width: 100,
               height: 100,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: AppColors.goldGradient,
+                gradient: AppColors.tiffanyGradient,
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.gold.withAlpha(60),
+                    color: AppColors.tiffanyBlue.withAlpha(60),
                     blurRadius: 40,
                     spreadRadius: 5,
                   ),
@@ -78,11 +75,11 @@ class _SplashScreenState extends State<SplashScreen> {
                 .fadeIn(duration: 600.ms),
             const SizedBox(height: 30),
             Text(
-              'SAVINGS UTL',
+              'NZELU',
               style: GoogleFonts.playfairDisplay(
                 fontSize: 28,
                 fontWeight: FontWeight.w700,
-                color: AppColors.gold,
+                color: AppColors.tiffanyBlue,
                 letterSpacing: 6,
               ),
             )
@@ -104,7 +101,7 @@ class _SplashScreenState extends State<SplashScreen> {
               height: 30,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                color: AppColors.gold.withAlpha(150),
+                color: AppColors.tiffanyBlue.withAlpha(150),
               ),
             ).animate().fadeIn(delay: 1200.ms, duration: 600.ms),
           ],

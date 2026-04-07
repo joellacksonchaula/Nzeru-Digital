@@ -9,12 +9,12 @@ class AppTheme {
     return ThemeData(
       brightness: Brightness.light,
       scaffoldBackgroundColor: AppColors.background,
-      primaryColor: AppColors.gold,
+      primaryColor: AppColors.tiffanyBlue,
       colorScheme: const ColorScheme.light(
-        primary: AppColors.gold,
-        secondary: AppColors.goldLight,
+        primary: AppColors.tiffanyBlue,
+        secondary: AppColors.tiffanyBlueLight,
         surface: AppColors.background,
-        error: AppColors.actionRed,
+        error: AppColors.faluRed,
         onPrimary: Colors.white,
         onSecondary: Colors.white,
         onSurface: AppColors.textPrimary,
@@ -43,7 +43,7 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.gold,
+          backgroundColor: AppColors.tiffanyBlue,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           shape: RoundedRectangleBorder(
@@ -54,13 +54,13 @@ class AppTheme {
             fontWeight: FontWeight.bold,
           ),
           elevation: 2,
-          shadowColor: AppColors.gold.withAlpha(100),
+          shadowColor: AppColors.tiffanyBlue.withAlpha(100),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.gold,
-          side: const BorderSide(color: AppColors.gold, width: 1.5),
+          foregroundColor: AppColors.tiffanyBlue,
+          side: const BorderSide(color: AppColors.tiffanyBlue, width: 1.5),
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -94,17 +94,17 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.gold, width: 1.5),
+          borderSide: const BorderSide(color: AppColors.tiffanyBlue, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.actionRed),
+          borderSide: const BorderSide(color: AppColors.faluRed),
         ),
         prefixIconColor: AppColors.textMuted,
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: AppColors.background,
-        selectedItemColor: AppColors.gold,
+        selectedItemColor: AppColors.tiffanyBlue,
         unselectedItemColor: AppColors.textMuted,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
@@ -119,7 +119,7 @@ class AppTheme {
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: AppColors.blackPrimary,
-        foregroundColor: AppColors.gold,
+        foregroundColor: AppColors.tiffanyBlue,
         elevation: 4,
       ),
       snackBarTheme: SnackBarThemeData(
@@ -135,12 +135,12 @@ class AppTheme {
     return ThemeData(
       brightness: Brightness.dark,
       scaffoldBackgroundColor: const Color(0xFF091018),
-      primaryColor: AppColors.gold,
+      primaryColor: AppColors.tiffanyBlue,
       colorScheme: const ColorScheme.dark(
-        primary: AppColors.gold,
-        secondary: AppColors.goldLight,
+        primary: AppColors.tiffanyBlue,
+        secondary: AppColors.tiffanyBlueLight,
         surface: Color(0xFF101720),
-        error: AppColors.actionRed,
+        error: AppColors.faluRed,
         onPrimary: Colors.black,
         onSecondary: Colors.black,
         onSurface: Colors.white,
@@ -173,8 +173,8 @@ class AppTheme {
       elevatedButtonTheme: lightTheme.elevatedButtonTheme,
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.gold,
-          side: const BorderSide(color: AppColors.gold, width: 1.5),
+          foregroundColor: AppColors.tiffanyBlue,
+          side: const BorderSide(color: AppColors.tiffanyBlue, width: 1.5),
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -208,11 +208,11 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.gold, width: 1.5),
+          borderSide: const BorderSide(color: AppColors.tiffanyBlue, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.actionRed),
+          borderSide: const BorderSide(color: AppColors.faluRed),
         ),
         prefixIconColor: const Color(0xFF9BA6B2),
       ),
@@ -235,7 +235,6 @@ class AppTheme {
 
   static TextTheme get _textTheme {
     return TextTheme(
-      // Playfair Display for display / headline — elegant serif
       displayLarge: GoogleFonts.playfairDisplay(
         fontSize: 34,
         fontWeight: FontWeight.bold,
@@ -266,7 +265,6 @@ class AppTheme {
         fontWeight: FontWeight.w600,
         color: AppColors.textPrimary,
       ),
-      // Inter for body text — clean and readable
       titleLarge: GoogleFonts.inter(
         fontSize: 18,
         fontWeight: FontWeight.w600,

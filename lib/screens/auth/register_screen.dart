@@ -42,7 +42,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: AppColors.gold),
+          icon: const Icon(Icons.arrow_back_ios, color: AppColors.tiffanyBlue),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -60,13 +60,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   style: GoogleFonts.playfairDisplay(
                     fontSize: 24,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.gold,
+                    color: AppColors.tiffanyBlue,
                     letterSpacing: 4,
                   ),
                 ).animate().fadeIn(duration: 500.ms),
                 const SizedBox(height: 8),
                 Text(
-                  'Join the future of savings',
+                  'Join Nzelu savings',
                   style: GoogleFonts.inter(
                     fontSize: 14,
                     color: AppColors.textMuted,
@@ -201,7 +201,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         child: Text(
                           'Sign In',
                           style: GoogleFonts.inter(
-                            color: AppColors.gold,
+                            color: AppColors.tiffanyBlue,
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                           ),

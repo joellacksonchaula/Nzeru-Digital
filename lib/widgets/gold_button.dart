@@ -66,16 +66,16 @@ class _GoldButtonState extends State<GoldButton>
           width: widget.width,
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           decoration: BoxDecoration(
-            gradient: widget.isOutlined ? null : AppColors.goldGradient,
+            gradient: widget.isOutlined ? null : AppColors.tiffanyGradient,
             borderRadius: BorderRadius.circular(14),
             border: widget.isOutlined
-                ? Border.all(color: AppColors.gold, width: 1.5)
+                ? Border.all(color: AppColors.tiffanyBlue, width: 1.5)
                 : null,
             boxShadow: widget.isOutlined
                 ? null
                 : [
                     BoxShadow(
-                      color: AppColors.gold.withAlpha(60),
+                      color: AppColors.tiffanyBlue.withAlpha(60),
                       blurRadius: 20,
                       offset: const Offset(0, 6),
                     ),
@@ -92,7 +92,7 @@ class _GoldButtonState extends State<GoldButton>
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
                     color: widget.isOutlined
-                        ? AppColors.gold
+                        ? AppColors.tiffanyBlue
                         : Colors.white,
                   ),
                 )
@@ -102,7 +102,7 @@ class _GoldButtonState extends State<GoldButton>
                     widget.icon,
                     size: 20,
                     color: widget.isOutlined
-                        ? AppColors.gold
+                        ? AppColors.tiffanyBlue
                         : Colors.white,
                   ),
                   const SizedBox(width: 10),
@@ -113,7 +113,7 @@ class _GoldButtonState extends State<GoldButton>
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
                   color: widget.isOutlined
-                      ? AppColors.gold
+                      ? AppColors.tiffanyBlue
                       : Colors.white,
                     letterSpacing: 1.5,
                   ),

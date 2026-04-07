@@ -17,7 +17,7 @@ class CreatePlanScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const DashboardPage(
-      eyebrow: 'Savings Planner',
+      eyebrow: 'Nzelu Savings Planner',
       title: 'Create a plan and fund it first',
       subtitle:
           'Choose the title, target, and first deposit. The app now sends you straight to the deposit step before setup is complete.',
@@ -224,7 +224,7 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.event_outlined, color: Color(0xFFB98A2D)),
+                    const Icon(Icons.event_outlined, color: Color(0xFF0ABAB5)),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
@@ -253,7 +253,7 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
                       style: GoogleFonts.poppins(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
-                        color: const Color(0xFFB98A2D),
+                        color: const Color(0xFF0ABAB5),
                       ),
                     ),
                   ],
@@ -282,7 +282,7 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
                 _FrequencyChip(
                   label: 'Monthly',
                   selected: _frequency == PlanFrequency.monthly,
-                  color: const Color(0xFFB98A2D),
+                  color: const Color(0xFF0ABAB5),
                   onTap: () => setState(() => _frequency = PlanFrequency.monthly),
                 ),
               ],
@@ -380,7 +380,7 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
                         _InsightCard(
                           label: 'Monthly',
                           value: CurrencyUtil.formatNoDecimal(_perMonth),
-                          color: const Color(0xFFB98A2D),
+                          color: const Color(0xFFD4AF37),
                           darkMode: isDark,
                         ),
                         const SizedBox(width: 8),
@@ -447,7 +447,7 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
-        borderSide: const BorderSide(color: Color(0xFFB98A2D)),
+        borderSide: const BorderSide(color: Color(0xFF0ABAB5)),
       ),
     );
   }
@@ -483,7 +483,7 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
         prefixStyle: GoogleFonts.poppins(
           fontSize: 18,
           fontWeight: FontWeight.w700,
-          color: const Color(0xFFB98A2D),
+          color: const Color(0xFF0ABAB5),
         ),
       ),
     );
@@ -496,7 +496,7 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
         fontSize: 14,
         letterSpacing: 1.8,
         fontWeight: FontWeight.w700,
-        color: const Color(0xFFB98A2D),
+        color: const Color(0xFF0ABAB5),
       ),
     );
   }
@@ -509,7 +509,7 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
       case PlanFrequency.biweekly:
         return const Color(0x663B9D5D);
       case PlanFrequency.monthly:
-        return const Color(0x66B98A2D);
+        return const Color(0x66D4AF37);
     }
   }
 

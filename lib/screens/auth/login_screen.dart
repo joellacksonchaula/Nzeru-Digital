@@ -49,10 +49,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 70,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      gradient: AppColors.goldGradient,
+                      gradient: AppColors.tiffanyGradient,
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.gold.withAlpha(40),
+                          color: AppColors.tiffanyBlue.withAlpha(40),
                           blurRadius: 30,
                         ),
                       ],
@@ -71,13 +71,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: GoogleFonts.playfairDisplay(
                     fontSize: 24,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.gold,
+                    color: AppColors.tiffanyBlue,
                     letterSpacing: 4,
                   ),
                 ).animate().fadeIn(delay: 200.ms, duration: 500.ms),
                 const SizedBox(height: 8),
                 Text(
-                  'Sign in to your financial vault',
+                  'Sign in to your Nzelu vault',
                   style: GoogleFonts.inter(
                     fontSize: 14,
                     color: AppColors.textMuted,
@@ -128,7 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Text(
                       'Forgot Password?',
                       style: GoogleFonts.inter(
-                        color: AppColors.gold,
+                        color: AppColors.tiffanyBlue,
                         fontSize: 13,
                       ),
                     ),
@@ -182,7 +182,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Text(
                           'Sign Up',
                           style: GoogleFonts.inter(
-                            color: AppColors.gold,
+                            color: AppColors.tiffanyBlue,
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                           ),

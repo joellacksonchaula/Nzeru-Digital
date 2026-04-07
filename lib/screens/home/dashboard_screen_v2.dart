@@ -53,7 +53,7 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
           DashboardBackdrop(darkMode: darkMode),
           SafeArea(
             child: RefreshIndicator(
-              color: const Color(0xFFC89B38),
+              color: const Color(0xFF0ABAB5),
               onRefresh: () async {
                 await Future.wait([
                   context.read<DashboardProvider>().loadDashboard(),
@@ -74,7 +74,7 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                   ),
                   const SizedBox(height: 26),
                   _SectionRow(
-                    title: 'Savings Plans',
+                    title: 'Nzelu Savings Plans',
                     trailing: plans.isEmpty ? null : '${plans.length} active',
                     darkMode: darkMode,
                   ),
@@ -91,7 +91,7 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                   const SizedBox(height: 18),
                   _PerformanceCard(candles: candles),
                   const SizedBox(height: 18),
-                  _SectionRow(title: 'Quick Actions', darkMode: darkMode),
+                  _SectionRow(title: 'Nzelu Quick Actions', darkMode: darkMode),
                   const SizedBox(height: 14),
                   const _QuickActionsRow(),
                   const SizedBox(height: 18),
@@ -113,8 +113,8 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
                           color: darkMode
-                              ? const Color(0xFFE7C768)
-                              : const Color(0xFF9B7B23),
+                              ? const Color(0xFF8DE8E5)
+                              : const Color(0xFF088F8B),
                         ),
                       ),
                     ),
@@ -143,7 +143,7 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                   if (dashboard.isLoading) ...[
                     const SizedBox(height: 20),
                     const Center(
-                      child: CircularProgressIndicator(color: Color(0xFFC89B38)),
+                      child: CircularProgressIndicator(color: Color(0xFF0ABAB5)),
                     ),
                   ],
                 ],
@@ -202,15 +202,15 @@ class _PhoneHeader extends StatelessWidget {
                   shape: BoxShape.circle,
                   gradient: LinearGradient(
                     colors: [
-                      Color(0xFFFFF5D7),
-                      Color(0xFFF5E6AA),
+                      Color(0xFFD6F5F4),
+                      Color(0xFF8DE8E5),
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Color(0x1AC89B38),
+                      color: Color(0x1A0ABAB5),
                       blurRadius: 24,
                       offset: Offset(0, 10),
                     ),
@@ -221,7 +221,7 @@ class _PhoneHeader extends StatelessWidget {
                     initial,
                     style: GoogleFonts.poppins(
                       fontSize: 28,
-                      color: const Color(0xFFB88616),
+                      color: const Color(0xFF088F8B),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -290,7 +290,7 @@ class _PhoneHeader extends StatelessWidget {
                           width: 11,
                           height: 11,
                           decoration: BoxDecoration(
-                            color: const Color(0xFFE86161),
+                            color: const Color(0xFF801818),
                             shape: BoxShape.circle,
                             border: Border.all(color: Colors.white, width: 2),
                           ),
@@ -309,8 +309,8 @@ class _PhoneHeader extends StatelessWidget {
               borderRadius: BorderRadius.circular(999),
               gradient: LinearGradient(
                 colors: darkMode
-                    ? const [Color(0xFFE7C768), Color(0x6673C7A3)]
-                    : const [Color(0xFFD0AE56), Color(0x66B6D5C4)],
+                    ? const [Color(0xFF0ABAB5), Color(0x66D4AF37)]
+                    : const [Color(0xFF0ABAB5), Color(0x66D4AF37)],
               ),
             ),
           ),
@@ -354,8 +354,8 @@ class _SectionRow extends StatelessWidget {
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
                   color: darkMode
-                      ? const Color(0xFFE7C768)
-                      : const Color(0xFF9B7B23),
+                      ? const Color(0xFF8DE8E5)
+                      : const Color(0xFF088F8B),
                 ),
               ),
           ],
@@ -368,8 +368,8 @@ class _SectionRow extends StatelessWidget {
             borderRadius: BorderRadius.circular(999),
             gradient: LinearGradient(
               colors: darkMode
-                  ? const [Color(0xFFE7C768), Color(0x6673C7A3)]
-                  : const [Color(0xFFCAA13B), Color(0x66CFE5D7)],
+                  ? const [Color(0xFF0ABAB5), Color(0x66D4AF37)]
+                  : const [Color(0xFF0ABAB5), Color(0x66D4AF37)],
             ),
           ),
         ),
@@ -527,7 +527,7 @@ class _TopSavingsPlanCard extends StatelessWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE6F1E9),
+                    color: const Color(0xFFD6F5F4),
                     borderRadius: BorderRadius.circular(999),
                   ),
                   child: Text(
@@ -535,7 +535,7 @@ class _TopSavingsPlanCard extends StatelessWidget {
                     style: GoogleFonts.montserrat(
                       fontSize: 9,
                       fontWeight: FontWeight.w600,
-                      color: const Color(0xFF427A54),
+                      color: const Color(0xFF088F8B),
                     ),
                   ),
                 ),
@@ -589,11 +589,11 @@ class _TopSavingsPlanCard extends StatelessWidget {
   static Color _statusColor(PlanHealth health) {
     switch (health) {
       case PlanHealth.onTrack:
-        return const Color(0xFF4B9C73);
+        return const Color(0xFF0ABAB5);
       case PlanHealth.watch:
-        return const Color(0xFFBE9D54);
+        return const Color(0xFFD4AF37);
       case PlanHealth.behind:
-        return const Color(0xFFD16C5E);
+        return const Color(0xFF801818);
     }
   }
 }
@@ -644,6 +644,7 @@ class _PerformanceCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF111721),
         borderRadius: BorderRadius.circular(26),
+        border: Border.all(color: const Color(0xFF801818).withValues(alpha: 0.3)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.18),
@@ -663,7 +664,7 @@ class _PerformanceCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Savings Performance',
+                      'Nzelu Performance',
                       style: GoogleFonts.poppins(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
@@ -751,8 +752,8 @@ class _QuickActionsRow extends StatelessWidget {
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [
-                      Color(0xFFF7E8A2),
-                      Color(0xFFE6BF50),
+                      Color(0xFF8DE8E5),
+                      Color(0xFF0ABAB5),
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -760,7 +761,7 @@ class _QuickActionsRow extends StatelessWidget {
                   borderRadius: BorderRadius.circular(18),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFFC89B38).withValues(alpha: 0.18),
+                      color: const Color(0xFF0ABAB5).withValues(alpha: 0.18),
                       blurRadius: 14,
                       offset: const Offset(0, 6),
                     ),
@@ -779,7 +780,7 @@ class _QuickActionsRow extends StatelessWidget {
                       child: Icon(
                         items[i].icon,
                         size: 18,
-                        color: const Color(0xFF6B520F),
+                        color: const Color(0xFF045452),
                       ),
                     ),
                     const SizedBox(height: 6),
@@ -788,7 +789,7 @@ class _QuickActionsRow extends StatelessWidget {
                       style: GoogleFonts.montserrat(
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
-                        color: const Color(0xFF4A3810),
+                        color: const Color(0xFF04403E),
                       ),
                     ),
                   ],
@@ -852,7 +853,7 @@ class _TransactionRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color =
-        txn.isCredit ? const Color(0xFF427A54) : const Color(0xFFD16C5E);
+        txn.isCredit ? const Color(0xFF0ABAB5) : const Color(0xFF801818);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       child: Row(
@@ -861,7 +862,7 @@ class _TransactionRow extends StatelessWidget {
             width: 38,
             height: 38,
             decoration: BoxDecoration(
-              color: const Color(0xFFF0F5EF),
+              color: const Color(0xFFE8F8F7),
               borderRadius: BorderRadius.circular(19),
             ),
             child: Icon(

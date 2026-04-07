@@ -90,15 +90,15 @@ class _NavItem extends StatelessWidget {
         duration: const Duration(milliseconds: 250),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isActive ? const Color(0xFFFFF6DB) : Colors.transparent,
+          color: isActive ? const Color(0xFFD6F5F4) : Colors.transparent,
           borderRadius: BorderRadius.circular(26),
           border: isActive
-              ? Border.all(color: const Color(0xFFE7D39B))
+              ? Border.all(color: const Color(0xFF8DE8E5))
               : Border.all(color: Colors.transparent),
           boxShadow: isActive
               ? [
                   BoxShadow(
-                    color: const Color(0xFFC89B38).withValues(alpha: 0.14),
+                    color: const Color(0xFF0ABAB5).withValues(alpha: 0.14),
                     blurRadius: 18,
                     offset: const Offset(0, 8),
                   ),
@@ -110,7 +110,7 @@ class _NavItem extends StatelessWidget {
           children: [
             Icon(
               icon,
-              color: isActive ? const Color(0xFFB88616) : const Color(0xFF8E8374),
+              color: isActive ? const Color(0xFF088F8B) : const Color(0xFF8E8374),
               size: 24,
             ),
             const SizedBox(height: 4),
@@ -119,7 +119,7 @@ class _NavItem extends StatelessWidget {
               style: GoogleFonts.inter(
                 fontSize: 10,
                 fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                color: isActive ? const Color(0xFFB88616) : const Color(0xFF6F665C),
+                color: isActive ? const Color(0xFF088F8B) : const Color(0xFF6F665C),
               ),
             ),
           ],

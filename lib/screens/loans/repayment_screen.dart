@@ -35,10 +35,10 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
       appBar: AppBar(
         title: Text('MAKE PAYMENT',
             style: GoogleFonts.playfairDisplay(
-                fontSize: 16, letterSpacing: 2, color: AppColors.gold)),
+                fontSize: 16, letterSpacing: 2, color: AppColors.tiffanyBlue)),
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: AppColors.gold),
+          icon: const Icon(Icons.arrow_back_ios, color: AppColors.tiffanyBlue),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -58,12 +58,12 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
                         height: 80,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: AppColors.gold.withAlpha(15),
+                          color: AppColors.tiffanyBlue.withAlpha(15),
                           border: Border.all(
-                              color: AppColors.gold.withAlpha(40), width: 2),
+                              color: AppColors.tiffanyBlue.withAlpha(40), width: 2),
                         ),
                         child: const Icon(Icons.payment_rounded,
-                            color: AppColors.gold, size: 40),
+                            color: AppColors.tiffanyBlue, size: 40),
                       ),
                     ).animate().scale(
                         duration: 500.ms, curve: Curves.elasticOut),
@@ -111,7 +111,7 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
                                   style: GoogleFonts.playfairDisplay(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
-                                      color: AppColors.gold)),
+                                      color: AppColors.tiffanyBlue)),
                             ],
                           ),
                         ],
@@ -131,7 +131,7 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
                       keyboardType: TextInputType.number,
                       style: GoogleFonts.playfairDisplay(
                         fontSize: 32,
-                        color: AppColors.gold,
+                        color: AppColors.tiffanyBlue,
                         fontWeight: FontWeight.w700,
                       ),
                       decoration: InputDecoration(
@@ -143,7 +143,7 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
                         prefixText: 'MK ',
                         prefixStyle: GoogleFonts.playfairDisplay(
                           fontSize: 32,
-                          color: AppColors.gold,
+                          color: AppColors.tiffanyBlue,
                           fontWeight: FontWeight.w700,
                         ),
                       ),

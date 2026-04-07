@@ -17,7 +17,7 @@ class ProfileScreen extends StatelessWidget {
     final user = auth.user;
 
     return DashboardPage(
-      eyebrow: 'Profile',
+      eyebrow: 'Nzelu Profile',
       title: user?.name ?? 'Your profile',
       subtitle:
           'This profile page now keeps personal info, settings, and theme controls together in one vertical container.',
@@ -66,7 +66,7 @@ class ProfileScreen extends StatelessWidget {
               SwitchListTile.adaptive(
                 contentPadding: EdgeInsets.zero,
                 value: themeMode.isDarkMode,
-                activeColor: const Color(0xFFB98A2D),
+                activeColor: const Color(0xFF0ABAB5),
                 title: Text(
                   themeMode.isDarkMode ? 'Dark theme' : 'Light theme',
                   style: GoogleFonts.oswald(
@@ -105,7 +105,7 @@ class _SectionTitle extends StatelessWidget {
       style: GoogleFonts.oswald(
         fontSize: 14,
         letterSpacing: 1.8,
-        color: const Color(0xFFB98A2D),
+        color: const Color(0xFF0ABAB5),
       ),
     );
   }
@@ -138,10 +138,10 @@ class _ProfileRow extends StatelessWidget {
             width: 38,
             height: 38,
             decoration: BoxDecoration(
-              color: const Color(0xFFB98A2D).withValues(alpha: 0.14),
+              color: const Color(0xFF0ABAB5).withValues(alpha: 0.14),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: const Color(0xFFB98A2D), size: 18),
+            child: Icon(icon, color: const Color(0xFF0ABAB5), size: 18),
           ),
           const SizedBox(width: 12),
           Expanded(

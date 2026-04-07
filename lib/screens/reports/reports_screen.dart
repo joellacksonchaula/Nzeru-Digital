@@ -18,8 +18,8 @@ class ReportsScreen extends StatelessWidget {
     final finance = context.watch<FinanceOverviewProvider>();
 
     return DashboardPage(
-      eyebrow: 'Reports',
-      title: 'Financial Reports',
+      eyebrow: 'Nzelu Reports',
+      title: 'Nzelu Financial Reports',
       subtitle:
           'Two live charts now use your actual savings data, and the report cards mix horizontal and vertical layouts.',
       children: [

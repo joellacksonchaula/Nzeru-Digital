@@ -86,15 +86,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           height: 120,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: AppColors.gold.withAlpha(15),
+                            color: AppColors.tiffanyBlue.withAlpha(15),
                             border: Border.all(
-                              color: AppColors.gold.withAlpha(40),
+                              color: AppColors.tiffanyBlue.withAlpha(40),
                               width: 2,
                             ),
                           ),
                           child: Icon(
                             page.icon,
-                            color: AppColors.gold,
+                            color: AppColors.tiffanyBlue,
                             size: 56,
                           ),
                         ).animate().scale(
@@ -108,7 +108,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           style: GoogleFonts.playfairDisplay(
                             fontSize: 36,
                             fontWeight: FontWeight.w700,
-                            color: AppColors.gold,
+                            color: AppColors.tiffanyBlue,
                             letterSpacing: 8,
                           ),
                         ).animate().fadeIn(delay: 200.ms, duration: 500.ms),
@@ -150,13 +150,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   height: 8,
                   decoration: BoxDecoration(
                     color: _currentPage == i
-                        ? AppColors.gold
+                        ? AppColors.tiffanyBlue
                         : AppColors.textMuted.withAlpha(60),
                     borderRadius: BorderRadius.circular(4),
                     boxShadow: _currentPage == i
                         ? [
                             BoxShadow(
-                              color: AppColors.gold.withAlpha(60),
+                              color: AppColors.tiffanyBlue.withAlpha(60),
                               blurRadius: 8,
                             ),
                           ]

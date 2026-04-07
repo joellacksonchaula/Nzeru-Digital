@@ -57,12 +57,12 @@ class NotificationsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text('NOTIFICATIONS',
+        title: Text('NZELU NOTIFICATIONS',
             style: GoogleFonts.playfairDisplay(
-                fontSize: 16, letterSpacing: 2, color: AppColors.gold)),
+                fontSize: 16, letterSpacing: 2, color: AppColors.tiffanyBlue)),
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: AppColors.gold),
+          icon: const Icon(Icons.arrow_back_ios, color: AppColors.tiffanyBlue),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [

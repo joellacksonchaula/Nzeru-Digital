@@ -35,11 +35,11 @@ class LoanEligibilityScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Loans',
+                    'Nzelu Loans',
                     style: GoogleFonts.oswald(
                       fontSize: 14,
                       letterSpacing: 2.2,
-                      color: const Color(0xFFB98A2D),
+                      color: const Color(0xFF0ABAB5),
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -102,8 +102,8 @@ class LoanEligibilityScreen extends StatelessWidget {
                             ? () => Navigator.pushNamed(context, AppRoutes.requestLoan)
                             : null,
                         style: FilledButton.styleFrom(
-                          backgroundColor: const Color(0xFFE0B449),
-                          foregroundColor: const Color(0xFF3E2F0D),
+                          backgroundColor: const Color(0xFF0ABAB5),
+                          foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(
                             horizontal: 16,
                             vertical: 14,
