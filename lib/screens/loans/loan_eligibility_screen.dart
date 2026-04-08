@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
+import '../../config/app_colors.dart';
 import '../../config/app_routes.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/finance_overview_provider.dart';
@@ -23,7 +24,7 @@ class LoanEligibilityScreen extends StatelessWidget {
     final eligible = maxLoan > 0 && activeLoan == null;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F4EE),
+      backgroundColor: Colors.transparent,
       body: Stack(
         children: [
           const DashboardBackdrop(),
@@ -102,7 +103,7 @@ class LoanEligibilityScreen extends StatelessWidget {
                             ? () => Navigator.pushNamed(context, AppRoutes.requestLoan)
                             : null,
                         style: FilledButton.styleFrom(
-                          backgroundColor: const Color(0xFF0ABAB5),
+                          backgroundColor: AppColors.faluRed,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(
                             horizontal: 16,
@@ -230,8 +231,8 @@ class LoanEligibilityScreen extends StatelessWidget {
                             child: LinearProgressIndicator(
                               value: activeLoan.repaymentProgress,
                               minHeight: 12,
-                              backgroundColor: const Color(0xFFE7DED1),
-                              color: const Color(0xFF4B9957),
+                              backgroundColor: AppColors.faluMist,
+                              color: AppColors.loadingGreen,
                             ),
                           ),
                           const SizedBox(height: 8),

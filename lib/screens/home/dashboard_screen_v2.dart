@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../config/app_colors.dart';
 import '../../config/app_routes.dart';
 import '../../models/savings_plan.dart';
 import '../../models/savings_transaction.dart';
@@ -47,13 +48,13 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
     final darkMode = themeMode.isDarkMode;
 
     return Scaffold(
-      backgroundColor: darkMode ? const Color(0xFF091018) : const Color(0xFFF7F4EC),
+      backgroundColor: Colors.transparent,
       body: Stack(
         children: [
           DashboardBackdrop(darkMode: darkMode),
           SafeArea(
             child: RefreshIndicator(
-              color: const Color(0xFF0ABAB5),
+              color: AppColors.loadingRed,
               onRefresh: () async {
                 await Future.wait([
                   context.read<DashboardProvider>().loadDashboard(),
@@ -125,7 +126,7 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                       onPressed: () => themeMode.toggle(),
                       style: FilledButton.styleFrom(
                         backgroundColor:
-                            darkMode ? const Color(0xFF161F2A) : const Color(0xFF171717),
+                            darkMode ? const Color(0xFF161F2A) : AppColors.faluRed,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
                         shape: RoundedRectangleBorder(
@@ -143,7 +144,10 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                   if (dashboard.isLoading) ...[
                     const SizedBox(height: 20),
                     const Center(
-                      child: CircularProgressIndicator(color: Color(0xFF0ABAB5)),
+                      child: CircularProgressIndicator(
+                        color: AppColors.loadingRed,
+                        backgroundColor: AppColors.tiffanyMist,
+                      ),
                     ),
                   ],
                 ],
@@ -442,8 +446,12 @@ class _TopSavingsPlanCard extends StatelessWidget {
                       CircularProgressIndicator(
                         value: plan.progressPercent,
                         strokeWidth: 4,
-                        backgroundColor: const Color(0xFFEAE3D9),
-                        valueColor: AlwaysStoppedAnimation<Color>(statusColor),
+                        backgroundColor: AppColors.faluMist,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          percent >= 50
+                              ? AppColors.loadingGreen
+                              : AppColors.loadingRed,
+                        ),
                       ),
                       Center(
                         child: Text(
@@ -514,8 +522,10 @@ class _TopSavingsPlanCard extends StatelessWidget {
               child: LinearProgressIndicator(
                 value: plan.progressPercent,
                 minHeight: 10,
-                backgroundColor: const Color(0xFFEEF0EA),
-                color: statusColor.withValues(alpha: 0.78),
+                backgroundColor: AppColors.faluMist,
+                color: percent >= 50
+                    ? AppColors.loadingGreen
+                    : AppColors.loadingRed,
               ),
             ),
             const SizedBox(height: 6),

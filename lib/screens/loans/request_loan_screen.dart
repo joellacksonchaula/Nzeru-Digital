@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
+import '../../config/app_colors.dart';
 import '../../models/loan.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/loan_provider.dart';
@@ -31,7 +32,7 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
     final monthlyPayment = totalWithInterest / _durationMonths;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F4EE),
+      backgroundColor: Colors.transparent,
       body: Stack(
         children: [
           const DashboardBackdrop(),
@@ -98,10 +99,10 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
                         ),
                         SliderTheme(
                           data: SliderThemeData(
-                            activeTrackColor: const Color(0xFF0ABAB5),
-                            inactiveTrackColor: const Color(0xFFE6DED3),
-                            thumbColor: const Color(0xFF0ABAB5),
-                            overlayColor: const Color(0x330ABAB5),
+                            activeTrackColor: AppColors.loadingRed,
+                            inactiveTrackColor: AppColors.tiffanyMist,
+                            thumbColor: AppColors.loadingRed,
+                            overlayColor: const Color(0x33801818),
                           ),
                           child: Slider(
                             value: _loanAmount,
@@ -132,9 +133,9 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
                         ),
                         SliderTheme(
                           data: SliderThemeData(
-                            activeTrackColor: const Color(0xFF4C6A78),
-                            inactiveTrackColor: const Color(0xFFE6DED3),
-                            thumbColor: const Color(0xFF4C6A78),
+                            activeTrackColor: AppColors.loadingGreen,
+                            inactiveTrackColor: AppColors.faluMist,
+                            thumbColor: AppColors.loadingGreen,
                           ),
                           child: Slider(
                             value: _durationMonths.toDouble(),

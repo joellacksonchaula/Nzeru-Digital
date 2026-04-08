@@ -4,8 +4,11 @@ class AppColors {
   AppColors._();
 
   // ── Primary Background ──
-  static const Color background = Color(0xFFFFFFFF);
-  static const Color backgroundLight = Color(0xFFFAFAFA);
+  static const Color background = Color(0xFFFDF8F1);
+  static const Color backgroundLight = Color(0xFFF7F7F4);
+  static const Color shellOverlay = Color(0xFFF8F4EE);
+  static const Color tiffanyMist = Color(0xFFEAFBFA);
+  static const Color faluMist = Color(0xFFF8E5E5);
 
   // ── Black & Dark Grays ──
   static const Color black = Color(0xFF000000);
@@ -33,6 +36,7 @@ class AppColors {
   static const Color goldLight = Color(0xFFF3E5AB);
   static const Color goldDark = Color(0xFF996515);
   static const Color goldGlow = Color(0xFFFFD700);
+  static const Color goldString = Color(0xFFE2C15A);
 
   // ── Legacy Alias (so widgets referencing actionRed still compile) ──
   static const Color actionRed = faluRed;
@@ -55,6 +59,8 @@ class AppColors {
   static const Color success = Color(0xFF2E7D32);
   static const Color warning = Color(0xFFF57C00);
   static const Color info = Color(0xFF1976D2);
+  static const Color loadingRed = faluRedLight;
+  static const Color loadingGreen = Color(0xFF2E8B57);
 
   // ── Crypto / Chart ──
   static const Color chartPositive = Color(0xFF00D084);
@@ -68,6 +74,26 @@ class AppColors {
     colors: [tiffanyBlueDark, tiffanyBlue, tiffanyBlueLight],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
+  );
+
+  static const LinearGradient tiffanyFaluSplitGradient = LinearGradient(
+    colors: [
+      Color(0xFFBFF4F2),
+      tiffanyBlueLight,
+      tiffanyBlue,
+      faluRed,
+      faluRedLight,
+      Color(0xFFC04242),
+    ],
+    stops: [0.0, 0.30, 0.49, 0.51, 0.72, 1.0],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  static const LinearGradient faluTopBarGradient = LinearGradient(
+    colors: [faluRedDark, faluRed, faluRedLight],
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
   );
 
   // Secondary — Falu Red
@@ -93,9 +119,9 @@ class AppColors {
 
   // Light page background gradient
   static const LinearGradient lightGradient = LinearGradient(
-    colors: [background, Color(0xFFF0F0F0)],
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
+    colors: [background, shellOverlay],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
   );
 
   static const LinearGradient cardGradient = LinearGradient(

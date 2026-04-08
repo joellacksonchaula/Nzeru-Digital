@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+
 import '../../config/app_colors.dart';
 import '../../providers/loan_provider.dart';
+import '../../utils/currency_util.dart';
+import '../../widgets/dashboard_kit.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/progress_ring.dart';
-import '../../utils/currency_util.dart';
 
 class LoanDetailScreen extends StatelessWidget {
   const LoanDetailScreen({super.key});
@@ -18,24 +20,34 @@ class LoanDetailScreen extends StatelessWidget {
     final activeLoan = loanProvider.activeLoan;
     final loanPayments =
         loanProvider.payments.where((p) => p.loanId == activeLoan?.id).toList();
-    final distribution =
-        loanProvider.distributions.where((d) => d.loanId == activeLoan?.id).firstOrNull;
+    final distribution = loanProvider.distributions
+        .where((d) => d.loanId == activeLoan?.id)
+        .firstOrNull;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: Text('LOAN DETAILS',
-            style: GoogleFonts.playfairDisplay(
-                fontSize: 16, letterSpacing: 2, color: AppColors.tiffanyBlue)),
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.faluRed,
+        title: Text(
+          'LOAN DETAILS',
+          style: GoogleFonts.playfairDisplay(
+            fontSize: 16,
+            letterSpacing: 2,
+            color: Colors.white,
+          ),
+        ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: AppColors.tiffanyBlue),
           onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
         ),
       ),
-      body: activeLoan == null
-          ? const Center(child: Text('No active loan'))
-          : SingleChildScrollView(
+      body: Stack(
+        children: [
+          const DashboardBackdrop(darkMode: false),
+          if (activeLoan == null)
+            const Center(child: Text('No active loan'))
+          else
+            SingleChildScrollView(
               padding: const EdgeInsets.only(bottom: 30),
               child: Column(
                 children: [
@@ -48,32 +60,38 @@ class LoanDetailScreen extends StatelessWidget {
                       label: 'REPAID',
                     ),
                   ).animate().scale(duration: 600.ms, curve: Curves.easeOut),
-
                   const SizedBox(height: 20),
-
-                  // Loan info
                   GlassCard(
                     child: Column(
                       children: [
-                        _row('Loan Amount',
-                            CurrencyUtil.format(activeLoan.amount)),
+                        _row('Loan Amount', CurrencyUtil.format(activeLoan.amount)),
                         const Divider(color: AppColors.border, height: 24),
-                        _row('Interest Rate',
-                            '${activeLoan.interestRate.toStringAsFixed(0)}%'),
+                        _row(
+                          'Interest Rate',
+                          '${activeLoan.interestRate.toStringAsFixed(0)}%',
+                        ),
                         const Divider(color: AppColors.border, height: 24),
-                        _row('Total with Interest',
-                            CurrencyUtil.format(activeLoan.totalWithInterest)),
+                        _row(
+                          'Total with Interest',
+                          CurrencyUtil.format(activeLoan.totalWithInterest),
+                        ),
                         const Divider(color: AppColors.border, height: 24),
-                        _row('Monthly Payment',
-                            CurrencyUtil.format(activeLoan.monthlyPayment)),
+                        _row(
+                          'Monthly Payment',
+                          CurrencyUtil.format(activeLoan.monthlyPayment),
+                        ),
                         const Divider(color: AppColors.border, height: 24),
-                        _row('Total Repaid',
-                            CurrencyUtil.format(activeLoan.totalRepaid),
-                            valueColor: AppColors.success),
+                        _row(
+                          'Total Repaid',
+                          CurrencyUtil.format(activeLoan.totalRepaid),
+                          valueColor: AppColors.success,
+                        ),
                         const Divider(color: AppColors.border, height: 24),
-                        _row('Remaining',
-                            CurrencyUtil.format(activeLoan.remainingBalance),
-                            valueColor: AppColors.actionRed),
+                        _row(
+                          'Remaining',
+                          CurrencyUtil.format(activeLoan.remainingBalance),
+                          valueColor: AppColors.actionRed,
+                        ),
                         const Divider(color: AppColors.border, height: 24),
                         _row('Duration', '${activeLoan.durationMonths} months'),
                         const Divider(color: AppColors.border, height: 24),
@@ -81,64 +99,66 @@ class LoanDetailScreen extends StatelessWidget {
                       ],
                     ),
                   ).animate().fadeIn(delay: 300.ms),
-
-                  // Interest distribution
                   if (distribution != null) ...[
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                       child: Align(
                         alignment: Alignment.centerLeft,
-                        child: Text('INTEREST DISTRIBUTION',
-                            style: GoogleFonts.playfairDisplay(
-                                fontSize: 12,
-                                color: AppColors.textMuted,
-                                letterSpacing: 2)),
+                        child: Text(
+                          'INTEREST DISTRIBUTION',
+                          style: GoogleFonts.playfairDisplay(
+                            fontSize: 12,
+                            color: AppColors.textMuted,
+                            letterSpacing: 2,
+                          ),
+                        ),
                       ),
                     ),
                     GlassCard(
                       child: Column(
                         children: [
-                          _row('Total Interest',
-                              CurrencyUtil.format(distribution.totalInterest)),
+                          _row(
+                            'Total Interest',
+                            CurrencyUtil.format(distribution.totalInterest),
+                          ),
                           const Divider(color: AppColors.border, height: 24),
-                          _row('Your Share (50%)',
-                              CurrencyUtil
-                                  .format(distribution.userSavingsShare),
-                              valueColor: AppColors.success),
+                          _row(
+                            'Your Share (50%)',
+                            CurrencyUtil.format(distribution.userSavingsShare),
+                            valueColor: AppColors.success,
+                          ),
                           const Divider(color: AppColors.border, height: 24),
-                          _row('Platform Share (50%)',
-                              CurrencyUtil
-                                  .format(distribution.platformShare),
-                              valueColor: AppColors.info),
+                          _row(
+                            'Platform Share (50%)',
+                            CurrencyUtil.format(distribution.platformShare),
+                            valueColor: AppColors.info,
+                          ),
                         ],
                       ),
                     ).animate().fadeIn(delay: 400.ms),
                   ],
-
-                  // Payments history
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                     child: Align(
                       alignment: Alignment.centerLeft,
-                      child: Text('PAYMENT HISTORY',
-                          style: GoogleFonts.playfairDisplay(
-                              fontSize: 12,
-                              color: AppColors.textMuted,
-                              letterSpacing: 2)),
+                      child: Text(
+                        'PAYMENT HISTORY',
+                        style: GoogleFonts.playfairDisplay(
+                          fontSize: 12,
+                          color: AppColors.textMuted,
+                          letterSpacing: 2,
+                        ),
+                      ),
                     ),
                   ),
                   ...loanPayments.map(
                     (payment) => Container(
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 4),
+                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
                         color: AppColors.cardBg,
                         borderRadius: BorderRadius.circular(12),
-                        border:
-                            Border.all(color: AppColors.border, width: 0.5),
+                        border: Border.all(color: AppColors.border, width: 0.5),
                       ),
                       child: Row(
                         children: [
@@ -148,33 +168,43 @@ class LoanDetailScreen extends StatelessWidget {
                               color: AppColors.success.withAlpha(20),
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            child: const Icon(Icons.check_circle_outline,
-                                color: AppColors.success, size: 18),
+                            child: const Icon(
+                              Icons.check_circle_outline,
+                              color: AppColors.success,
+                              size: 18,
+                            ),
                           ),
                           const SizedBox(width: 14),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Payment',
-                                    style: GoogleFonts.inter(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.textPrimary)),
                                 Text(
-                                    DateFormat('dd MMM yyyy')
-                                        .format(payment.paymentDate),
-                                    style: GoogleFonts.inter(
-                                        fontSize: 11,
-                                        color: AppColors.textMuted)),
+                                  'Payment',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
+                                Text(
+                                  DateFormat('dd MMM yyyy').format(payment.paymentDate),
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11,
+                                    color: AppColors.textMuted,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
-                          Text(CurrencyUtil.format(payment.amountPaid),
-                              style: GoogleFonts.playfairDisplay(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.success)),
+                          Text(
+                            CurrencyUtil.format(payment.amountPaid),
+                            style: GoogleFonts.playfairDisplay(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.success,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -182,6 +212,8 @@ class LoanDetailScreen extends StatelessWidget {
                 ],
               ),
             ),
+        ],
+      ),
     );
   }
 
@@ -189,14 +221,18 @@ class LoanDetailScreen extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label,
-            style: GoogleFonts.inter(
-                fontSize: 13, color: AppColors.textMuted)),
-        Text(value,
-            style: GoogleFonts.playfairDisplay(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: valueColor ?? AppColors.textPrimary)),
+        Text(
+          label,
+          style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted),
+        ),
+        Text(
+          value,
+          style: GoogleFonts.playfairDisplay(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: valueColor ?? AppColors.textPrimary,
+          ),
+        ),
       ],
     );
   }

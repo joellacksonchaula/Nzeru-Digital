@@ -19,8 +19,8 @@ class ProgressRing extends StatefulWidget {
     this.strokeWidth = 12,
     this.centerText,
     this.label,
-    this.progressColor = AppColors.gold,
-    this.trackColor = const Color(0xFF2A2A2A),
+    this.progressColor = AppColors.loadingGreen,
+    this.trackColor = AppColors.faluMist,
   });
 
   @override

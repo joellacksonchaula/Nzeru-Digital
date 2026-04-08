@@ -11,8 +11,8 @@ class AppTheme {
       scaffoldBackgroundColor: AppColors.background,
       primaryColor: AppColors.tiffanyBlue,
       colorScheme: const ColorScheme.light(
-        primary: AppColors.tiffanyBlue,
-        secondary: AppColors.tiffanyBlueLight,
+        primary: AppColors.faluRed,
+        secondary: AppColors.tiffanyBlue,
         surface: AppColors.background,
         error: AppColors.faluRed,
         onPrimary: Colors.white,
@@ -22,15 +22,15 @@ class AppTheme {
       ),
       textTheme: _textTheme,
       appBarTheme: AppBarTheme(
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.faluRed,
         elevation: 0,
         centerTitle: true,
         titleTextStyle: GoogleFonts.playfairDisplay(
           fontSize: 20,
           fontWeight: FontWeight.bold,
-          color: AppColors.textPrimary,
+          color: Colors.white,
         ),
-        iconTheme: const IconThemeData(color: AppColors.textPrimary),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       cardTheme: CardThemeData(
         color: AppColors.background,
@@ -73,7 +73,7 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.backgroundLight,
+        fillColor: Colors.white.withValues(alpha: 0.86),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
         hintStyle: GoogleFonts.inter(
@@ -85,19 +85,19 @@ class AppTheme {
           fontSize: 14,
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderRadius: BorderRadius.circular(18),
+          borderSide: const BorderSide(color: AppColors.goldString),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderRadius: BorderRadius.circular(18),
+          borderSide: const BorderSide(color: AppColors.goldString),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.tiffanyBlue, width: 1.5),
+          borderRadius: BorderRadius.circular(18),
+          borderSide: const BorderSide(color: AppColors.faluRedLight, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(18),
           borderSide: const BorderSide(color: AppColors.faluRed),
         ),
         prefixIconColor: AppColors.textMuted,
@@ -112,6 +112,11 @@ class AppTheme {
       dividerTheme: const DividerThemeData(
         color: AppColors.border,
         thickness: 0.5,
+      ),
+      progressIndicatorTheme: const ProgressIndicatorThemeData(
+        color: AppColors.loadingRed,
+        linearTrackColor: AppColors.tiffanyMist,
+        circularTrackColor: AppColors.faluMist,
       ),
       iconTheme: const IconThemeData(
         color: AppColors.textPrimary,
@@ -137,8 +142,8 @@ class AppTheme {
       scaffoldBackgroundColor: const Color(0xFF091018),
       primaryColor: AppColors.tiffanyBlue,
       colorScheme: const ColorScheme.dark(
-        primary: AppColors.tiffanyBlue,
-        secondary: AppColors.tiffanyBlueLight,
+        primary: AppColors.faluRedLight,
+        secondary: AppColors.tiffanyBlue,
         surface: Color(0xFF101720),
         error: AppColors.faluRed,
         onPrimary: Colors.black,
@@ -151,7 +156,7 @@ class AppTheme {
         displayColor: Colors.white,
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: const Color(0xFF091018),
+        backgroundColor: AppColors.faluRedDark,
         elevation: 0,
         centerTitle: true,
         titleTextStyle: GoogleFonts.playfairDisplay(
@@ -199,19 +204,19 @@ class AppTheme {
           fontSize: 14,
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFF223041)),
+          borderRadius: BorderRadius.circular(18),
+          borderSide: const BorderSide(color: AppColors.goldDark),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFF223041)),
+          borderRadius: BorderRadius.circular(18),
+          borderSide: const BorderSide(color: AppColors.goldDark),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.tiffanyBlue, width: 1.5),
+          borderRadius: BorderRadius.circular(18),
+          borderSide: const BorderSide(color: AppColors.faluRedLight, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(18),
           borderSide: const BorderSide(color: AppColors.faluRed),
         ),
         prefixIconColor: const Color(0xFF9BA6B2),
@@ -219,6 +224,11 @@ class AppTheme {
       dividerTheme: const DividerThemeData(
         color: Color(0xFF223041),
         thickness: 0.5,
+      ),
+      progressIndicatorTheme: const ProgressIndicatorThemeData(
+        color: AppColors.loadingRed,
+        linearTrackColor: Color(0xFF17343B),
+        circularTrackColor: Color(0xFF3D1D1D),
       ),
       iconTheme: const IconThemeData(
         color: Colors.white,

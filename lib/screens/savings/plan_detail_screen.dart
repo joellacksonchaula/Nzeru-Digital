@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+
 import '../../config/app_colors.dart';
 import '../../providers/savings_provider.dart';
+import '../../utils/currency_util.dart';
+import '../../widgets/dashboard_kit.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/progress_ring.dart';
-import '../../utils/currency_util.dart';
 
 class PlanDetailScreen extends StatelessWidget {
   const PlanDetailScreen({super.key});
@@ -16,30 +18,37 @@ class PlanDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final savings = context.watch<SavingsProvider>();
     final plan = savings.plans.isNotEmpty ? savings.plans[0] : null;
-    final planTransactions = savings.transactions
-        .where((t) => t.planId == plan?.id)
-        .toList();
+    final planTransactions =
+        savings.transactions.where((t) => t.planId == plan?.id).toList();
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: Text('PLAN DETAILS',
-            style: GoogleFonts.playfairDisplay(
-                fontSize: 16, letterSpacing: 2, color: AppColors.tiffanyBlue)),
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.faluRed,
+        title: Text(
+          'PLAN DETAILS',
+          style: GoogleFonts.playfairDisplay(
+            fontSize: 16,
+            letterSpacing: 2,
+            color: Colors.white,
+          ),
+        ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: AppColors.tiffanyBlue),
           onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
         ),
       ),
-      body: plan == null
-          ? const Center(child: Text('No plan found'))
-          : SingleChildScrollView(
+      body: Stack(
+        children: [
+          const DashboardBackdrop(darkMode: false),
+          if (plan == null)
+            const Center(child: Text('No plan found'))
+          else
+            SingleChildScrollView(
               padding: const EdgeInsets.only(bottom: 30),
               child: Column(
                 children: [
                   const SizedBox(height: 20),
-                  // Progress Ring
                   Center(
                     child: ProgressRing(
                       progress: plan.progressPercent,
@@ -58,31 +67,32 @@ class PlanDetailScreen extends StatelessWidget {
                     ),
                   ).animate().fadeIn(delay: 300.ms),
                   const SizedBox(height: 30),
-
-                  // Plan Info
                   GlassCard(
                     child: Column(
                       children: [
                         _infoRow('Frequency', plan.frequencyLabel),
                         const Divider(color: AppColors.border, height: 24),
-                        _infoRow('Amount per Period',
-                            CurrencyUtil.format(plan.amountPerPeriod)),
+                        _infoRow(
+                          'Amount per Period',
+                          CurrencyUtil.format(plan.amountPerPeriod),
+                        ),
                         const Divider(color: AppColors.border, height: 24),
                         _infoRow('Duration', '${plan.durationMonths} months'),
                         const Divider(color: AppColors.border, height: 24),
-                        _infoRow('Start',
-                            DateFormat('dd MMM yyyy').format(plan.startDate)),
+                        _infoRow(
+                          'Start',
+                          DateFormat('dd MMM yyyy').format(plan.startDate),
+                        ),
                         const Divider(color: AppColors.border, height: 24),
-                        _infoRow('End',
-                            DateFormat('dd MMM yyyy').format(plan.endDate)),
+                        _infoRow(
+                          'End',
+                          DateFormat('dd MMM yyyy').format(plan.endDate),
+                        ),
                       ],
                     ),
                   ).animate().fadeIn(delay: 400.ms),
-
-                  // Transactions
                   Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
@@ -97,14 +107,12 @@ class PlanDetailScreen extends StatelessWidget {
                   ),
                   ...planTransactions.map(
                     (txn) => Container(
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 4),
+                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
                         color: AppColors.cardBg,
                         borderRadius: BorderRadius.circular(12),
-                        border:
-                            Border.all(color: AppColors.border, width: 0.5),
+                        border: Border.all(color: AppColors.border, width: 0.5),
                       ),
                       child: Row(
                         children: [
@@ -131,19 +139,21 @@ class PlanDetailScreen extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(txn.typeLabel,
-                                    style: GoogleFonts.inter(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.textPrimary,
-                                    )),
                                 Text(
-                                    DateFormat('dd MMM yyyy')
-                                        .format(txn.date),
-                                    style: GoogleFonts.inter(
-                                      fontSize: 11,
-                                      color: AppColors.textMuted,
-                                    )),
+                                  txn.typeLabel,
+                                  style: GoogleFonts.inter(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
+                                Text(
+                                  DateFormat('dd MMM yyyy').format(txn.date),
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11,
+                                    color: AppColors.textMuted,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -164,6 +174,8 @@ class PlanDetailScreen extends StatelessWidget {
                 ],
               ),
             ),
+        ],
+      ),
     );
   }
 
@@ -171,14 +183,18 @@ class PlanDetailScreen extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label,
-            style: GoogleFonts.inter(
-                fontSize: 13, color: AppColors.textMuted)),
-        Text(value,
-            style: GoogleFonts.playfairDisplay(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary)),
+        Text(
+          label,
+          style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted),
+        ),
+        Text(
+          value,
+          style: GoogleFonts.playfairDisplay(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary,
+          ),
+        ),
       ],
     );
   }

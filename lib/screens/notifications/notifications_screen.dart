@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../config/app_colors.dart';
+import '../../widgets/dashboard_kit.dart';
 import '../../widgets/notification_card.dart';
 
 class NotificationsScreen extends StatelessWidget {
@@ -55,14 +56,14 @@ class NotificationsScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: Text('NZELU NOTIFICATIONS',
             style: GoogleFonts.playfairDisplay(
-                fontSize: 16, letterSpacing: 2, color: AppColors.tiffanyBlue)),
-        backgroundColor: Colors.transparent,
+                fontSize: 16, letterSpacing: 2, color: Colors.white)),
+        backgroundColor: AppColors.faluRed,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: AppColors.tiffanyBlue),
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
@@ -74,22 +75,27 @@ class NotificationsScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        itemCount: notifications.length,
-        itemBuilder: (context, index) {
-          final n = notifications[index];
-          return NotificationCard(
-            icon: n.icon,
-            title: n.title,
-            message: n.message,
-            time: n.time,
-            iconColor: n.color,
-          ).animate().fadeIn(
-                delay: Duration(milliseconds: 100 * index),
-                duration: 400.ms,
-              );
-        },
+      body: Stack(
+        children: [
+          const DashboardBackdrop(darkMode: false),
+          ListView.builder(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            itemCount: notifications.length,
+            itemBuilder: (context, index) {
+              final n = notifications[index];
+              return NotificationCard(
+                icon: n.icon,
+                title: n.title,
+                message: n.message,
+                time: n.time,
+                iconColor: n.color,
+              ).animate().fadeIn(
+                    delay: Duration(milliseconds: 100 * index),
+                    duration: 400.ms,
+                  );
+            },
+          ),
+        ],
       ),
     );
   }

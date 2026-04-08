@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../config/app_colors.dart';
 import '../config/app_routes.dart';
 import '../providers/auth_provider.dart';
+import '../widgets/dashboard_kit.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -39,11 +40,14 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        children: [
+          const DashboardBackdrop(darkMode: false),
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
             // Logo icon — Tiffany Blue gradient
             Container(
               width: 100,
@@ -96,16 +100,19 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
             ).animate().fadeIn(delay: 800.ms, duration: 800.ms),
             const SizedBox(height: 60),
-            SizedBox(
-              width: 30,
-              height: 30,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: AppColors.tiffanyBlue.withAlpha(150),
-              ),
-            ).animate().fadeIn(delay: 1200.ms, duration: 600.ms),
-          ],
-        ),
+                SizedBox(
+                  width: 30,
+                  height: 30,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    color: AppColors.loadingRed,
+                    backgroundColor: AppColors.tiffanyMist,
+                  ),
+                ).animate().fadeIn(delay: 1200.ms, duration: 600.ms),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

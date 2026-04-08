@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../config/app_colors.dart';
 import '../config/app_routes.dart';
+import '../widgets/dashboard_kit.dart';
 import '../widgets/gold_button.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -49,10 +50,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: Column(
-          children: [
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        children: [
+          const DashboardBackdrop(darkMode: false),
+          SafeArea(
+            child: Column(
+              children: [
             // Skip button
             Align(
               alignment: Alignment.topRight,
@@ -86,15 +90,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           height: 120,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: AppColors.tiffanyBlue.withAlpha(15),
+                            gradient: const LinearGradient(
+                              colors: [
+                                AppColors.tiffanyBlueLight,
+                                AppColors.tiffanyBlue,
+                                AppColors.faluRed,
+                              ],
+                              stops: [0.0, 0.5, 1.0],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
                             border: Border.all(
-                              color: AppColors.tiffanyBlue.withAlpha(40),
+                              color: AppColors.goldString,
                               width: 2,
                             ),
                           ),
                           child: Icon(
                             page.icon,
-                            color: AppColors.tiffanyBlue,
+                            color: Colors.white,
                             size: 56,
                           ),
                         ).animate().scale(
@@ -150,13 +163,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   height: 8,
                   decoration: BoxDecoration(
                     color: _currentPage == i
-                        ? AppColors.tiffanyBlue
+                        ? (i.isEven
+                            ? AppColors.loadingRed
+                            : AppColors.loadingGreen)
                         : AppColors.textMuted.withAlpha(60),
                     borderRadius: BorderRadius.circular(4),
                     boxShadow: _currentPage == i
                         ? [
                             BoxShadow(
-                              color: AppColors.tiffanyBlue.withAlpha(60),
+                              color: (i.isEven
+                                      ? AppColors.loadingRed
+                                      : AppColors.loadingGreen)
+                                  .withAlpha(60),
                               blurRadius: 8,
                             ),
                           ]
@@ -187,8 +205,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
             ),
             const SizedBox(height: 40),
-          ],
-        ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

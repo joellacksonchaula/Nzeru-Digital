@@ -1,3 +1,4 @@
+import '../config/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -15,7 +16,8 @@ class BottomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFFCFBF8),
+        color: Colors.white.withValues(alpha: 0.92),
+        border: Border(top: BorderSide(color: AppColors.goldString.withValues(alpha: 0.55))),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.10),
@@ -90,15 +92,15 @@ class _NavItem extends StatelessWidget {
         duration: const Duration(milliseconds: 250),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isActive ? const Color(0xFFD6F5F4) : Colors.transparent,
+          color: isActive ? AppColors.tiffanyMist : Colors.transparent,
           borderRadius: BorderRadius.circular(26),
           border: isActive
-              ? Border.all(color: const Color(0xFF8DE8E5))
+              ? Border.all(color: AppColors.goldString)
               : Border.all(color: Colors.transparent),
           boxShadow: isActive
               ? [
                   BoxShadow(
-                    color: const Color(0xFF0ABAB5).withValues(alpha: 0.14),
+                    color: AppColors.faluRed.withValues(alpha: 0.12),
                     blurRadius: 18,
                     offset: const Offset(0, 8),
                   ),
@@ -110,7 +112,7 @@ class _NavItem extends StatelessWidget {
           children: [
             Icon(
               icon,
-              color: isActive ? const Color(0xFF088F8B) : const Color(0xFF8E8374),
+              color: isActive ? AppColors.faluRed : const Color(0xFF8E8374),
               size: 24,
             ),
             const SizedBox(height: 4),
@@ -119,7 +121,7 @@ class _NavItem extends StatelessWidget {
               style: GoogleFonts.inter(
                 fontSize: 10,
                 fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                color: isActive ? const Color(0xFF088F8B) : const Color(0xFF6F665C),
+                color: isActive ? AppColors.faluRed : const Color(0xFF6F665C),
               ),
             ),
           ],

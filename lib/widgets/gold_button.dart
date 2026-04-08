@@ -66,16 +66,31 @@ class _GoldButtonState extends State<GoldButton>
           width: widget.width,
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           decoration: BoxDecoration(
-            gradient: widget.isOutlined ? null : AppColors.tiffanyGradient,
+            gradient: widget.isOutlined
+                ? null
+                : const LinearGradient(
+                    colors: [
+                      AppColors.tiffanyBlue,
+                      AppColors.tiffanyBlueLight,
+                      AppColors.faluRed,
+                      AppColors.faluRedLight,
+                    ],
+                    stops: [0.0, 0.48, 0.52, 1.0],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
             borderRadius: BorderRadius.circular(14),
-            border: widget.isOutlined
-                ? Border.all(color: AppColors.tiffanyBlue, width: 1.5)
-                : null,
+            border: Border.all(
+              color: widget.isOutlined
+                  ? AppColors.goldString
+                  : AppColors.goldString.withValues(alpha: 0.75),
+              width: 1.5,
+            ),
             boxShadow: widget.isOutlined
                 ? null
                 : [
                     BoxShadow(
-                      color: AppColors.tiffanyBlue.withAlpha(60),
+                      color: AppColors.faluRed.withValues(alpha: 0.22),
                       blurRadius: 20,
                       offset: const Offset(0, 6),
                     ),
@@ -92,8 +107,8 @@ class _GoldButtonState extends State<GoldButton>
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
                     color: widget.isOutlined
-                        ? AppColors.tiffanyBlue
-                        : Colors.white,
+                        ? AppColors.loadingRed
+                        : AppColors.loadingGreen,
                   ),
                 )
               else ...[
@@ -102,7 +117,7 @@ class _GoldButtonState extends State<GoldButton>
                     widget.icon,
                     size: 20,
                     color: widget.isOutlined
-                        ? AppColors.tiffanyBlue
+                        ? AppColors.faluRed
                         : Colors.white,
                   ),
                   const SizedBox(width: 10),
@@ -112,9 +127,9 @@ class _GoldButtonState extends State<GoldButton>
                   style: GoogleFonts.playfairDisplay(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
-                  color: widget.isOutlined
-                      ? AppColors.tiffanyBlue
-                      : Colors.white,
+                    color: widget.isOutlined
+                        ? AppColors.faluRed
+                        : Colors.white,
                     letterSpacing: 1.5,
                   ),
                 ),
