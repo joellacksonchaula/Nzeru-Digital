@@ -76,20 +76,6 @@ class AppColors {
     end: Alignment.bottomRight,
   );
 
-  static const LinearGradient tiffanyFaluSplitGradient = LinearGradient(
-    colors: [
-      Color(0xFFBFF4F2),
-      tiffanyBlueLight,
-      tiffanyBlue,
-      faluRed,
-      faluRedLight,
-      Color(0xFFC04242),
-    ],
-    stops: [0.0, 0.30, 0.49, 0.51, 0.72, 1.0],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
-
   static const LinearGradient faluTopBarGradient = LinearGradient(
     colors: [faluRedDark, faluRed, faluRedLight],
     begin: Alignment.centerLeft,

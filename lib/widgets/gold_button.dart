@@ -66,31 +66,19 @@ class _GoldButtonState extends State<GoldButton>
           width: widget.width,
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           decoration: BoxDecoration(
-            gradient: widget.isOutlined
-                ? null
-                : const LinearGradient(
-                    colors: [
-                      AppColors.tiffanyBlue,
-                      AppColors.tiffanyBlueLight,
-                      AppColors.faluRed,
-                      AppColors.faluRedLight,
-                    ],
-                    stops: [0.0, 0.48, 0.52, 1.0],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+            color: widget.isOutlined ? Colors.transparent : AppColors.tiffanyBlue,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: widget.isOutlined
-                  ? AppColors.goldString
-                  : AppColors.goldString.withValues(alpha: 0.75),
+                  ? AppColors.tiffanyBlue
+                  : AppColors.faluRed.withValues(alpha: 0.60),
               width: 1.5,
             ),
             boxShadow: widget.isOutlined
                 ? null
                 : [
                     BoxShadow(
-                      color: AppColors.faluRed.withValues(alpha: 0.22),
+                      color: AppColors.tiffanyBlue.withAlpha(60),
                       blurRadius: 20,
                       offset: const Offset(0, 6),
                     ),

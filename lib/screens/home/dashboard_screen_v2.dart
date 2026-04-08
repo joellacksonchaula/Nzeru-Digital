@@ -48,7 +48,7 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
     final darkMode = themeMode.isDarkMode;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: darkMode ? const Color(0xFF091018) : const Color(0xFFF7F4EC),
       body: Stack(
         children: [
           DashboardBackdrop(darkMode: darkMode),
@@ -311,11 +311,7 @@ class _PhoneHeader extends StatelessWidget {
             height: 4,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(999),
-              gradient: LinearGradient(
-                colors: darkMode
-                    ? const [Color(0xFF0ABAB5), Color(0x66D4AF37)]
-                    : const [Color(0xFF0ABAB5), Color(0x66D4AF37)],
-              ),
+              color: const Color(0xFF0ABAB5),
             ),
           ),
         ],
@@ -370,11 +366,7 @@ class _SectionRow extends StatelessWidget {
           width: 110,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(999),
-            gradient: LinearGradient(
-              colors: darkMode
-                  ? const [Color(0xFF0ABAB5), Color(0x66D4AF37)]
-                  : const [Color(0xFF0ABAB5), Color(0x66D4AF37)],
-            ),
+            color: const Color(0xFF0ABAB5),
           ),
         ),
       ],
@@ -760,14 +752,7 @@ class _QuickActionsRow extends StatelessWidget {
               child: Container(
                 height: 72,
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [
-                      Color(0xFF8DE8E5),
-                      Color(0xFF0ABAB5),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  color: const Color(0xFF8DE8E5),
                   borderRadius: BorderRadius.circular(18),
                   boxShadow: [
                     BoxShadow(

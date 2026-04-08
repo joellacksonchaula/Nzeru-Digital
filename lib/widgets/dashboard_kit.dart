@@ -29,7 +29,7 @@ class DashboardPage extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: isDark ? const Color(0xFF091018) : const Color(0xFFF7F4EE),
       body: Stack(
         children: [
           DashboardBackdrop(darkMode: isDark),
@@ -110,7 +110,7 @@ class DashboardHeader extends StatelessWidget {
                     fontSize: 14,
                     height: 1.45,
                     color:
-                        isDark ? const Color(0xFFD0D5DC) : AppColors.faluRed,
+                        isDark ? const Color(0xFFD0D5DC) : const Color(0xFF6F665C),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -177,16 +177,6 @@ class DashboardPanel extends StatelessWidget {
                     offset: Offset(0, 20),
                   ),
                 ],
-                gradient: LinearGradient(
-                  colors: isDark
-                      ? const [Color(0xCC1A2330), Color(0xCC141A21)]
-                      : [
-                          Colors.white.withValues(alpha: 0.92),
-                          AppColors.background.withValues(alpha: 0.78),
-                        ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
               ),
               child: child,
             ),
@@ -790,19 +780,21 @@ class DashboardBackdrop extends StatelessWidget {
       children: [
         Container(
           decoration: BoxDecoration(
-            gradient: resolvedDarkMode
-                ? const LinearGradient(
-                    colors: [
-                      Color(0xFF17212B),
-                      Color(0xFF1A2028),
-                      Color(0xFF2A1216),
-                      Color(0xFF4A161B),
+            gradient: LinearGradient(
+              colors: resolvedDarkMode
+                  ? const [
+                      Color(0xFF06080C),
+                      Color(0xFF0B1118),
+                      Color(0xFF12161F),
+                    ]
+                  : const [
+                      Color(0xFFF9F7F1),
+                      Color(0xFFF4F0E6),
+                      Color(0xFFF8F5EE),
                     ],
-                    stops: [0.0, 0.49, 0.51, 1.0],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  )
-                : AppColors.tiffanyFaluSplitGradient,
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
           ),
         ),
         Positioned(
@@ -824,7 +816,7 @@ class DashboardBackdrop extends StatelessWidget {
           left: -40,
           child: orb(
             220,
-            resolvedDarkMode ? const Color(0x160ABAB5) : const Color(0x260ABAB5),
+            resolvedDarkMode ? const Color(0x140ABAB5) : const Color(0x148FD7A5),
           ),
         ),
         Positioned(
@@ -832,7 +824,7 @@ class DashboardBackdrop extends StatelessWidget {
           right: -40,
           child: orb(
             220,
-            resolvedDarkMode ? const Color(0x18D4AF37) : const Color(0x20D4AF37),
+            resolvedDarkMode ? const Color(0x12D4AF37) : const Color(0x16D4AF37),
           ),
         ),
         Positioned(
@@ -840,7 +832,7 @@ class DashboardBackdrop extends StatelessWidget {
           left: 100,
           child: orb(
             240,
-            resolvedDarkMode ? const Color(0x20801818) : const Color(0x22801818),
+            resolvedDarkMode ? const Color(0x12801818) : const Color(0x14801818),
           ),
         ),
       ],
@@ -858,9 +850,7 @@ class _GridGlowPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final linePaint = Paint()
-      ..color = darkMode
-          ? const Color(0x18E2C15A)
-          : AppColors.goldString.withValues(alpha: 0.28)
+      ..color = darkMode ? const Color(0x22DDE7F4) : const Color(0xFFE8E1D5)
       ..strokeWidth = 1;
 
     for (var i = 0; i <= 12; i++) {

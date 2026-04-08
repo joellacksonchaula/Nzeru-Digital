@@ -32,7 +32,7 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
     final monthlyPayment = totalWithInterest / _durationMonths;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: const Color(0xFFF7F4EE),
       body: Stack(
         children: [
           const DashboardBackdrop(),
