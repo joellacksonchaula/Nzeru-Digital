@@ -3,6 +3,16 @@ import '../models/user.dart';
 import '../models/user_settings.dart';
 import '../services/api_service.dart';
 
+Map<String, dynamic> _asStringKeyedMap(Object? value) {
+  if (value is Map<String, dynamic>) {
+    return Map<String, dynamic>.from(value);
+  }
+  if (value is Map) {
+    return Map<String, dynamic>.from(value);
+  }
+  return <String, dynamic>{};
+}
+
 class AuthProvider with ChangeNotifier {
   final ApiService _api = ApiService();
   User? _user;
@@ -122,7 +132,8 @@ class AuthProvider with ChangeNotifier {
   Future<void> _fetchCurrentUser() async {
     try {
       final data = await _api.getCurrentUser();
-      final userData = Map<String, dynamic>.from(data['user'] ?? data);
+      final userMap = _asStringKeyedMap(data['user']);
+      final userData = userMap.isNotEmpty ? userMap : _asStringKeyedMap(data);
       userData['phone'] = data['phone'];
       userData['savings_balance'] = data['savings_balance'];
       userData['credit_balance'] = data['credit_balance'] ?? data['loan_balance'];
@@ -130,7 +141,7 @@ class AuthProvider with ChangeNotifier {
       userData['tracked_savings_balance'] =
           data['tracked_savings_balance'] ?? data['savings_balance'];
       userData['financial_score'] = data['financial_score'];
-      userData['settings'] = data['settings'] ?? {};
+      userData['settings'] = _asStringKeyedMap(data['settings']);
       _user = User.fromJson(userData);
     } catch (e) {
       debugPrint('Error fetching current user: $e');
@@ -142,8 +153,9 @@ class AuthProvider with ChangeNotifier {
   Future<void> refreshProfile() async {
     try {
       final data = await _api.getDashboard();
-      final userData = data['user'] ?? {};
-      final mergedUser = {
+      final userData = _asStringKeyedMap(data['user']);
+      final userSettings = _asStringKeyedMap(userData['settings']);
+      final mergedUser = <String, dynamic>{
         ...userData,
         'id': userData['id']?.toString() ?? _user?.id ?? '',
         'name': userData['name'] ?? _user?.name ?? 'User',
@@ -156,7 +168,9 @@ class AuthProvider with ChangeNotifier {
             data['tracked_savings_balance'] ?? _user?.trackedSavingsBalance ?? 0,
         'financial_score':
             data['financial_score'] ?? _user?.financialScore ?? 0,
-        'settings': userData['settings'] ?? _user?.settings.toJson() ?? {},
+        'settings': userSettings.isNotEmpty
+            ? userSettings
+            : (_user?.settings.toJson() ?? <String, dynamic>{}),
       };
       _user = User.fromJson(mergedUser);
       notifyListeners();
@@ -176,9 +190,7 @@ class AuthProvider with ChangeNotifier {
             ),
             financialScore:
                 int.tryParse(data['financial_score']?.toString() ?? ''),
-            settings: UserSettings.fromJson(
-              data['settings'] as Map<String, dynamic>? ?? {},
-            ),
+            settings: UserSettings.fromJson(_asStringKeyedMap(data['settings'])),
           );
           notifyListeners();
         }
@@ -191,7 +203,7 @@ class AuthProvider with ChangeNotifier {
       final data = await _api.updateSettings(newSettings.toJson());
       if (_user != null) {
         _user = _user!.copyWith(
-          settings: UserSettings.fromJson(data),
+          settings: UserSettings.fromJson(_asStringKeyedMap(data)),
         );
         notifyListeners();
       }

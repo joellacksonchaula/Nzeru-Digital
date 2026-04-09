@@ -26,6 +26,8 @@ class User {
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
+    final settingsData = json['settings'];
+
     return User(
       id: json['id']?.toString() ?? '',
       name: json['name']?.toString() ?? 'User',
@@ -42,7 +44,13 @@ class User {
           0.0,
       financialScore: int.tryParse(json['financial_score']?.toString() ?? '') ?? 0,
       avatarUrl: json['avatar_url']?.toString(),
-      settings: UserSettings.fromJson(json['settings'] as Map<String, dynamic>? ?? const {}),
+      settings: UserSettings.fromJson(
+        settingsData is Map<String, dynamic>
+            ? settingsData
+            : settingsData is Map
+                ? Map<String, dynamic>.from(settingsData)
+                : const <String, dynamic>{},
+      ),
     );
   }
 
