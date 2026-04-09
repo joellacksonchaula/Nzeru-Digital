@@ -15,7 +15,9 @@ router.register(r'profile', UserProfileViewSet)
 router.register(r'savings', SavingsPlanViewSet)
 router.register(r'transactions', TransactionViewSet)
 router.register(r'loans', LoanViewSet)
+router.register(r'credits', LoanViewSet, basename='credits')
 router.register(r'payments', LoanPaymentViewSet)
+router.register(r'credit-payments', LoanPaymentViewSet, basename='credit-payments')
 router.register(r'penalties', PenaltyViewSet)
 router.register(r'interest', InterestDistributionViewSet)
 router.register(r'notifications', NotificationViewSet)
@@ -32,6 +34,7 @@ urlpatterns = [
 
     # Business logic endpoints
     path('loans/eligibility/', loan_eligibility, name='loan_eligibility'),
+    path('credits/eligibility/', loan_eligibility, name='credit_eligibility'),
     path('reports/', financial_report, name='financial_report'),
 
     # Router URLs

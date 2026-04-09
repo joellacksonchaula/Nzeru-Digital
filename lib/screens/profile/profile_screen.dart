@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 
 import '../../config/app_routes.dart';
 import '../../providers/auth_provider.dart';
-import '../../providers/theme_mode_provider.dart';
 import '../../widgets/dashboard_kit.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -13,14 +12,13 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
-    final themeMode = context.watch<ThemeModeProvider>();
     final user = auth.user;
 
     return DashboardPage(
       eyebrow: 'Nzelu Profile',
       title: user?.name ?? 'Your profile',
       subtitle:
-          'This profile page now keeps personal info, settings, and theme controls together in one vertical container.',
+          'Your live profile, tracked savings, and security shortcuts stay synced with the backend from here.',
       children: [
         DashboardPanel(
           child: Column(
@@ -43,13 +41,24 @@ class ProfileScreen extends StatelessWidget {
                 label: 'Phone',
                 value: (user?.phone ?? '').trim().isEmpty ? '--' : user!.phone,
               ),
+              _ProfileRow(
+                icon: Icons.savings_outlined,
+                label: 'Tracked savings',
+                value: user == null ? '--' : user.trackedSavingsBalance.toStringAsFixed(2),
+              ),
+              _ProfileRow(
+                icon: Icons.account_balance_wallet_outlined,
+                label: 'Outstanding credit',
+                value: user == null ? '--' : user.creditBalance.toStringAsFixed(2),
+              ),
               const SizedBox(height: 18),
               const _SectionTitle(label: 'Settings'),
               const SizedBox(height: 12),
-              const _ProfileRow(
-                icon: Icons.security_rounded,
-                label: 'Security',
-                value: 'Protected account',
+              _ProfileAction(
+                icon: Icons.settings_outlined,
+                label: 'Open settings',
+                detail: 'Security, preferences, financial defaults, and support',
+                onTap: () => Navigator.pushNamed(context, AppRoutes.settings),
               ),
               _ProfileAction(
                 icon: Icons.logout_rounded,
@@ -59,29 +68,6 @@ class ProfileScreen extends StatelessWidget {
                   auth.logout();
                   Navigator.pushReplacementNamed(context, AppRoutes.login);
                 },
-              ),
-              const SizedBox(height: 18),
-              const _SectionTitle(label: 'Themes'),
-              const SizedBox(height: 12),
-              SwitchListTile.adaptive(
-                contentPadding: EdgeInsets.zero,
-                value: themeMode.isDarkMode,
-                activeColor: const Color(0xFF0ABAB5),
-                title: Text(
-                  themeMode.isDarkMode ? 'Dark theme' : 'Light theme',
-                  style: GoogleFonts.oswald(
-                    fontSize: 18,
-                    color: const Color(0xFF171412),
-                  ),
-                ),
-                subtitle: Text(
-                  'Switch the whole app appearance from this profile panel.',
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    color: const Color(0xFF6F665C),
-                  ),
-                ),
-                onChanged: themeMode.setDarkMode,
               ),
             ],
           ),

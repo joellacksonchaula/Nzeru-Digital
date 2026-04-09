@@ -46,7 +46,7 @@ class SavingsTransaction {
     switch (t) {
       case TransactionType.deposit: return 'DEPOSIT';
       case TransactionType.penaltyDeduction: return 'PENALTY';
-      case TransactionType.interestReward: return 'INTEREST';
+      case TransactionType.interestReward: return 'INTEREST_REWARD';
       case TransactionType.withdrawal: return 'WITHDRAWAL';
     }
   }
@@ -55,7 +55,9 @@ class SavingsTransaction {
     switch (s.toUpperCase()) {
       case 'DEPOSIT': return TransactionType.deposit;
       case 'PENALTY': return TransactionType.penaltyDeduction;
-      case 'INTEREST': return TransactionType.interestReward;
+      case 'INTEREST':
+      case 'INTEREST_REWARD':
+        return TransactionType.interestReward;
       case 'WITHDRAWAL': return TransactionType.withdrawal;
       default: return TransactionType.deposit;
     }

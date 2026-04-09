@@ -64,7 +64,7 @@ set -u  # Only fail on undefined variables
 **Before:**
 ```python
 CORS_ALLOWED_ORIGINS = [
-    "https://savingsutl-production.up.railway.app",
+  "https://savingsutl-production-bf7e.up.railway.app",
     "https://glittering-cobbler-1d32f6.netlify.app",
 ]
 ```
@@ -72,7 +72,7 @@ CORS_ALLOWED_ORIGINS = [
 **After:**
 ```python
 CORS_ALLOWED_ORIGINS = [
-    "https://savingsutl-production.up.railway.app",
+  "https://savingsutl-production-bf7e.up.railway.app",
     "https://glittering-cobbler-1d32f6.netlify.app",
     "http://localhost:3000",
     "http://localhost:8081",

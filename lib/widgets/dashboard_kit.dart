@@ -464,6 +464,27 @@ class DashboardSavingsPlanCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        if (plan.isTrial) ...[
+                          Container(
+                            margin: const EdgeInsets.only(bottom: 6),
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFD4AF37).withValues(alpha: 0.16),
+                              borderRadius: BorderRadius.circular(999),
+                              border: Border.all(
+                                color: const Color(0xFFD4AF37).withValues(alpha: 0.32),
+                              ),
+                            ),
+                            child: Text(
+                              'TRIAL MODE',
+                              style: GoogleFonts.oswald(
+                                fontSize: 11,
+                                letterSpacing: 1.2,
+                                color: const Color(0xFFB7821E),
+                              ),
+                            ),
+                          ),
+                        ],
                         Text(
                           plan.title,
                           style: GoogleFonts.oswald(
@@ -797,17 +818,6 @@ class DashboardBackdrop extends StatelessWidget {
             ),
           ),
         ),
-        Positioned(
-          top: 0,
-          left: 0,
-          right: 0,
-          child: SizedBox(
-            height: 120,
-            child: CustomPaint(
-              painter: _TopRibbonPainter(darkMode: resolvedDarkMode),
-            ),
-          ),
-        ),
         Positioned.fill(
           child: CustomPaint(painter: _GridGlowPainter(darkMode: resolvedDarkMode)),
         ),
@@ -866,52 +876,6 @@ class _GridGlowPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
-class _TopRibbonPainter extends CustomPainter {
-  final bool darkMode;
-
-  _TopRibbonPainter({required this.darkMode});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final ribbon = Paint()
-      ..shader = AppColors.faluTopBarGradient.createShader(
-        Rect.fromLTWH(0, 0, size.width, size.height),
-      );
-    final goldLine = Paint()
-      ..color = AppColors.goldString.withValues(alpha: darkMode ? 0.75 : 0.95)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.2;
-    final whiteLine = Paint()
-      ..color = Colors.white.withValues(alpha: darkMode ? 0.55 : 0.88)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.4;
-
-    final fillPath = Path()
-      ..lineTo(0, 54)
-      ..quadraticBezierTo(size.width * 0.30, 96, size.width * 0.64, 64)
-      ..quadraticBezierTo(size.width * 0.85, 48, size.width, 18)
-      ..lineTo(size.width, 0)
-      ..close();
-    canvas.drawPath(fillPath, ribbon);
-
-    final goldPath = Path()
-      ..moveTo(0, 56)
-      ..quadraticBezierTo(size.width * 0.30, 97, size.width * 0.64, 66)
-      ..quadraticBezierTo(size.width * 0.85, 50, size.width, 22);
-    canvas.drawPath(goldPath, goldLine);
-
-    final whitePath = Path()
-      ..moveTo(0, 67)
-      ..quadraticBezierTo(size.width * 0.32, 104, size.width * 0.66, 74)
-      ..quadraticBezierTo(size.width * 0.87, 58, size.width, 30);
-    canvas.drawPath(whitePath, whiteLine);
-  }
-
-  @override
-  bool shouldRepaint(covariant _TopRibbonPainter oldDelegate) =>
-      oldDelegate.darkMode != darkMode;
 }
 
 class DashboardFixedGrid extends StatelessWidget {

@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// Tokens are persisted to SharedPreferences so sessions survive app restarts.
 class ApiService {
   static const String _defaultBaseUrl =
-      'https://savingsutl-production.up.railway.app/api';
+      'https://savingsutl-production-bf7e.up.railway.app/api';
   static const String _envBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
     defaultValue: _defaultBaseUrl,
@@ -100,6 +100,35 @@ class ApiService {
       if (refreshed) {
         response = await http
             .post(
+              Uri.parse('$baseUrl$path'),
+              headers: _headers,
+              body: body != null ? jsonEncode(body) : null,
+            )
+            .timeout(const Duration(seconds: 30));
+      }
+    }
+    return response;
+  }
+
+  Future<http.Response> _patch(String path,
+      {Map<String, dynamic>? body, bool requiresAuth = true}) async {
+    final headers = requiresAuth
+        ? _headers
+        : {'Content-Type': 'application/json', 'Accept': 'application/json'};
+
+    var response = await http
+        .patch(
+          Uri.parse('$baseUrl$path'),
+          headers: headers,
+          body: body != null ? jsonEncode(body) : null,
+        )
+        .timeout(const Duration(seconds: 30));
+
+    if (response.statusCode == 401 && requiresAuth) {
+      final refreshed = await refreshToken();
+      if (refreshed) {
+        response = await http
+            .patch(
               Uri.parse('$baseUrl$path'),
               headers: _headers,
               body: body != null ? jsonEncode(body) : null,
@@ -228,6 +257,25 @@ class ApiService {
     return _handleResponse(response);
   }
 
+  Future<Map<String, dynamic>> updateSettings(Map<String, dynamic> data) async {
+    final response = await _patch('/profile/settings/', body: data);
+    return _handleResponse(response);
+  }
+
+  Future<Map<String, dynamic>> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    final response = await _post(
+      '/profile/change_password/',
+      body: {
+        'current_password': currentPassword,
+        'new_password': newPassword,
+      },
+    );
+    return _handleResponse(response);
+  }
+
   // ─── Savings Plans ────────────────────────────────────
 
   Future<List<dynamic>> getSavingsPlans({bool? secretOnly}) async {
@@ -241,6 +289,21 @@ class ApiService {
   Future<Map<String, dynamic>> createSavingsPlan(
       Map<String, dynamic> data) async {
     final response = await _post('/savings/', body: data);
+    return _handleResponse(response);
+  }
+
+  Future<Map<String, dynamic>> simulatePenalty({
+    required String planId,
+    double amount = 250,
+    String reason = 'Simulated penalty for testing.',
+  }) async {
+    final response = await _post(
+      '/savings/$planId/simulate_penalty/',
+      body: {
+        'amount': amount,
+        'reason': reason,
+      },
+    );
     return _handleResponse(response);
   }
 
@@ -271,14 +334,33 @@ class ApiService {
     return _handleListResponse(response);
   }
 
+  Future<List<dynamic>> getCredits() async {
+    final response = await _get('/credits/');
+    return _handleListResponse(response);
+  }
+
   Future<Map<String, dynamic>> requestLoan(
       Map<String, dynamic> data) async {
     final response = await _post('/loans/', body: data);
     return _handleResponse(response);
   }
 
+  Future<Map<String, dynamic>> requestCredit(
+      Map<String, dynamic> data) async {
+    final response = await _post('/credits/', body: data);
+    return _handleResponse(response);
+  }
+
   Future<Map<String, dynamic>> getLoanEligibility() async {
     final response = await _get('/loans/eligibility/');
+    return _handleResponse(response);
+  }
+
+  Future<Map<String, dynamic>> getCreditEligibility({String? planId}) async {
+    final path = planId == null
+        ? '/credits/eligibility/'
+        : '/credits/eligibility/?plan=$planId';
+    final response = await _get(path);
     return _handleResponse(response);
   }
 
@@ -289,9 +371,20 @@ class ApiService {
     return _handleListResponse(response);
   }
 
+  Future<List<dynamic>> getCreditPayments() async {
+    final response = await _get('/credit-payments/');
+    return _handleListResponse(response);
+  }
+
   Future<Map<String, dynamic>> makeLoanPayment(
       Map<String, dynamic> data) async {
     final response = await _post('/payments/', body: data);
+    return _handleResponse(response);
+  }
+
+  Future<Map<String, dynamic>> makeCreditPayment(
+      Map<String, dynamic> data) async {
+    final response = await _post('/credit-payments/', body: data);
     return _handleResponse(response);
   }
 

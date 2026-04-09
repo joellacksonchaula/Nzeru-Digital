@@ -46,7 +46,7 @@ class BottomNavBar extends StatelessWidget {
               ),
               _NavItem(
                 icon: Icons.account_balance_rounded,
-                label: 'Loans',
+                label: 'Credit',
                 isActive: currentIndex == 2,
                 onTap: () => onTap(2),
               ),

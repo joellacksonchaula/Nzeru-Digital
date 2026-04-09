@@ -18,6 +18,7 @@ class SavingsPlan {
   final double currentAmount;
   final bool isActive;
   final bool isSecret;
+  final bool isTrial;
   final DateTime? createdAt;
 
   SavingsPlan({
@@ -34,6 +35,7 @@ class SavingsPlan {
     this.currentAmount = 0,
     this.isActive = true,
     this.isSecret = false,
+    this.isTrial = false,
     this.createdAt,
   });
 
@@ -208,6 +210,7 @@ class SavingsPlan {
       currentAmount: _parseDouble(json['current_amount']),
       isActive: json['is_active'] as bool? ?? true,
       isSecret: json['is_secret'] as bool? ?? false,
+      isTrial: json['is_trial'] as bool? ?? false,
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'] as String)
           : null,
@@ -225,5 +228,6 @@ class SavingsPlan {
         'goal_amount': _formatMoney(goalAmount),
         'current_amount': _formatMoney(currentAmount),
         'is_secret': isSecret,
+        'is_trial': isTrial,
       };
 }

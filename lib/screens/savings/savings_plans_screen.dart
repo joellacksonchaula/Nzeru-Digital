@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../config/app_routes.dart';
 import '../../providers/finance_overview_provider.dart';
+import '../../providers/savings_provider.dart';
 import '../../utils/currency_util.dart';
 import '../../widgets/dashboard_kit.dart';
 import '../../widgets/gold_button.dart';
@@ -14,7 +15,10 @@ class SavingsPlansScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final finance = context.watch<FinanceOverviewProvider>();
+    final savings = context.watch<SavingsProvider>();
     final plans = finance.prioritizedPlans;
+    final trialPlans = plans.where((plan) => plan.isTrial).toList();
+    final trialPlan = trialPlans.isEmpty ? null : trialPlans.first;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return DashboardPage(
@@ -58,9 +62,50 @@ class SavingsPlansScreen extends StatelessWidget {
               icon: Icons.trending_up_rounded,
               accent: const Color(0xFF801818),
             ),
+            if (finance.trialPlans.isNotEmpty)
+              DashboardStatItem(
+                label: 'Trial',
+                value: CurrencyUtil.formatCompact(
+                  finance.trialPlans.fold(0.0, (sum, plan) => sum + plan.currentAmount),
+                ),
+                detail: 'Sandbox savings total',
+                icon: Icons.science_rounded,
+                accent: const Color(0xFFD4AF37),
+              ),
           ],
         ),
         const SizedBox(height: 18),
+        if (trialPlan != null) ...[
+          DashboardPanel(
+            glowColor: const Color(0x66D4AF37),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Trial plan detected. Use it to test deposits, credit requests, repayments, and penalties safely.',
+                    style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF6E5626)),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                OutlinedButton.icon(
+                  onPressed: () async {
+                    final messenger = ScaffoldMessenger.of(context);
+                    final success = await savings.simulateTrialPenalty(planId: trialPlan.id);
+                    if (!context.mounted) return;
+                    messenger.showSnackBar(
+                      SnackBar(
+                        content: Text(success ? 'Trial penalty applied.' : (savings.error ?? 'Penalty simulation failed.')),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.warning_amber_rounded),
+                  label: const Text('Apply Trial Penalty'),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 18),
+        ],
         if (plans.isEmpty)
           DashboardPanel(
             child: SizedBox(
@@ -108,8 +153,11 @@ class SavingsPlansScreen extends StatelessWidget {
           const SizedBox(height: 10),
           DashboardPlanCarousel(
             plans: plans,
-            onTap: (plan) =>
-                Navigator.pushNamed(context, AppRoutes.planDetail),
+            onTap: (plan) => Navigator.pushNamed(
+              context,
+              AppRoutes.planDetail,
+              arguments: plan.id,
+            ),
           ),
         ],
       ],

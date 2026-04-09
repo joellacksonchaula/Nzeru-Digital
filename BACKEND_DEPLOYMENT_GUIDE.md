@@ -36,7 +36,7 @@ CORS_ALLOW_CREDENTIALS = True
 
 # Extended CORS_ALLOWED_ORIGINS with localhost for testing
 CORS_ALLOWED_ORIGINS = [
-    "https://savingsutl-production.up.railway.app",
+  "https://savingsutl-production-bf7e.up.railway.app",
     "https://glittering-cobbler-1d32f6.netlify.app",
     "http://localhost:3000",  # Testing
     "http://localhost:8081",  # Flutter web dev
@@ -136,7 +136,7 @@ PORT=8000  # Railway sets this automatically
 4. **Test authentication**:
    ```bash
    # Register user
-   curl -X POST https://savingsutl-production.up.railway.app/api/auth/register/ \
+curl -X POST https://savingsutl-production-bf7e.up.railway.app/api/auth/register/ \
      -H "Content-Type: application/json" \
      -d '{
        "username": "testuser",
@@ -146,7 +146,7 @@ PORT=8000  # Railway sets this automatically
      }'
    
    # Login
-   curl -X POST https://savingsutl-production.up.railway.app/api/auth/login/ \
+curl -X POST https://savingsutl-production-bf7e.up.railway.app/api/auth/login/ \
      -H "Content-Type: application/json" \
      -d '{
        "username": "testuser",

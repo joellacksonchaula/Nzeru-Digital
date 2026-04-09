@@ -17,25 +17,32 @@ class PlanDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final savings = context.watch<SavingsProvider>();
-    final plan = savings.plans.isNotEmpty ? savings.plans[0] : null;
+    final planId = ModalRoute.of(context)?.settings.arguments as String?;
+    final matchedPlans = planId == null
+        ? const []
+        : savings.plans.where((item) => item.id == planId).toList();
+    final plan = matchedPlans.isNotEmpty
+        ? matchedPlans.first
+        : (savings.plans.isNotEmpty ? savings.plans.first : null);
     final planTransactions =
         savings.transactions.where((t) => t.planId == plan?.id).toList();
 
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        backgroundColor: AppColors.faluRed,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         title: Text(
           'PLAN DETAILS',
           style: GoogleFonts.playfairDisplay(
             fontSize: 16,
             letterSpacing: 2,
-            color: Colors.white,
+            color: AppColors.textPrimary,
           ),
         ),
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+          icon: const Icon(Icons.arrow_back_ios, color: AppColors.textPrimary),
         ),
       ),
       body: Stack(

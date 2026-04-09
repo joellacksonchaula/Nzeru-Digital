@@ -37,12 +37,8 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
     final finance = context.watch<FinanceOverviewProvider>();
     final dashboard = context.watch<DashboardProvider>();
     final themeMode = context.watch<ThemeModeProvider>();
-    final plans = finance.prioritizedPlans.isEmpty
-        ? _fallbackPlans
-        : finance.prioritizedPlans.take(5).toList();
-    final transactions = finance.recentTransactions.isEmpty
-        ? _fallbackTransactions
-        : finance.recentTransactions.take(5).toList();
+    final plans = finance.prioritizedPlans;
+    final transactions = finance.recentTransactions;
     final candles = _buildSavingsCandles(finance);
     final userName = _firstName(finance.user?.name);
     final darkMode = themeMode.isDarkMode;
@@ -76,7 +72,9 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                   const SizedBox(height: 26),
                   _SectionRow(
                     title: 'Nzelu Savings Plans',
-                    trailing: plans.isEmpty ? null : '${plans.length} active',
+                    trailing: plans.isEmpty
+                        ? null
+                        : '${plans.length} tracked • ${finance.trialPlans.length} trial',
                     darkMode: darkMode,
                   ),
                   const SizedBox(height: 14),
@@ -86,7 +84,7 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                           child: _EmptyCard(message: 'No savings plans yet.'),
                         )
                       : _TopPlansRail(
-                          plans: plans.take(3).toList(),
+                          plans: plans,
                           darkMode: darkMode,
                         ),
                   const SizedBox(height: 18),
@@ -416,16 +414,38 @@ class _TopSavingsPlanCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: Text(
-                    _displayTopTitle(plan.title),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      height: 0.95,
-                      fontWeight: FontWeight.w700,
-                      color: darkMode ? Colors.white : const Color(0xFF111111),
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (plan.isTrial)
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 6),
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFD4AF37).withValues(alpha: 0.18),
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                          child: Text(
+                            'TRIAL',
+                            style: GoogleFonts.oswald(
+                              fontSize: 10,
+                              letterSpacing: 1.1,
+                              color: const Color(0xFFB7821E),
+                            ),
+                          ),
+                        ),
+                      Text(
+                        _displayTopTitle(plan.title),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          height: 0.95,
+                          fontWeight: FontWeight.w700,
+                          color: darkMode ? Colors.white : const Color(0xFF111111),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(width: 6),
@@ -739,7 +759,7 @@ class _QuickActionsRow extends StatelessWidget {
     final items = [
       (label: 'Deposit', icon: Icons.download_rounded, route: AppRoutes.deposit),
       (label: 'New Plan', icon: Icons.note_alt_rounded, route: AppRoutes.createPlan),
-      (label: 'Loan', icon: Icons.account_balance_wallet_rounded, route: AppRoutes.requestLoan),
+                      (label: 'Credit', icon: Icons.account_balance_wallet_rounded, route: AppRoutes.requestLoan),
       (label: 'Repay', icon: Icons.refresh_rounded, route: AppRoutes.repayment),
     ];
 
@@ -979,7 +999,7 @@ List<CandleData> _buildSavingsCandles(FinanceOverviewProvider finance) {
         .toList();
   }
 
-  return _fallbackCandles;
+  return <CandleData>[];
 }
 
 String _firstName(String? name) {
@@ -990,88 +1010,3 @@ String _firstName(String? name) {
 
 double _maxDouble(double a, double b) => a > b ? a : b;
 double _minDouble(double a, double b) => a < b ? a : b;
-
-final List<SavingsPlan> _fallbackPlans = [
-  SavingsPlan(
-    id: 'plan-1',
-    userId: 'demo',
-    title: 'Go',
-    amountPerPeriod: 5000,
-    frequency: PlanFrequency.weekly,
-    durationMonths: 6,
-    startDate: DateTime(2026, 1, 1),
-    endDate: DateTime(2026, 9, 12),
-    penaltyPolicy: PenaltyPolicy.monetaryDeduction,
-    goalAmount: 1200000000,
-    currentAmount: 28332000,
-    createdAt: DateTime(2026, 1, 1),
-  ),
-  SavingsPlan(
-    id: 'plan-2',
-    userId: 'demo',
-    title: 'Vacation',
-    amountPerPeriod: 50000,
-    frequency: PlanFrequency.weekly,
-    durationMonths: 24,
-    startDate: DateTime(2026, 1, 1),
-    endDate: DateTime(2026, 4, 16),
-    penaltyPolicy: PenaltyPolicy.monetaryDeduction,
-    goalAmount: 48000,
-    currentAmount: 48000,
-    createdAt: DateTime(2026, 1, 2),
-  ),
-  SavingsPlan(
-    id: 'plan-3',
-    userId: 'demo',
-    title: 'Emergency',
-    amountPerPeriod: 10000,
-    frequency: PlanFrequency.weekly,
-    durationMonths: 12,
-    startDate: DateTime(2026, 1, 1),
-    endDate: DateTime(2027, 1, 1),
-    penaltyPolicy: PenaltyPolicy.monetaryDeduction,
-    goalAmount: 48000,
-    currentAmount: 2400,
-    createdAt: DateTime(2026, 1, 3),
-  ),
-];
-
-final _fallbackTransactions = [
-  SavingsTransaction(
-    id: '1',
-    userId: 'demo',
-    amount: 20000,
-    date: DateTime(2026, 3, 24, 20, 55),
-    type: TransactionType.deposit,
-  ),
-  SavingsTransaction(
-    id: '2',
-    userId: 'demo',
-    amount: 2000,
-    date: DateTime(2026, 3, 22, 17, 36),
-    type: TransactionType.deposit,
-  ),
-  SavingsTransaction(
-    id: '3',
-    userId: 'demo',
-    amount: 1200,
-    date: DateTime(2026, 3, 20, 14, 10),
-    type: TransactionType.deposit,
-  ),
-];
-
-final _fallbackCandles = List.generate(
-  12,
-  (index) {
-    final open = 14000000.0 + (index * 120000);
-    final close = open + (index.isEven ? 30000 : -18000);
-    return CandleData(
-      time: DateTime(2026, 3, 13).add(Duration(days: index)),
-      open: open,
-      high: _maxDouble(open, close) + 60000,
-      low: _minDouble(open, close) - 45000,
-      close: close,
-      volume: 1000,
-    );
-  },
-);

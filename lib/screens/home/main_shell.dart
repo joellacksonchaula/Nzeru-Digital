@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../config/app_colors.dart';
+import '../../providers/credit_provider.dart';
 import '../../providers/savings_provider.dart';
-import '../../providers/loan_provider.dart';
 import '../../providers/auth_provider.dart' as auth;
 import '../../widgets/bottom_nav_bar.dart';
 import 'dashboard_screen_v2.dart';
@@ -32,10 +32,9 @@ class _MainShellState extends State<MainShell> {
   @override
   void initState() {
     super.initState();
-    // Load mock data
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<SavingsProvider>().loadData();
-      context.read<LoanProvider>().loadData();
+      context.read<CreditProvider>().loadData();
     });
   }
 
@@ -55,7 +54,7 @@ class _MainShellState extends State<MainShell> {
           if (i == 0 || i == 1 || i == 2) {
              context.read<auth.AuthProvider>().refreshProfile();
              context.read<SavingsProvider>().loadData();
-             context.read<LoanProvider>().loadData();
+             context.read<CreditProvider>().loadData();
           }
         },
       ),

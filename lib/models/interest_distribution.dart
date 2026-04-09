@@ -20,7 +20,7 @@ class InterestDistribution {
 
   factory InterestDistribution.fromJson(Map<String, dynamic> json) {
     return InterestDistribution(
-      loanId: json['loan_id'] as String,
+      loanId: (json['loan_id'] ?? json['loan']).toString(),
       totalInterest: _parseDouble(json['total_interest']),
       userSavingsShare: _parseDouble(json['user_savings_share']),
       platformShare: _parseDouble(json['platform_share']),

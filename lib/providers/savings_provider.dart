@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+
+import '../models/penalty.dart';
 import '../models/savings_plan.dart';
 import '../models/savings_transaction.dart';
-import '../models/penalty.dart';
 import '../services/api_service.dart';
 
 class SavingsProvider with ChangeNotifier {
@@ -14,21 +15,20 @@ class SavingsProvider with ChangeNotifier {
 
   List<SavingsPlan> get plans => _plans;
   List<SavingsPlan> get activePlans =>
-      _plans.where((p) => p.isActive && !p.isSecret).toList();
+      _plans.where((plan) => plan.isActive && !plan.isSecret).toList();
   List<SavingsPlan> get secretPlans =>
-      _plans.where((p) => p.isActive && p.isSecret).toList();
+      _plans.where((plan) => plan.isActive && plan.isSecret).toList();
   List<SavingsTransaction> get transactions => _transactions;
   List<Penalty> get penalties => _penalties;
   bool get isLoading => _isLoading;
   String? get error => _error;
 
   double get totalPenalties =>
-      _penalties.where((p) => p.isApplied).fold(0.0, (sum, p) => sum + p.amount);
+      _penalties.where((penalty) => penalty.isApplied).fold(0.0, (sum, penalty) => sum + penalty.amount);
 
   double get secretSavingsTotal =>
-      secretPlans.fold(0.0, (sum, p) => sum + p.currentAmount);
+      secretPlans.fold(0.0, (sum, plan) => sum + plan.currentAmount);
 
-  /// ─── Load all data ─────────────────────────────
   Future<void> loadData() async {
     _isLoading = true;
     _error = null;
@@ -37,37 +37,33 @@ class SavingsProvider with ChangeNotifier {
     try {
       final plansData = await _api.getSavingsPlans();
       _plans = plansData
-          .map((json) =>
-              SavingsPlan.fromJson(_normalizeKeys(json as Map<String, dynamic>)))
+          .map((json) => SavingsPlan.fromJson(_normalizeKeys(Map<String, dynamic>.from(json as Map))))
           .toList();
 
       final txnData = await _api.getTransactions();
       _transactions = txnData
-          .map((json) => SavingsTransaction.fromJson(
-              _normalizeKeys(json as Map<String, dynamic>)))
+          .map((json) => SavingsTransaction.fromJson(_normalizeKeys(Map<String, dynamic>.from(json as Map))))
           .toList();
 
       final penData = await _api.getPenalties();
       _penalties = penData
-          .map((json) =>
-              Penalty.fromJson(_normalizeKeys(json as Map<String, dynamic>)))
+          .map((json) => Penalty.fromJson(_normalizeKeys(Map<String, dynamic>.from(json as Map))))
           .toList();
-
-      _error = null;
     } catch (e) {
       _error = 'Failed to load savings data: $e';
       debugPrint('SavingsProvider.loadData error: $e');
+      _plans = [];
+      _transactions = [];
+      _penalties = [];
     }
 
     _isLoading = false;
     notifyListeners();
   }
 
-  /// ─── Add a new savings plan ────────────────────
   Future<SavingsPlan?> addPlan(SavingsPlan plan) async {
     try {
-      final data = plan.toJson();
-      final created = await _api.createSavingsPlan(data);
+      final created = await _api.createSavingsPlan(plan.toJson());
       await loadData();
       return SavingsPlan.fromJson(_normalizeKeys(created));
     } catch (e) {
@@ -77,7 +73,6 @@ class SavingsProvider with ChangeNotifier {
     }
   }
 
-  /// ─── Add a deposit to a savings plan ─────────
   Future<bool> addDeposit(SavingsTransaction transaction) async {
     try {
       await _api.createDeposit({
@@ -96,7 +91,26 @@ class SavingsProvider with ChangeNotifier {
     }
   }
 
-  /// ─── Normalize API keys to match model expectations ─────────
+  Future<bool> simulateTrialPenalty({
+    required String planId,
+    double amount = 250,
+    String reason = 'Simulated penalty for testing.',
+  }) async {
+    try {
+      await _api.simulatePenalty(
+        planId: planId,
+        amount: amount,
+        reason: reason,
+      );
+      await loadData();
+      return true;
+    } catch (e) {
+      _error = 'Failed to simulate penalty: $e';
+      notifyListeners();
+      return false;
+    }
+  }
+
   Map<String, dynamic> _normalizeKeys(Map<String, dynamic> json) {
     final normalized = Map<String, dynamic>.from(json);
 

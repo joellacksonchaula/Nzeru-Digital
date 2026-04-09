@@ -100,15 +100,16 @@ class _DepositScreenState extends State<DepositScreen> {
             style: GoogleFonts.playfairDisplay(
               fontSize: 16,
               letterSpacing: 2,
-              color: Colors.white,
+              color: AppColors.textPrimary,
             ),
           ),
-          backgroundColor: AppColors.faluRed,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
           automaticallyImplyLeading: args?.requireDeposit != true,
           leading: args?.requireDeposit == true
               ? null
               : IconButton(
-                  icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+                  icon: const Icon(Icons.arrow_back_ios, color: AppColors.textPrimary),
                   onPressed: () => Navigator.pop(context),
                 ),
         ),

@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from decimal import Decimal
+from django.db.models import Q
 
 
 class UserProfile(models.Model):
@@ -10,6 +11,24 @@ class UserProfile(models.Model):
     savings_balance = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     loan_balance = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     financial_score = models.IntegerField(default=50)
+    preferred_theme = models.CharField(max_length=20, default='system')
+    preferred_language = models.CharField(max_length=20, default='en')
+    preferred_currency = models.CharField(max_length=10, default='MWK')
+    notifications_enabled = models.BooleanField(default=True)
+    transaction_alerts = models.BooleanField(default=True)
+    two_factor_enabled = models.BooleanField(default=False)
+    biometric_login_enabled = models.BooleanField(default=False)
+    auto_save_enabled = models.BooleanField(default=False)
+    credit_usage_preference = models.CharField(max_length=20, default='flexible')
+    payment_methods = models.TextField(blank=True, default='')
+    app_feedback = models.TextField(blank=True, default='')
+    default_savings_plan = models.ForeignKey(
+        'SavingsPlan',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='default_for_profiles',
+    )
 
     def __str__(self):
         return self.user.username
@@ -20,19 +39,27 @@ class UserProfile(models.Model):
     def recalculate_savings_balance(self):
         """Balance = Deposits + Interest Rewards - Penalties - Withdrawals"""
         deposits = self.user.transactions.filter(
-            type='DEPOSIT', status='COMPLETED'
+            Q(plan__isnull=True) | Q(plan__is_trial=False),
+            type='DEPOSIT',
+            status='COMPLETED',
         ).aggregate(total=models.Sum('amount'))['total'] or Decimal('0')
 
         interest = self.user.transactions.filter(
-            type='INTEREST_REWARD', status='COMPLETED'
+            Q(plan__isnull=True) | Q(plan__is_trial=False),
+            type='INTEREST_REWARD',
+            status='COMPLETED',
         ).aggregate(total=models.Sum('amount'))['total'] or Decimal('0')
 
         penalties = self.user.transactions.filter(
-            type='PENALTY', status='COMPLETED'
+            Q(plan__isnull=True) | Q(plan__is_trial=False),
+            type='PENALTY',
+            status='COMPLETED',
         ).aggregate(total=models.Sum('amount'))['total'] or Decimal('0')
 
         withdrawals = self.user.transactions.filter(
-            type='WITHDRAWAL', status='COMPLETED'
+            Q(plan__isnull=True) | Q(plan__is_trial=False),
+            type='WITHDRAWAL',
+            status='COMPLETED',
         ).aggregate(total=models.Sum('amount'))['total'] or Decimal('0')
 
         self.savings_balance = deposits + interest - penalties - withdrawals
@@ -40,8 +67,11 @@ class UserProfile(models.Model):
         return self.savings_balance
 
     def recalculate_loan_balance(self):
-        """Loan balance = sum of (loan amount + interest - repayments) for active loans"""
-        active_loans = self.user.loans.filter(status__in=['APPROVED', 'ACTIVE'])
+        """Credit balance = sum of remaining balances for active credits."""
+        active_loans = self.user.loans.filter(
+            Q(plan__isnull=True) | Q(plan__is_trial=False),
+            status__in=['APPROVED', 'ACTIVE'],
+        )
         total = Decimal('0')
         for loan in active_loans:
             total += loan.remaining_balance
@@ -49,12 +79,34 @@ class UserProfile(models.Model):
         self.save(update_fields=['loan_balance'])
         return self.loan_balance
 
+    def settings_payload(self):
+        return {
+            'preferred_theme': self.preferred_theme,
+            'preferred_language': self.preferred_language,
+            'preferred_currency': self.preferred_currency,
+            'notifications_enabled': self.notifications_enabled,
+            'transaction_alerts': self.transaction_alerts,
+            'two_factor_enabled': self.two_factor_enabled,
+            'biometric_login_enabled': self.biometric_login_enabled,
+            'auto_save_enabled': self.auto_save_enabled,
+            'credit_usage_preference': self.credit_usage_preference,
+            'payment_methods': [
+                method.strip()
+                for method in self.payment_methods.split(',')
+                if method.strip()
+            ],
+            'app_feedback': self.app_feedback,
+            'default_savings_plan_id': (
+                str(self.default_savings_plan_id) if self.default_savings_plan_id else None
+            ),
+        }
+
     def calculate_financial_score(self):
         """Score based on savings consistency, loan repayment, and penalty frequency."""
         score = 50  # base score
 
         # Savings consistency (up to +30 points)
-        plans = self.user.savings_plans.filter(is_active=True)
+        plans = self.user.savings_plans.filter(is_active=True, is_trial=False)
         if plans.exists():
             total_expected = 0
             total_deposited = 0
@@ -78,17 +130,27 @@ class UserProfile(models.Model):
                 score += int(consistency * 30)
 
         # Loan repayment record (up to +20 points)
-        paid_loans = self.user.loans.filter(status='PAID').count()
-        defaulted_loans = self.user.loans.filter(status='DEFAULTED').count()
+        paid_loans = self.user.loans.filter(
+            Q(plan__isnull=True) | Q(plan__is_trial=False),
+            status='PAID',
+        ).count()
+        defaulted_loans = self.user.loans.filter(
+            Q(plan__isnull=True) | Q(plan__is_trial=False),
+            status='DEFAULTED',
+        ).count()
         total_loans = paid_loans + defaulted_loans
         if total_loans > 0:
             repayment_rate = paid_loans / total_loans
             score += int(repayment_rate * 20)
-        elif self.user.loans.count() == 0:
+        elif self.user.loans.filter(
+            Q(plan__isnull=True) | Q(plan__is_trial=False)
+        ).count() == 0:
             score += 10  # neutral — no loan history
 
         # Penalty frequency (up to -20 points)
-        penalty_count = self.user.penalties.count()
+        penalty_count = self.user.penalties.filter(
+            Q(plan__isnull=True) | Q(plan__is_trial=False)
+        ).count()
         if penalty_count == 0:
             score += 10
         elif penalty_count <= 2:
@@ -128,6 +190,7 @@ class SavingsPlan(models.Model):
     grace_period_days = models.IntegerField(default=3)
     is_active = models.BooleanField(default=True)
     is_secret = models.BooleanField(default=False)
+    is_trial = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
     def __str__(self):
@@ -219,6 +282,11 @@ class Penalty(models.Model):
 
 
 class Loan(models.Model):
+    WITHDRAWAL_MODE_CHOICES = [
+        ('INSTANT', 'All At Once'),
+        ('DAILY', 'Daily Locked Amount'),
+        ('WEEKLY', 'Weekly Locked Amount'),
+    ]
     STATUS_CHOICES = [
         ('PENDING', 'Pending'),
         ('APPROVED', 'Approved'),
@@ -228,9 +296,22 @@ class Loan(models.Model):
         ('DEFAULTED', 'Defaulted'),
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='loans')
+    plan = models.ForeignKey(
+        SavingsPlan,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='credits',
+    )
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     interest_rate = models.DecimalField(max_digits=5, decimal_places=2, default=10)
     duration_months = models.IntegerField()
+    withdrawal_mode = models.CharField(
+        max_length=10,
+        choices=WITHDRAWAL_MODE_CHOICES,
+        default='INSTANT',
+    )
+    locked_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='PENDING')
     approved_date = models.DateTimeField(null=True, blank=True)
     due_date = models.DateTimeField()
@@ -252,6 +333,10 @@ class Loan(models.Model):
         if self.duration_months > 0:
             return self.total_with_interest / self.duration_months
         return self.total_with_interest
+
+    @property
+    def is_trial(self):
+        return bool(self.plan and self.plan.is_trial)
 
     @property
     def repayment_progress(self):

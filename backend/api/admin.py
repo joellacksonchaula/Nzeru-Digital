@@ -25,8 +25,8 @@ class UserProfileAdmin(admin.ModelAdmin):
 @admin.register(SavingsPlan)
 class SavingsPlanAdmin(admin.ModelAdmin):
     list_display = ('user', 'amount_per_period', 'frequency', 'duration_months',
-                    'goal_amount', 'current_amount', 'grace_period_days', 'is_active')
-    list_filter = ('frequency', 'is_active', 'penalty_policy')
+                    'goal_amount', 'current_amount', 'grace_period_days', 'is_active', 'is_trial')
+    list_filter = ('frequency', 'is_active', 'penalty_policy', 'is_trial')
     search_fields = ('user__username',)
 
 
@@ -46,9 +46,9 @@ class PenaltyAdmin(admin.ModelAdmin):
 
 @admin.register(Loan)
 class LoanAdmin(admin.ModelAdmin):
-    list_display = ('user', 'amount', 'interest_rate', 'status', 'approved_date',
+    list_display = ('user', 'plan', 'amount', 'interest_rate', 'withdrawal_mode', 'status', 'approved_date',
                     'due_date', 'remaining_balance')
-    list_filter = ('status', 'approved_date')
+    list_filter = ('status', 'approved_date', 'withdrawal_mode')
     search_fields = ('user__username',)
     actions = ['approve_loans', 'reject_loans']
 
@@ -61,16 +61,16 @@ class LoanAdmin(admin.ModelAdmin):
         for loan in queryset.filter(status='APPROVED'):
             Notification.objects.create(
                 user=loan.user,
-                title='Loan Approved!',
-                message=f'Your loan of ${loan.amount} has been approved.',
+                title='Credit Approved!',
+                message=f'Your credit of MK {loan.amount} has been approved.',
                 type='LOAN_APPROVED',
             )
-        self.message_user(request, f'{updated} loan(s) approved.')
+        self.message_user(request, f'{updated} credit request(s) approved.')
 
     @admin.action(description='Reject selected loans')
     def reject_loans(self, request, queryset):
         updated = queryset.filter(status='PENDING').update(status='REJECTED')
-        self.message_user(request, f'{updated} loan(s) rejected.')
+        self.message_user(request, f'{updated} credit request(s) rejected.')
 
 
 @admin.register(LoanPayment)

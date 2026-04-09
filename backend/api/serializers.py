@@ -1,8 +1,10 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
+from django.utils import timezone
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
+from datetime import timedelta
 from .models import (
     UserProfile, SavingsPlan, Transaction, Loan,
     LoanPayment, Penalty, InterestDistribution, Notification
@@ -57,7 +59,22 @@ class RegisterSerializer(serializers.ModelSerializer):
             first_name=validated_data.get('first_name', ''),
             last_name=validated_data.get('last_name', ''),
         )
-        UserProfile.objects.create(user=user, phone=phone)
+        profile = UserProfile.objects.create(user=user, phone=phone)
+        start = timezone.now()
+        trial_plan = SavingsPlan.objects.create(
+            user=user,
+            title='Trial Savings Plan',
+            amount_per_period='2500.00',
+            frequency='WEEKLY',
+            duration_months=3,
+            start_date=start,
+            end_date=start + timedelta(days=90),
+            penalty_policy='MONETARY',
+            goal_amount='30000.00',
+            is_trial=True,
+        )
+        profile.default_savings_plan = trial_plan
+        profile.save(update_fields=['default_savings_plan'])
         return user
 
 
@@ -69,10 +86,39 @@ class UserSerializer(serializers.ModelSerializer):
 
 class UserProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
+    settings = serializers.SerializerMethodField()
+    credit_balance = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
-        fields = '__all__'
+        fields = [
+            'id',
+            'user',
+            'phone',
+            'savings_balance',
+            'loan_balance',
+            'financial_score',
+            'preferred_theme',
+            'preferred_language',
+            'preferred_currency',
+            'notifications_enabled',
+            'transaction_alerts',
+            'two_factor_enabled',
+            'biometric_login_enabled',
+            'auto_save_enabled',
+            'credit_usage_preference',
+            'payment_methods',
+            'app_feedback',
+            'default_savings_plan',
+            'settings',
+            'credit_balance',
+        ]
+
+    def get_settings(self, obj):
+        return obj.settings_payload()
+
+    def get_credit_balance(self, obj):
+        return obj.loan_balance
 
 
 class SavingsPlanSerializer(serializers.ModelSerializer):
@@ -102,10 +148,29 @@ class LoanSerializer(serializers.ModelSerializer):
     total_with_interest = serializers.ReadOnlyField()
     monthly_payment = serializers.ReadOnlyField()
     repayment_progress = serializers.ReadOnlyField()
+    is_trial = serializers.ReadOnlyField()
 
     class Meta:
         model = Loan
-        fields = '__all__'
+        fields = [
+            'id',
+            'user',
+            'plan',
+            'amount',
+            'interest_rate',
+            'duration_months',
+            'withdrawal_mode',
+            'locked_amount',
+            'status',
+            'approved_date',
+            'due_date',
+            'remaining_balance',
+            'created_at',
+            'total_with_interest',
+            'monthly_payment',
+            'repayment_progress',
+            'is_trial',
+        ]
         read_only_fields = ['user', 'remaining_balance', 'approved_date', 'status']
 
 

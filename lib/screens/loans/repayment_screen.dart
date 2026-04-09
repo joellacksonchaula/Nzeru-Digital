@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../config/app_colors.dart';
-import '../../models/loan_payment.dart';
-import '../../providers/loan_provider.dart';
+import '../../models/credit_payment.dart';
+import '../../providers/credit_provider.dart';
 import '../../utils/currency_util.dart';
 import '../../widgets/dashboard_kit.dart';
 import '../../widgets/gold_button.dart';
@@ -29,151 +28,105 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final loans = context.watch<LoanProvider>();
-    final activeLoan = loans.activeLoan;
+    final credits = context.watch<CreditProvider>();
+    final activeCredit = credits.activeCredit;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        backgroundColor: AppColors.faluRed,
-        title: Text(
-          'MAKE PAYMENT',
-          style: GoogleFonts.playfairDisplay(
-            fontSize: 16,
-            letterSpacing: 2,
-            color: Colors.white,
-          ),
-        ),
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-        ),
-      ),
       body: Stack(
         children: [
           const DashboardBackdrop(darkMode: false),
-          if (activeLoan == null)
-            Center(
-              child: Text(
-                'No active loan',
-                style: GoogleFonts.inter(color: AppColors.textMuted),
-              ),
-            )
-          else
-            SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Center(
-                      child: Container(
-                        width: 80,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: AppColors.tiffanyBlue.withAlpha(15),
-                          border: Border.all(
-                            color: AppColors.tiffanyBlue.withAlpha(40),
-                            width: 2,
-                          ),
-                        ),
-                        child: const Icon(
-                          Icons.payment_rounded,
-                          color: AppColors.tiffanyBlue,
-                          size: 40,
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(16, 18, 16, 28),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'NZELU CREDIT',
+                              style: GoogleFonts.oswald(
+                                fontSize: 13,
+                                letterSpacing: 2.1,
+                                color: const Color(0xFF0ABAB5),
+                              ),
+                            ),
+                            Text(
+                              'Repay Credit',
+                              style: GoogleFonts.oswald(fontSize: 28, color: const Color(0xFF171412)),
+                            ),
+                          ],
                         ),
                       ),
-                    ).animate().scale(duration: 500.ms, curve: Curves.elasticOut),
-                    const SizedBox(height: 24),
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: AppColors.cardBg,
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: AppColors.border, width: 0.5),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  if (activeCredit == null)
+                    DashboardPanel(
+                      child: Text(
+                        'No active credit right now.',
+                        style: GoogleFonts.inter(fontSize: 14, color: AppColors.textMuted),
                       ),
+                    )
+                  else ...[
+                    DashboardPanel(
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Remaining Balance',
-                                style: GoogleFonts.inter(
-                                  fontSize: 12,
-                                  color: AppColors.textMuted,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                CurrencyUtil.format(activeLoan.remainingBalance),
-                                style: GoogleFonts.playfairDisplay(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.textPrimary,
-                                ),
-                              ),
-                            ],
+                          Expanded(
+                            child: _BalanceItem(
+                              label: 'Remaining balance',
+                              value: CurrencyUtil.format(activeCredit.remainingBalance),
+                            ),
                           ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                'Suggested',
-                                style: GoogleFonts.inter(
-                                  fontSize: 12,
-                                  color: AppColors.textMuted,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                CurrencyUtil.format(activeLoan.monthlyPayment),
-                                style: GoogleFonts.playfairDisplay(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.tiffanyBlue,
-                                ),
-                              ),
-                            ],
+                          Expanded(
+                            child: _BalanceItem(
+                              label: 'Suggested payment',
+                              value: CurrencyUtil.format(activeCredit.suggestedRepayment),
+                            ),
                           ),
                         ],
                       ),
-                    ).animate().fadeIn(delay: 200.ms),
-                    const SizedBox(height: 30),
-                    Text(
-                      'PAYMENT AMOUNT',
-                      style: GoogleFonts.playfairDisplay(
-                        fontSize: 11,
-                        color: AppColors.textMuted,
-                        letterSpacing: 2,
+                    ),
+                    if (activeCredit.isTrial) ...[
+                      const SizedBox(height: 12),
+                      DashboardPanel(
+                        glowColor: const Color(0x66D4AF37),
+                        child: Text(
+                          'This repayment belongs to trial mode and does not touch real balances.',
+                          style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF6E5626)),
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 16),
+                    DashboardPanel(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Payment amount', style: GoogleFonts.oswald(fontSize: 20, color: const Color(0xFF171412))),
+                          const SizedBox(height: 12),
+                          TextFormField(
+                            controller: _amountController,
+                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                            style: GoogleFonts.oswald(fontSize: 32, color: AppColors.tiffanyBlue),
+                            decoration: InputDecoration(
+                              hintText: '0.00',
+                              prefixText: 'MK ',
+                              prefixStyle: GoogleFonts.oswald(fontSize: 32, color: AppColors.tiffanyBlue),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 10),
-                    TextFormField(
-                      controller: _amountController,
-                      keyboardType: TextInputType.number,
-                      style: GoogleFonts.playfairDisplay(
-                        fontSize: 32,
-                        color: AppColors.tiffanyBlue,
-                        fontWeight: FontWeight.w700,
-                      ),
-                      decoration: InputDecoration(
-                        hintText: '0.00',
-                        hintStyle: GoogleFonts.playfairDisplay(
-                          color: AppColors.textMuted,
-                          fontSize: 32,
-                        ),
-                        prefixText: 'MK ',
-                        prefixStyle: GoogleFonts.playfairDisplay(
-                          fontSize: 32,
-                          color: AppColors.tiffanyBlue,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ).animate().fadeIn(delay: 300.ms),
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 18),
                     GoldButton(
                       label: 'CONFIRM PAYMENT',
                       icon: Icons.check_circle_outline,
@@ -187,11 +140,9 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
                           );
                           return;
                         }
-                        if (amount > activeLoan.remainingBalance) {
+                        if (amount > activeCredit.remainingBalance) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Amount exceeds remaining balance'),
-                            ),
+                            const SnackBar(content: Text('Amount exceeds remaining balance')),
                           );
                           return;
                         }
@@ -199,40 +150,60 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
                         setState(() => _isProcessing = true);
                         final navigator = Navigator.of(context);
                         final messenger = ScaffoldMessenger.of(context);
-
-                        final success = await loans.makePayment(
-                          LoanPayment(
+                        final success = await credits.makePayment(
+                          CreditPayment(
                             id: '',
-                            loanId: activeLoan.id,
+                            creditId: activeCredit.id,
                             amountPaid: amount,
                             paymentDate: DateTime.now(),
-                            remainingBalance: activeLoan.remainingBalance - amount,
+                            remainingBalance: activeCredit.remainingBalance - amount,
                           ),
                         );
 
                         if (!mounted) return;
-
                         setState(() => _isProcessing = false);
                         if (success) {
                           navigator.pop();
                           messenger.showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Payment of ${CurrencyUtil.format(amount)} successful!',
-                              ),
-                            ),
+                            SnackBar(content: Text('Payment of ${CurrencyUtil.format(amount)} successful.')),
                           );
                         } else {
                           messenger.showSnackBar(
-                            const SnackBar(content: Text('Failed to make payment.')),
+                            SnackBar(content: Text(credits.error ?? 'Failed to make payment.')),
                           );
                         }
                       },
-                    ).animate().fadeIn(delay: 400.ms),
+                    ),
                   ],
-                ),
+                ],
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BalanceItem extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _BalanceItem({
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMuted)),
+          const SizedBox(height: 4),
+          Text(value, style: GoogleFonts.oswald(fontSize: 20, color: AppColors.textPrimary)),
         ],
       ),
     );

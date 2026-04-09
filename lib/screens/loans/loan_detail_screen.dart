@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../config/app_colors.dart';
-import '../../providers/loan_provider.dart';
+import '../../providers/credit_provider.dart';
 import '../../utils/currency_util.dart';
 import '../../widgets/dashboard_kit.dart';
 import '../../widgets/glass_card.dart';
@@ -16,36 +16,38 @@ class LoanDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final loanProvider = context.watch<LoanProvider>();
-    final activeLoan = loanProvider.activeLoan;
+    final loanProvider = context.watch<CreditProvider>();
+    final activeLoan = loanProvider.activeCredit;
     final loanPayments =
-        loanProvider.payments.where((p) => p.loanId == activeLoan?.id).toList();
-    final distribution = loanProvider.distributions
+        loanProvider.payments.where((p) => p.creditId == activeLoan?.id).toList();
+    final distributions = loanProvider.distributions
         .where((d) => d.loanId == activeLoan?.id)
-        .firstOrNull;
+        .toList();
+    final distribution = distributions.isEmpty ? null : distributions.first;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        backgroundColor: AppColors.faluRed,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         title: Text(
-          'LOAN DETAILS',
+          'CREDIT DETAILS',
           style: GoogleFonts.playfairDisplay(
             fontSize: 16,
             letterSpacing: 2,
-            color: Colors.white,
+            color: AppColors.textPrimary,
           ),
         ),
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+          icon: const Icon(Icons.arrow_back_ios, color: AppColors.textPrimary),
         ),
       ),
       body: Stack(
         children: [
           const DashboardBackdrop(darkMode: false),
           if (activeLoan == null)
-            const Center(child: Text('No active loan'))
+            const Center(child: Text('No active credit'))
           else
             SingleChildScrollView(
               padding: const EdgeInsets.only(bottom: 30),
@@ -64,7 +66,7 @@ class LoanDetailScreen extends StatelessWidget {
                   GlassCard(
                     child: Column(
                       children: [
-                        _row('Loan Amount', CurrencyUtil.format(activeLoan.amount)),
+                        _row('Credit Amount', CurrencyUtil.format(activeLoan.amount)),
                         const Divider(color: AppColors.border, height: 24),
                         _row(
                           'Interest Rate',
@@ -77,8 +79,8 @@ class LoanDetailScreen extends StatelessWidget {
                         ),
                         const Divider(color: AppColors.border, height: 24),
                         _row(
-                          'Monthly Payment',
-                          CurrencyUtil.format(activeLoan.monthlyPayment),
+                          'Suggested Payment',
+                          CurrencyUtil.format(activeLoan.suggestedRepayment),
                         ),
                         const Divider(color: AppColors.border, height: 24),
                         _row(

@@ -1,8 +1,10 @@
-from rest_framework import viewsets, permissions, status, generics
+from rest_framework import viewsets, permissions, status, generics, serializers
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth.models import User
+from django.db.models import Sum
+from django.db.models.functions import TruncMonth
 from django.utils import timezone
 from decimal import Decimal
 
@@ -31,6 +33,9 @@ class RegisterView(generics.CreateAPIView):
 def current_user(request):
     """Return the current authenticated user's profile."""
     profile, _ = UserProfile.objects.get_or_create(user=request.user)
+    profile.recalculate_savings_balance()
+    profile.recalculate_loan_balance()
+    profile.calculate_financial_score()
     serializer = UserProfileSerializer(profile)
     return Response(serializer.data)
 
@@ -52,26 +57,24 @@ def dashboard_summary(request):
     profile.recalculate_loan_balance()
     profile.calculate_financial_score()
 
-    # Active plans summary
     active_plans = SavingsPlan.objects.filter(user=user, is_active=True)
+    trial_plans = active_plans.filter(is_trial=True)
     secret_plans = active_plans.filter(is_secret=True)
-    normal_plans = active_plans.filter(is_secret=False)
+    normal_plans = active_plans.filter(is_secret=False, is_trial=False)
 
-    # Active loans
     active_loans = Loan.objects.filter(
         user=user, status__in=['APPROVED', 'ACTIVE']
     )
     active_loan_balance = sum(l.remaining_balance for l in active_loans)
+    tracked_savings = sum(p.current_amount for p in active_plans)
 
-    # Recent transactions (last 10 for charts)
     recent_txns = Transaction.objects.filter(user=user).order_by('-timestamp')[:10]
-
-    # Unread notifications count
     unread_count = Notification.objects.filter(user=user, is_read=False).count()
-
-    # Total Penalties
-    from django.db.models import Sum
     total_penalties = Penalty.objects.filter(user=user).aggregate(Sum('amount'))['amount__sum'] or 0
+    trial_penalties = Penalty.objects.filter(
+        user=user,
+        plan__is_trial=True,
+    ).aggregate(Sum('amount'))['amount__sum'] or 0
 
     return Response({
         'user': {
@@ -83,21 +86,33 @@ def dashboard_summary(request):
             'name': f"{user.first_name} {user.last_name}".strip() or user.username,
             'phone': profile.phone,
             'savings_balance': float(profile.savings_balance),
+            'tracked_savings_balance': float(tracked_savings),
+            'credit_balance': float(profile.loan_balance),
             'loan_balance': float(profile.loan_balance),
             'financial_score': profile.financial_score,
+            'settings': profile.settings_payload(),
         },
         'savings_balance': float(profile.savings_balance),
-        'total_savings': float(profile.savings_balance), # Alias for frontend compatibility
+        'tracked_savings_balance': float(tracked_savings),
+        'real_savings_balance': float(profile.savings_balance),
+        'total_savings': float(tracked_savings),
+        'credit_balance': float(profile.loan_balance),
         'loan_balance': float(profile.loan_balance),
         'financial_score': profile.financial_score,
+        'active_credit_balance': float(active_loan_balance),
         'active_loan_balance': float(active_loan_balance),
-        'active_plans': normal_plans.count(), # Changed from active_plans_count
+        'active_plans': normal_plans.count(),
+        'trial_plans': trial_plans.count(),
+        'trial_savings_balance': float(sum(p.current_amount for p in trial_plans)),
         'secret_savings_count': secret_plans.count(),
         'secret_savings_balance': float(
             sum(p.current_amount for p in secret_plans)
         ),
         'total_penalties': float(total_penalties),
+        'trial_penalties': float(trial_penalties),
         'recent_transactions': TransactionSerializer(recent_txns, many=True).data,
+        'plans': SavingsPlanSerializer(active_plans, many=True).data,
+        'active_credit': LoanSerializer(active_loans.first()).data if active_loans.exists() else None,
         'unread_notifications': unread_count,
     })
 
@@ -114,12 +129,68 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def recalculate(self, request):
-        """Recalculate savings balance, loan balance, and financial score."""
+        """Recalculate balances and score."""
         profile, _ = UserProfile.objects.get_or_create(user=request.user)
         profile.recalculate_savings_balance()
         profile.recalculate_loan_balance()
         profile.calculate_financial_score()
         return Response(UserProfileSerializer(profile).data)
+
+    @action(detail=False, methods=['patch'])
+    def settings(self, request):
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        payload = request.data
+        simple_fields = [
+            'preferred_theme',
+            'preferred_language',
+            'preferred_currency',
+            'notifications_enabled',
+            'transaction_alerts',
+            'two_factor_enabled',
+            'biometric_login_enabled',
+            'auto_save_enabled',
+            'credit_usage_preference',
+            'app_feedback',
+        ]
+        for field in simple_fields:
+            if field in payload:
+                setattr(profile, field, payload[field])
+
+        if 'payment_methods' in payload:
+            methods = payload.get('payment_methods') or []
+            if isinstance(methods, list):
+                profile.payment_methods = ','.join(
+                    str(item).strip() for item in methods if str(item).strip()
+                )
+            else:
+                profile.payment_methods = str(methods)
+
+        if 'default_savings_plan_id' in payload:
+            plan_id = payload.get('default_savings_plan_id')
+            profile.default_savings_plan = SavingsPlan.objects.filter(
+                user=request.user,
+                id=plan_id,
+            ).first() if plan_id else None
+
+        profile.save()
+        return Response(profile.settings_payload())
+
+    @action(detail=False, methods=['post'])
+    def change_password(self, request):
+        user = request.user
+        current_password = request.data.get('current_password', '')
+        new_password = request.data.get('new_password', '')
+        if not user.check_password(current_password):
+            raise serializers.ValidationError({
+                'current_password': 'Current password is incorrect.'
+            })
+        if not new_password:
+            raise serializers.ValidationError({
+                'new_password': 'New password is required.'
+            })
+        user.set_password(new_password)
+        user.save(update_fields=['password'])
+        return Response({'status': 'password_updated'})
 
 
 # ─── Savings Plans ─────────────────────────────────
@@ -140,6 +211,26 @@ class SavingsPlanViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+    @action(detail=True, methods=['post'])
+    def simulate_penalty(self, request, pk=None):
+        plan = self.get_object()
+        amount = Decimal(str(request.data.get('amount', '250')))
+        penalty = Penalty.objects.create(
+            user=request.user,
+            plan=plan,
+            amount=amount,
+            penalty_type='MONETARY',
+            reason=request.data.get('reason') or 'Simulated penalty for testing.',
+            is_applied=True,
+        )
+        if plan.current_amount > 0:
+            plan.current_amount = max(Decimal('0'), plan.current_amount - amount)
+            plan.save(update_fields=['current_amount'])
+        if not plan.is_trial:
+            profile, _ = UserProfile.objects.get_or_create(user=request.user)
+            profile.recalculate_savings_balance()
+        return Response(PenaltySerializer(penalty).data, status=status.HTTP_201_CREATED)
+
 
 # ─── Transactions (Deposits) ──────────────────────
 
@@ -151,16 +242,34 @@ class TransactionViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return self.queryset.filter(user=self.request.user).order_by('-timestamp')
 
+    def create(self, request, *args, **kwargs):
+        if request.data.get('type') == 'WITHDRAWAL':
+            has_credit = request.user.loans.filter(
+                status__in=['PENDING', 'APPROVED', 'ACTIVE']
+            ).exists()
+            if has_credit:
+                return Response(
+                    {
+                        'detail': 'Savings withdrawals are locked while there is outstanding credit.'
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+        return super().create(request, *args, **kwargs)
+
     def perform_create(self, serializer):
         txn = serializer.save(user=self.request.user)
-        # If this is a deposit linked to a plan, update the plan's current_amount
-        if txn.type == 'DEPOSIT' and txn.plan:
+        if txn.plan and txn.type == 'DEPOSIT':
             plan = txn.plan
             plan.current_amount += txn.amount
             plan.save(update_fields=['current_amount'])
-        # Recalculate user balances
-        profile, _ = UserProfile.objects.get_or_create(user=self.request.user)
-        profile.recalculate_savings_balance()
+        elif txn.plan and txn.type in ['WITHDRAWAL', 'PENALTY']:
+            plan = txn.plan
+            plan.current_amount = max(Decimal('0'), plan.current_amount - txn.amount)
+            plan.save(update_fields=['current_amount'])
+
+        if not (txn.plan and txn.plan.is_trial):
+            profile, _ = UserProfile.objects.get_or_create(user=self.request.user)
+            profile.recalculate_savings_balance()
 
 
 # ─── Penalties ─────────────────────────────────────
@@ -185,9 +294,23 @@ class LoanViewSet(viewsets.ModelViewSet):
         return self.queryset.filter(user=self.request.user).order_by('-created_at')
 
     def perform_create(self, serializer):
-        """Create a loan request — status starts as PENDING."""
+        """Create a credit request with 40% tracked savings eligibility."""
+        plan = serializer.validated_data.get('plan')
         amount = serializer.validated_data['amount']
         interest_rate = serializer.validated_data.get('interest_rate', Decimal('10'))
+        tracked_savings = plan.current_amount if plan else sum(
+            item.current_amount
+            for item in SavingsPlan.objects.filter(user=self.request.user, is_active=True)
+        )
+        max_credit = Decimal(str(tracked_savings)) * Decimal('0.40')
+        if amount > max_credit:
+            raise serializers.ValidationError({
+                'amount': 'Requested credit exceeds 40% of tracked savings.'
+            })
+        if self.request.user.loans.filter(status__in=['PENDING', 'APPROVED', 'ACTIVE']).exists():
+            raise serializers.ValidationError({
+                'detail': 'Only one outstanding credit request is allowed at a time.'
+            })
         total = amount * (1 + interest_rate / 100)
         serializer.save(
             user=self.request.user,
@@ -201,16 +324,25 @@ class LoanViewSet(viewsets.ModelViewSet):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def loan_eligibility(request):
-    """Check how much the user is eligible to borrow (50% of savings)."""
+    """Check how much the user is eligible to access as credit (40% of tracked savings)."""
     profile, _ = UserProfile.objects.get_or_create(user=request.user)
     profile.recalculate_savings_balance()
-    savings = float(profile.savings_balance)
-    max_loan = savings * 0.5
+    plan_id = request.query_params.get('plan')
+    selected_plan = SavingsPlan.objects.filter(user=request.user, id=plan_id).first() if plan_id else None
+    tracked_savings = float(
+        selected_plan.current_amount if selected_plan else sum(
+            plan.current_amount
+            for plan in SavingsPlan.objects.filter(user=request.user, is_active=True)
+        )
+    )
+    max_loan = tracked_savings * 0.4
     has_active_loan = request.user.loans.filter(
         status__in=['PENDING', 'APPROVED', 'ACTIVE']
     ).exists()
     return Response({
-        'savings_balance': savings,
+        'savings_balance': float(profile.savings_balance),
+        'tracked_savings_balance': tracked_savings,
+        'selected_plan_id': str(selected_plan.id) if selected_plan else None,
         'max_loan_amount': max_loan,
         'has_active_loan': has_active_loan,
         'eligible': max_loan > 0 and not has_active_loan,
@@ -267,18 +399,23 @@ class LoanPaymentViewSet(viewsets.ModelViewSet):
         )
         Transaction.objects.create(
             user=loan.user,
+            plan=loan.plan,
             amount=user_share,
             type='INTEREST_REWARD',
             status='COMPLETED',
-            description=f'Interest reward from Loan #{loan.id}',
+            description=f'Interest reward from Credit #{loan.id}',
         )
+        if loan.plan:
+            loan.plan.current_amount += user_share
+            loan.plan.save(update_fields=['current_amount'])
         profile, _ = UserProfile.objects.get_or_create(user=loan.user)
-        profile.recalculate_savings_balance()
+        if not loan.is_trial:
+            profile.recalculate_savings_balance()
 
         Notification.objects.create(
             user=loan.user,
-            title='Loan Fully Repaid!',
-            message=f'You earned MK {user_share} in interest rewards from your loan.',
+            title='Credit Fully Repaid!',
+            message=f'You earned MK {user_share} in interest rewards from your credit.',
             type='INTEREST_REWARD',
         )
 
@@ -329,9 +466,6 @@ def financial_report(request):
     profile.recalculate_loan_balance()
     profile.calculate_financial_score()
 
-    from django.db.models import Sum
-    from django.db.models.functions import TruncMonth
-
     monthly_savings = (
         Transaction.objects.filter(user=user, type='DEPOSIT', status='COMPLETED')
         .annotate(month=TruncMonth('timestamp'))
@@ -351,15 +485,31 @@ def financial_report(request):
         total=Sum('amount')
     )['total'] or 0
     penalty_count = Penalty.objects.filter(user=user).count()
+    tracked_savings = sum(
+        plan.current_amount
+        for plan in SavingsPlan.objects.filter(user=user, is_active=True)
+    )
+    trial_savings = sum(
+        plan.current_amount
+        for plan in SavingsPlan.objects.filter(user=user, is_active=True, is_trial=True)
+    )
 
     return Response({
         'savings_balance': float(profile.savings_balance),
+        'tracked_savings_balance': float(tracked_savings),
+        'trial_savings_balance': float(trial_savings),
+        'credit_balance': float(profile.loan_balance),
         'loan_balance': float(profile.loan_balance),
         'financial_score': profile.financial_score,
         'monthly_savings': [
             {'month': entry['month'].strftime('%Y-%m'), 'total': float(entry['total'])}
             for entry in monthly_savings
         ],
+        'credits': {
+            'total_taken': total_loans_taken,
+            'total_borrowed': float(total_borrowed),
+            'total_repaid': float(total_repaid),
+        },
         'loans': {
             'total_taken': total_loans_taken,
             'total_borrowed': float(total_borrowed),

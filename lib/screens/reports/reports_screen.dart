@@ -429,9 +429,9 @@ class _ReportColumn extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         _ReportCard(
-          label: 'Loan',
-          value: CurrencyUtil.formatCompact(finance.outstandingLoan),
-          detail: 'Outstanding debt',
+          label: 'Credit',
+          value: CurrencyUtil.formatCompact(finance.outstandingCredit),
+          detail: 'Outstanding balance',
           accent: const Color(0xFFC2545E),
           icon: Icons.account_balance_wallet_rounded,
         ),

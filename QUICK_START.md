@@ -23,7 +23,7 @@ git push origin main
 ### Step 3: Test Backend (2 min)
 ```bash
 # Test login
-curl -X POST https://savingsutl-production.up.railway.app/api/auth/login/ \
+curl -X POST https://savingsutl-production-bf7e.up.railway.app/api/auth/login/ \
   -H "Content-Type: application/json" \
   -d '{"username":"admin","password":"YourPassword"}'
 ```

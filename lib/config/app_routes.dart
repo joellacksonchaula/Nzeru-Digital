@@ -15,6 +15,7 @@ import '../screens/loans/repayment_screen.dart';
 import '../screens/reports/reports_screen.dart';
 import '../screens/notifications/notifications_screen.dart';
 import '../screens/profile/profile_screen.dart';
+import '../screens/settings/settings_screen.dart';
 import '../screens/home/main_shell.dart';
 
 class AppRoutes {
@@ -37,6 +38,7 @@ class AppRoutes {
   static const String reports = '/reports';
   static const String notifications = '/notifications';
   static const String profile = '/profile';
+  static const String settings = '/settings';
 
   static Map<String, WidgetBuilder> get routes => {
         splash: (_) => const SplashScreen(),
@@ -56,5 +58,6 @@ class AppRoutes {
         reports: (_) => const ReportsScreen(),
         notifications: (_) => const NotificationsScreen(),
         profile: (_) => const ProfileScreen(),
+        settings: (_) => const SettingsScreen(),
       };
 }

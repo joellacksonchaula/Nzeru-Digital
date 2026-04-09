@@ -51,7 +51,28 @@ class CandlestickChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final series = candles.isEmpty ? _fallbackCandles : candles;
+    if (candles.isEmpty) {
+      final theme = _ChartPalette.fromMode(darkMode);
+      return ClipRRect(
+        borderRadius: borderRadius,
+        child: Container(
+          height: height,
+          color: theme.background,
+          child: Center(
+            child: Text(
+              'No chart data yet',
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                color: theme.body,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    final series = candles;
     final stats = _ChartStats.from(series);
     final theme = _ChartPalette.fromMode(darkMode);
 
@@ -399,20 +420,3 @@ class _CandlesPainter extends CustomPainter {
         oldDelegate.max != max;
   }
 }
-
-final _fallbackCandles = List.generate(
-  24,
-  (index) {
-    final open = 1200.0 + (index * 28);
-    final drift = index.isEven ? 16.0 : -10.0;
-    final close = open + drift;
-    return CandleData(
-      time: DateTime.now().subtract(Duration(hours: 24 - index)),
-      open: open,
-      high: math.max(open, close) + 22,
-      low: math.min(open, close) - 20,
-      close: close,
-      volume: 1000,
-    );
-  },
-);

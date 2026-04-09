@@ -60,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Sign in to continue managing your savings and loans.',
+                    'Sign in to continue managing your savings and credit.',
                     style: GoogleFonts.montserrat(
                       fontSize: 13,
                       height: 1.45,

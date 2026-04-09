@@ -1,27 +1,29 @@
 import 'package:flutter/material.dart';
 
-import '../models/loan.dart';
+import '../models/credit.dart';
 import '../models/savings_plan.dart';
 import '../models/savings_transaction.dart';
 import '../models/user.dart';
 import 'auth_provider.dart';
-import 'loan_provider.dart';
+import 'credit_provider.dart';
 import 'savings_provider.dart';
 
 class FinanceOverviewProvider with ChangeNotifier {
   User? _user;
   List<SavingsPlan> _plans = const [];
   List<SavingsTransaction> _transactions = const [];
-  Loan? _activeLoan;
+  Credit? _activeCredit;
   double _totalPenalties = 0;
   double _totalRepaid = 0;
 
   User? get user => _user;
   List<SavingsPlan> get plans => _plans;
   List<SavingsTransaction> get transactions => _transactions;
-  Loan? get activeLoan => _activeLoan;
+  Credit? get activeCredit => _activeCredit;
   double get totalPenalties => _totalPenalties;
   double get totalRepaid => _totalRepaid;
+  List<SavingsPlan> get trialPlans => _plans.where((plan) => plan.isTrial).toList();
+  List<SavingsPlan> get livePlans => _plans.where((plan) => !plan.isTrial).toList();
 
   double get totalSaved =>
       _plans.fold(0.0, (sum, plan) => sum + plan.currentAmount);
@@ -78,21 +80,21 @@ class FinanceOverviewProvider with ChangeNotifier {
     return sorted.take(6).toList();
   }
 
-  double get outstandingLoan => _activeLoan?.remainingBalance ?? 0;
+  double get outstandingCredit => _activeCredit?.remainingBalance ?? 0;
 
-  double get netWorth => totalSaved - outstandingLoan;
+  double get netWorth => totalSaved - outstandingCredit;
 
   void sync({
     required AuthProvider auth,
     required SavingsProvider savings,
-    required LoanProvider loans,
+    required CreditProvider credits,
   }) {
     _user = auth.user;
     _plans = savings.activePlans;
     _transactions = savings.transactions;
-    _activeLoan = loans.activeLoan;
+    _activeCredit = credits.activeCredit;
     _totalPenalties = savings.totalPenalties;
-    _totalRepaid = loans.totalRepaid;
+    _totalRepaid = credits.totalRepaid;
     notifyListeners();
   }
 }

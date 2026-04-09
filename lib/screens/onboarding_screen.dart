@@ -28,9 +28,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     _OnboardingPage(
       icon: Icons.account_balance_rounded,
       title: 'BORROW',
-      subtitle: 'Access Smart Loans',
+      subtitle: 'Access Smart Credit',
       description:
-          'Your savings unlock loan eligibility. Borrow up to 50% of your savings with transparent interest rates.',
+          'Your tracked savings unlock credit eligibility. Access up to 40% with transparent repayment and locked release options.',
     ),
     _OnboardingPage(
       icon: Icons.trending_up_rounded,

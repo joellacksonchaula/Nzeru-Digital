@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/user.dart';
+import '../models/user_settings.dart';
 import '../services/api_service.dart';
 
 class AuthProvider with ChangeNotifier {
@@ -13,6 +14,7 @@ class AuthProvider with ChangeNotifier {
   bool get isAuthenticated => _isAuthenticated;
   bool get isLoading => _isLoading;
   String? get error => _error;
+  UserSettings get settings => _user?.settings ?? const UserSettings();
 
   /// Call this at startup (from SplashScreen) to restore a saved session.
   Future<bool> tryRestoreSession() async {
@@ -120,24 +122,16 @@ class AuthProvider with ChangeNotifier {
   Future<void> _fetchCurrentUser() async {
     try {
       final data = await _api.getCurrentUser();
-      // /auth/me/ returns the UserProfile which contains nested user object
-      final userData = data['user'] ?? data;
-      _user = User(
-        id: userData['id']?.toString() ?? '',
-        name: '${userData['first_name'] ?? ''} ${userData['last_name'] ?? ''}'
-            .trim()
-            .isNotEmpty
-            ? '${userData['first_name'] ?? ''} ${userData['last_name'] ?? ''}'.trim()
-            : (userData['username'] ?? 'User'),
-        email: userData['email'] ?? '',
-        phone: data['phone'] ?? '',
-        savingsBalance:
-            double.tryParse(data['savings_balance']?.toString() ?? '') ?? 0.0,
-        loanBalance:
-            double.tryParse(data['loan_balance']?.toString() ?? '') ?? 0.0,
-        financialScore:
-            int.tryParse(data['financial_score']?.toString() ?? '') ?? 0,
-      );
+      final userData = Map<String, dynamic>.from(data['user'] ?? data);
+      userData['phone'] = data['phone'];
+      userData['savings_balance'] = data['savings_balance'];
+      userData['credit_balance'] = data['credit_balance'] ?? data['loan_balance'];
+      userData['loan_balance'] = data['loan_balance'];
+      userData['tracked_savings_balance'] =
+          data['tracked_savings_balance'] ?? data['savings_balance'];
+      userData['financial_score'] = data['financial_score'];
+      userData['settings'] = data['settings'] ?? {};
+      _user = User.fromJson(userData);
     } catch (e) {
       debugPrint('Error fetching current user: $e');
       _user = null;
@@ -149,26 +143,22 @@ class AuthProvider with ChangeNotifier {
     try {
       final data = await _api.getDashboard();
       final userData = data['user'] ?? {};
-      final name =
-          '${userData['first_name'] ?? ''} ${userData['last_name'] ?? ''}'.trim();
-      _user = User(
-        id: userData['id']?.toString() ?? _user?.id ?? '',
-        name: name.isNotEmpty ? name : (userData['username'] ?? _user?.name ?? 'User'),
-        email: userData['email'] ?? _user?.email ?? '',
-        phone: _user?.phone ?? '',
-        savingsBalance:
-            double.tryParse(data['savings_balance']?.toString() ?? '') ??
-                _user?.savingsBalance ??
-                0.0,
-        loanBalance:
-            double.tryParse(data['loan_balance']?.toString() ?? '') ??
-                _user?.loanBalance ??
-                0.0,
-        financialScore:
-            int.tryParse(data['financial_score']?.toString() ?? '') ??
-                _user?.financialScore ??
-                0,
-      );
+      final mergedUser = {
+        ...userData,
+        'id': userData['id']?.toString() ?? _user?.id ?? '',
+        'name': userData['name'] ?? _user?.name ?? 'User',
+        'email': userData['email'] ?? _user?.email ?? '',
+        'phone': userData['phone'] ?? _user?.phone ?? '',
+        'savings_balance': data['real_savings_balance'] ?? data['savings_balance'],
+        'credit_balance': data['credit_balance'] ?? data['loan_balance'],
+        'loan_balance': data['loan_balance'],
+        'tracked_savings_balance':
+            data['tracked_savings_balance'] ?? _user?.trackedSavingsBalance ?? 0,
+        'financial_score':
+            data['financial_score'] ?? _user?.financialScore ?? 0,
+        'settings': userData['settings'] ?? _user?.settings.toJson() ?? {},
+      };
+      _user = User.fromJson(mergedUser);
       notifyListeners();
     } catch (_) {
       // Fallback to the profile recalculate endpoint
@@ -178,14 +168,61 @@ class AuthProvider with ChangeNotifier {
           _user = _user!.copyWith(
             savingsBalance:
                 double.tryParse(data['savings_balance']?.toString() ?? ''),
-            loanBalance:
-                double.tryParse(data['loan_balance']?.toString() ?? ''),
+            creditBalance: double.tryParse(
+              (data['credit_balance'] ?? data['loan_balance'])?.toString() ?? '',
+            ),
+            trackedSavingsBalance: double.tryParse(
+              (data['tracked_savings_balance'] ?? data['savings_balance'])?.toString() ?? '',
+            ),
             financialScore:
                 int.tryParse(data['financial_score']?.toString() ?? ''),
+            settings: UserSettings.fromJson(
+              data['settings'] as Map<String, dynamic>? ?? {},
+            ),
           );
           notifyListeners();
         }
       } catch (_) {}
+    }
+  }
+
+  Future<bool> updateSettings(UserSettings newSettings) async {
+    try {
+      final data = await _api.updateSettings(newSettings.toJson());
+      if (_user != null) {
+        _user = _user!.copyWith(
+          settings: UserSettings.fromJson(data),
+        );
+        notifyListeners();
+      }
+      return true;
+    } catch (e) {
+      _error = 'Failed to update settings';
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    _error = null;
+    _isLoading = true;
+    notifyListeners();
+    try {
+      await _api.changePassword(
+        currentPassword: currentPassword,
+        newPassword: newPassword,
+      );
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _isLoading = false;
+      _error = 'Failed to change password';
+      notifyListeners();
+      return false;
     }
   }
 
