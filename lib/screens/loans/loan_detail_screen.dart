@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../config/app_colors.dart';
+import '../../models/credit.dart';
 import '../../providers/credit_provider.dart';
 import '../../utils/currency_util.dart';
 import '../../widgets/dashboard_kit.dart';
@@ -18,8 +19,9 @@ class LoanDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final loanProvider = context.watch<CreditProvider>();
     final activeLoan = loanProvider.activeCredit;
-    final loanPayments =
-        loanProvider.payments.where((p) => p.creditId == activeLoan?.id).toList();
+    final loanPayments = loanProvider.payments
+        .where((p) => p.creditId == activeLoan?.id)
+        .toList();
     final distributions = loanProvider.distributions
         .where((d) => d.loanId == activeLoan?.id)
         .toList();
@@ -66,7 +68,10 @@ class LoanDetailScreen extends StatelessWidget {
                   GlassCard(
                     child: Column(
                       children: [
-                        _row('Credit Amount', CurrencyUtil.format(activeLoan.amount)),
+                        _row(
+                          'Credit Amount',
+                          CurrencyUtil.format(activeLoan.amount),
+                        ),
                         const Divider(color: AppColors.border, height: 24),
                         _row(
                           'Interest Rate',
@@ -77,6 +82,20 @@ class LoanDetailScreen extends StatelessWidget {
                           'Total with Interest',
                           CurrencyUtil.format(activeLoan.totalWithInterest),
                         ),
+                        const Divider(color: AppColors.border, height: 24),
+                        _row('Cash-out Mode', activeLoan.withdrawalModeLabel),
+                        if (activeLoan.withdrawalMode !=
+                            CreditWithdrawalMode.instant) ...[
+                          const Divider(color: AppColors.border, height: 24),
+                          _row(
+                            activeLoan.withdrawalMode ==
+                                    CreditWithdrawalMode.daily
+                                ? 'Daily Cashout'
+                                : 'Weekly Cashout',
+                            CurrencyUtil.format(activeLoan.lockedAmount),
+                            valueColor: AppColors.info,
+                          ),
+                        ],
                         const Divider(color: AppColors.border, height: 24),
                         _row(
                           'Suggested Payment',
@@ -103,7 +122,10 @@ class LoanDetailScreen extends StatelessWidget {
                   ).animate().fadeIn(delay: 300.ms),
                   if (distribution != null) ...[
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 16,
+                      ),
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
@@ -140,7 +162,10 @@ class LoanDetailScreen extends StatelessWidget {
                     ).animate().fadeIn(delay: 400.ms),
                   ],
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 16,
+                    ),
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
@@ -155,7 +180,10 @@ class LoanDetailScreen extends StatelessWidget {
                   ),
                   ...loanPayments.map(
                     (payment) => Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 4,
+                      ),
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
                         color: AppColors.cardBg,
@@ -190,7 +218,9 @@ class LoanDetailScreen extends StatelessWidget {
                                   ),
                                 ),
                                 Text(
-                                  DateFormat('dd MMM yyyy').format(payment.paymentDate),
+                                  DateFormat(
+                                    'dd MMM yyyy',
+                                  ).format(payment.paymentDate),
                                   style: GoogleFonts.inter(
                                     fontSize: 11,
                                     color: AppColors.textMuted,

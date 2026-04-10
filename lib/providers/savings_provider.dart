@@ -23,8 +23,9 @@ class SavingsProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
-  double get totalPenalties =>
-      _penalties.where((penalty) => penalty.isApplied).fold(0.0, (sum, penalty) => sum + penalty.amount);
+  double get totalPenalties => _penalties
+      .where((penalty) => penalty.isApplied)
+      .fold(0.0, (sum, penalty) => sum + penalty.amount);
 
   double get secretSavingsTotal =>
       secretPlans.fold(0.0, (sum, plan) => sum + plan.currentAmount);
@@ -37,17 +38,29 @@ class SavingsProvider with ChangeNotifier {
     try {
       final plansData = await _api.getSavingsPlans();
       _plans = plansData
-          .map((json) => SavingsPlan.fromJson(_normalizeKeys(Map<String, dynamic>.from(json as Map))))
+          .map(
+            (json) => SavingsPlan.fromJson(
+              _normalizeKeys(Map<String, dynamic>.from(json as Map)),
+            ),
+          )
           .toList();
 
       final txnData = await _api.getTransactions();
       _transactions = txnData
-          .map((json) => SavingsTransaction.fromJson(_normalizeKeys(Map<String, dynamic>.from(json as Map))))
+          .map(
+            (json) => SavingsTransaction.fromJson(
+              _normalizeKeys(Map<String, dynamic>.from(json as Map)),
+            ),
+          )
           .toList();
 
       final penData = await _api.getPenalties();
       _penalties = penData
-          .map((json) => Penalty.fromJson(_normalizeKeys(Map<String, dynamic>.from(json as Map))))
+          .map(
+            (json) => Penalty.fromJson(
+              _normalizeKeys(Map<String, dynamic>.from(json as Map)),
+            ),
+          )
           .toList();
     } catch (e) {
       _error = 'Failed to load savings data: $e';
@@ -75,7 +88,7 @@ class SavingsProvider with ChangeNotifier {
 
   Future<bool> addDeposit(SavingsTransaction transaction) async {
     try {
-      await _api.createDeposit({
+      await _api.createTransaction({
         'amount': transaction.amount,
         'type': 'DEPOSIT',
         'status': 'COMPLETED',
@@ -86,6 +99,24 @@ class SavingsProvider with ChangeNotifier {
       return true;
     } catch (e) {
       _error = 'Failed to record deposit: $e';
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> addWithdrawal(SavingsTransaction transaction) async {
+    try {
+      await _api.createTransaction({
+        'amount': transaction.amount,
+        'type': 'WITHDRAWAL',
+        'status': 'COMPLETED',
+        'plan': transaction.planId,
+        'description': transaction.description ?? 'Savings withdrawal',
+      });
+      await loadData();
+      return true;
+    } catch (e) {
+      _error = 'Failed to record withdrawal: $e';
       notifyListeners();
       return false;
     }
@@ -114,14 +145,16 @@ class SavingsProvider with ChangeNotifier {
   Map<String, dynamic> _normalizeKeys(Map<String, dynamic> json) {
     final normalized = Map<String, dynamic>.from(json);
 
-    if (normalized['id'] != null) normalized['id'] = normalized['id'].toString();
+    if (normalized['id'] != null)
+      normalized['id'] = normalized['id'].toString();
     if (normalized['user'] != null) {
       normalized['user_id'] = normalized['user'].toString();
     }
     if (normalized['plan'] != null) {
       normalized['plan_id'] = normalized['plan'].toString();
     }
-    if (normalized.containsKey('timestamp') && !normalized.containsKey('date')) {
+    if (normalized.containsKey('timestamp') &&
+        !normalized.containsKey('date')) {
       normalized['date'] = normalized['timestamp'];
     }
 

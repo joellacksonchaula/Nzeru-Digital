@@ -56,10 +56,10 @@ class ApiService {
   // ─── Headers ────────────────────────────────────────
 
   Map<String, String> get _headers => {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        if (_accessToken != null) 'Authorization': 'Bearer $_accessToken',
-      };
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    if (_accessToken != null) 'Authorization': 'Bearer $_accessToken',
+  };
 
   // ─── Core HTTP helpers with auto-refresh ────────────
 
@@ -81,8 +81,11 @@ class ApiService {
   }
 
   /// POST with automatic token refresh on 401.
-  Future<http.Response> _post(String path,
-      {Map<String, dynamic>? body, bool requiresAuth = true}) async {
+  Future<http.Response> _post(
+    String path, {
+    Map<String, dynamic>? body,
+    bool requiresAuth = true,
+  }) async {
     final headers = requiresAuth
         ? _headers
         : {'Content-Type': 'application/json', 'Accept': 'application/json'};
@@ -110,8 +113,11 @@ class ApiService {
     return response;
   }
 
-  Future<http.Response> _patch(String path,
-      {Map<String, dynamic>? body, bool requiresAuth = true}) async {
+  Future<http.Response> _patch(
+    String path, {
+    Map<String, dynamic>? body,
+    bool requiresAuth = true,
+  }) async {
     final headers = requiresAuth
         ? _headers
         : {'Content-Type': 'application/json', 'Accept': 'application/json'};
@@ -151,8 +157,9 @@ class ApiService {
     String phone = '',
   }) async {
     final normalizedEmail = email.trim().toLowerCase();
-    final normalizedUsername =
-        username.trim().isEmpty ? normalizedEmail : username.trim();
+    final normalizedUsername = username.trim().isEmpty
+        ? normalizedEmail
+        : username.trim();
     try {
       final response = await _post(
         '/auth/register/',
@@ -170,7 +177,8 @@ class ApiService {
       return _handleResponse(response);
     } on SocketException catch (e) {
       throw Exception(
-          'Network error: ${e.message}. Check your internet connection.');
+        'Network error: ${e.message}. Check your internet connection.',
+      );
     } on TimeoutException {
       throw Exception('Request timeout. Server took too long to respond.');
     } catch (e) {
@@ -196,7 +204,8 @@ class ApiService {
       return data;
     } on SocketException catch (e) {
       throw Exception(
-          'Network error: ${e.message}. Check your internet connection.');
+        'Network error: ${e.message}. Check your internet connection.',
+      );
     } on TimeoutException {
       throw Exception('Login timeout. Server took too long to respond.');
     } catch (e) {
@@ -268,10 +277,7 @@ class ApiService {
   }) async {
     final response = await _post(
       '/profile/change_password/',
-      body: {
-        'current_password': currentPassword,
-        'new_password': newPassword,
-      },
+      body: {'current_password': currentPassword, 'new_password': newPassword},
     );
     return _handleResponse(response);
   }
@@ -287,7 +293,8 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> createSavingsPlan(
-      Map<String, dynamic> data) async {
+    Map<String, dynamic> data,
+  ) async {
     final response = await _post('/savings/', body: data);
     return _handleResponse(response);
   }
@@ -299,10 +306,7 @@ class ApiService {
   }) async {
     final response = await _post(
       '/savings/$planId/simulate_penalty/',
-      body: {
-        'amount': amount,
-        'reason': reason,
-      },
+      body: {'amount': amount, 'reason': reason},
     );
     return _handleResponse(response);
   }
@@ -314,10 +318,15 @@ class ApiService {
     return _handleListResponse(response);
   }
 
-  Future<Map<String, dynamic>> createDeposit(
-      Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> createTransaction(
+    Map<String, dynamic> data,
+  ) async {
     final response = await _post('/transactions/', body: data);
     return _handleResponse(response);
+  }
+
+  Future<Map<String, dynamic>> createDeposit(Map<String, dynamic> data) async {
+    return createTransaction(data);
   }
 
   // ─── Penalties ─────────────────────────────────────────
@@ -339,14 +348,12 @@ class ApiService {
     return _handleListResponse(response);
   }
 
-  Future<Map<String, dynamic>> requestLoan(
-      Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> requestLoan(Map<String, dynamic> data) async {
     final response = await _post('/loans/', body: data);
     return _handleResponse(response);
   }
 
-  Future<Map<String, dynamic>> requestCredit(
-      Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> requestCredit(Map<String, dynamic> data) async {
     final response = await _post('/credits/', body: data);
     return _handleResponse(response);
   }
@@ -377,13 +384,15 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> makeLoanPayment(
-      Map<String, dynamic> data) async {
+    Map<String, dynamic> data,
+  ) async {
     final response = await _post('/payments/', body: data);
     return _handleResponse(response);
   }
 
   Future<Map<String, dynamic>> makeCreditPayment(
-      Map<String, dynamic> data) async {
+    Map<String, dynamic> data,
+  ) async {
     final response = await _post('/credit-payments/', body: data);
     return _handleResponse(response);
   }

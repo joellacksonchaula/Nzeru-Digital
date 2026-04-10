@@ -37,11 +37,13 @@ class Credit {
 
   double get totalWithInterest => amount * (1 + interestRate / 100);
 
-  double get suggestedRepayment =>
-      durationMonths > 0 ? totalWithInterest / durationMonths : totalWithInterest;
+  double get suggestedRepayment => durationMonths > 0
+      ? totalWithInterest / durationMonths
+      : totalWithInterest;
 
-  double get repaymentProgress =>
-      totalWithInterest > 0 ? ((totalWithInterest - remainingBalance) / totalWithInterest).clamp(0, 1) : 0;
+  double get repaymentProgress => totalWithInterest > 0
+      ? ((totalWithInterest - remainingBalance) / totalWithInterest).clamp(0, 1)
+      : 0;
 
   String get statusLabel {
     switch (status) {
@@ -65,9 +67,9 @@ class Credit {
       case CreditWithdrawalMode.instant:
         return 'All at once';
       case CreditWithdrawalMode.daily:
-        return 'Daily locked';
+        return 'Daily cashout';
       case CreditWithdrawalMode.weekly:
-        return 'Weekly locked';
+        return 'Weekly cashout';
     }
   }
 
@@ -124,8 +126,9 @@ class Credit {
     final totalWithInterest = _parseDouble(json['total_with_interest']);
     final hasRemainingBalance = json.containsKey('remaining_balance');
     final remaining = _parseDouble(json['remaining_balance']);
-    final effectiveRemaining =
-        hasRemainingBalance ? remaining : (totalWithInterest > 0 ? totalWithInterest : remaining);
+    final effectiveRemaining = hasRemainingBalance
+        ? remaining
+        : (totalWithInterest > 0 ? totalWithInterest : remaining);
 
     return Credit(
       id: json['id'].toString(),
@@ -148,20 +151,20 @@ class Credit {
       remainingBalance: effectiveRemaining,
       totalRepaid: totalWithInterest > 0
           ? (totalWithInterest - effectiveRemaining)
-              .clamp(0, totalWithInterest)
-              .toDouble()
+                .clamp(0, totalWithInterest)
+                .toDouble()
           : _parseDouble(json['total_repaid']),
       isTrial: json['is_trial'] as bool? ?? false,
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'amount': amount,
-        'interest_rate': interestRate,
-        'duration_months': durationMonths,
-        'plan': planId,
-        'withdrawal_mode': withdrawalModeToApiString(withdrawalMode),
-        'locked_amount': lockedAmount,
-        'due_date': dueDate?.toIso8601String(),
-      };
+    'amount': amount,
+    'interest_rate': interestRate,
+    'duration_months': durationMonths,
+    'plan': planId,
+    'withdrawal_mode': withdrawalModeToApiString(withdrawalMode),
+    'locked_amount': lockedAmount,
+    'due_date': dueDate?.toIso8601String(),
+  };
 }

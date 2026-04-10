@@ -31,15 +31,20 @@ class _LoanEligibilityScreenState extends State<LoanEligibilityScreen> {
     final finance = context.watch<FinanceOverviewProvider>();
     final activeCredit = finance.activeCredit;
     final eligibility = credits.eligibility ?? const {};
-    final trackedSavings = double.tryParse(
-          (eligibility['tracked_savings_balance'] ?? finance.totalSaved).toString(),
+    final trackedSavings =
+        double.tryParse(
+          (eligibility['tracked_savings_balance'] ?? finance.totalSaved)
+              .toString(),
         ) ??
         finance.totalSaved;
-    final maxCredit = double.tryParse(
+    final maxCredit =
+        double.tryParse(
           (eligibility['max_loan_amount'] ?? (trackedSavings * 0.4)).toString(),
         ) ??
         (trackedSavings * 0.4);
-    final eligible = (eligibility['eligible'] as bool?) ?? (maxCredit > 0 && activeCredit == null);
+    final eligible =
+        (eligibility['eligible'] as bool?) ??
+        (maxCredit > 0 && activeCredit == null);
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -64,38 +69,64 @@ class _LoanEligibilityScreenState extends State<LoanEligibilityScreen> {
                   const SizedBox(height: 4),
                   Text(
                     'Borrow with clarity',
-                    style: GoogleFonts.oswald(fontSize: 30, height: 0.96, color: const Color(0xFF171412)),
+                    style: GoogleFonts.oswald(
+                      fontSize: 30,
+                      height: 0.96,
+                      color: const Color(0xFF171412),
+                    ),
                   ),
                   const SizedBox(height: 14),
                   Row(
                     children: [
                       Expanded(
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 12,
+                          ),
                           decoration: BoxDecoration(
-                            color: eligible ? const Color(0xFFE7F4EA) : const Color(0xFFF8E9E7),
+                            color: eligible
+                                ? const Color(0xFFE7F4EA)
+                                : const Color(0xFFF8E9E7),
                             borderRadius: BorderRadius.circular(18),
                           ),
                           child: Text(
-                            eligible ? 'Eligible for credit' : 'Credit locked right now',
+                            eligible
+                                ? 'Eligible for credit'
+                                : 'Credit locked right now',
                             style: GoogleFonts.inter(
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
-                              color: eligible ? const Color(0xFF32663E) : const Color(0xFF9B4E42),
+                              color: eligible
+                                  ? const Color(0xFF32663E)
+                                  : const Color(0xFF9B4E42),
                             ),
                           ),
                         ),
                       ),
                       const SizedBox(width: 12),
                       FilledButton.icon(
-                        onPressed: eligible ? () => Navigator.pushNamed(context, AppRoutes.requestLoan) : null,
+                        onPressed: eligible
+                            ? () => Navigator.pushNamed(
+                                context,
+                                AppRoutes.requestLoan,
+                              )
+                            : null,
                         style: FilledButton.styleFrom(
                           backgroundColor: AppColors.faluRed,
                           foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18),
+                          ),
                         ),
-                        icon: const Icon(Icons.account_balance_wallet_rounded, size: 18),
+                        icon: const Icon(
+                          Icons.account_balance_wallet_rounded,
+                          size: 18,
+                        ),
                         label: const Text('Request'),
                       ),
                     ],
@@ -106,15 +137,45 @@ class _LoanEligibilityScreenState extends State<LoanEligibilityScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Eligibility Overview', style: GoogleFonts.oswald(fontSize: 22, color: const Color(0xFF171412))),
+                        Text(
+                          'Eligibility Overview',
+                          style: GoogleFonts.oswald(
+                            fontSize: 22,
+                            color: const Color(0xFF171412),
+                          ),
+                        ),
                         const SizedBox(height: 14),
                         DashboardFixedGrid(
                           mainAxisExtent: 122,
                           children: [
-                            _MetricCard(label: 'Eligible', value: CurrencyUtil.formatCompact(maxCredit), accent: const Color(0xFF4B9957), icon: Icons.verified_rounded),
-                            _MetricCard(label: 'Tracked', value: CurrencyUtil.formatCompact(trackedSavings), accent: const Color(0xFF876446), icon: Icons.savings_rounded),
-                            _MetricCard(label: 'Outstanding', value: CurrencyUtil.formatCompact(finance.outstandingCredit), accent: const Color(0xFFC2545E), icon: Icons.wallet_rounded),
-                            _MetricCard(label: 'Repaid', value: CurrencyUtil.formatCompact(finance.totalRepaid), accent: const Color(0xFF4C6A78), icon: Icons.paid_rounded),
+                            _MetricCard(
+                              label: 'Eligible',
+                              value: CurrencyUtil.formatCompact(maxCredit),
+                              accent: const Color(0xFF4B9957),
+                              icon: Icons.verified_rounded,
+                            ),
+                            _MetricCard(
+                              label: 'Tracked',
+                              value: CurrencyUtil.formatCompact(trackedSavings),
+                              accent: const Color(0xFF876446),
+                              icon: Icons.savings_rounded,
+                            ),
+                            _MetricCard(
+                              label: 'Outstanding',
+                              value: CurrencyUtil.formatCompact(
+                                finance.outstandingCredit,
+                              ),
+                              accent: const Color(0xFFC2545E),
+                              icon: Icons.wallet_rounded,
+                            ),
+                            _MetricCard(
+                              label: 'Repaid',
+                              value: CurrencyUtil.formatCompact(
+                                finance.totalRepaid,
+                              ),
+                              accent: const Color(0xFF4C6A78),
+                              icon: Icons.paid_rounded,
+                            ),
                           ],
                         ),
                       ],
@@ -126,30 +187,58 @@ class _LoanEligibilityScreenState extends State<LoanEligibilityScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Active Credit', style: GoogleFonts.oswald(fontSize: 22, color: const Color(0xFF171412))),
+                        Text(
+                          'Active Credit',
+                          style: GoogleFonts.oswald(
+                            fontSize: 22,
+                            color: const Color(0xFF171412),
+                          ),
+                        ),
                         const SizedBox(height: 12),
                         if (activeCredit == null)
                           Text(
-                            'No active credit at the moment. Trial plan activity and live tracked savings will appear here once requested.',
-                            style: GoogleFonts.inter(fontSize: 13, height: 1.4, color: const Color(0xFF6F665C)),
+                            'No active credit at the moment. Your approved credit details will appear here once requested.',
+                            style: GoogleFonts.inter(
+                              fontSize: 13,
+                              height: 1.4,
+                              color: const Color(0xFF6F665C),
+                            ),
                           )
                         else ...[
-                          DashboardInfoRow(label: 'Status', value: activeCredit.statusLabel, valueColor: const Color(0xFF4B9957)),
-                          DashboardInfoRow(label: 'Credit amount', value: CurrencyUtil.formatNoDecimal(activeCredit.amount)),
-                          DashboardInfoRow(label: 'Repayable total', value: CurrencyUtil.formatNoDecimal(activeCredit.totalWithInterest)),
-                          DashboardInfoRow(label: 'Suggested payment', value: CurrencyUtil.formatNoDecimal(activeCredit.suggestedRepayment)),
-                          DashboardInfoRow(label: 'Release mode', value: activeCredit.withdrawalModeLabel),
+                          DashboardInfoRow(
+                            label: 'Status',
+                            value: activeCredit.statusLabel,
+                            valueColor: const Color(0xFF4B9957),
+                          ),
+                          DashboardInfoRow(
+                            label: 'Credit amount',
+                            value: CurrencyUtil.formatNoDecimal(
+                              activeCredit.amount,
+                            ),
+                          ),
+                          DashboardInfoRow(
+                            label: 'Repayable total',
+                            value: CurrencyUtil.formatNoDecimal(
+                              activeCredit.totalWithInterest,
+                            ),
+                          ),
+                          DashboardInfoRow(
+                            label: 'Suggested payment',
+                            value: CurrencyUtil.formatNoDecimal(
+                              activeCredit.suggestedRepayment,
+                            ),
+                          ),
+                          DashboardInfoRow(
+                            label: 'Cash-out mode',
+                            value: activeCredit.withdrawalModeLabel,
+                          ),
                           DashboardInfoRow(
                             label: 'Remaining balance',
-                            value: CurrencyUtil.formatNoDecimal(activeCredit.remainingBalance),
+                            value: CurrencyUtil.formatNoDecimal(
+                              activeCredit.remainingBalance,
+                            ),
                             valueColor: const Color(0xFFC2545E),
                           ),
-                          if (activeCredit.isTrial)
-                            DashboardInfoRow(
-                              label: 'Mode',
-                              value: 'Trial credit',
-                              valueColor: const Color(0xFFB7821E),
-                            ),
                           const SizedBox(height: 10),
                           ClipRRect(
                             borderRadius: BorderRadius.circular(999),
@@ -163,11 +252,18 @@ class _LoanEligibilityScreenState extends State<LoanEligibilityScreen> {
                           const SizedBox(height: 8),
                           Text(
                             'Repayment progress ${(activeCredit.repaymentProgress * 100).round()}%',
-                            style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: const Color(0xFF4B9957)),
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFF4B9957),
+                            ),
                           ),
                           const SizedBox(height: 12),
                           OutlinedButton.icon(
-                            onPressed: () => Navigator.pushNamed(context, AppRoutes.repayment),
+                            onPressed: () => Navigator.pushNamed(
+                              context,
+                              AppRoutes.repayment,
+                            ),
                             icon: const Icon(Icons.payment_rounded),
                             label: const Text('Make Payment'),
                           ),
@@ -216,9 +312,25 @@ class _MetricCard extends StatelessWidget {
             child: Icon(icon, color: accent, size: 18),
           ),
           const Spacer(),
-          Text(label.toUpperCase(), style: GoogleFonts.oswald(fontSize: 11, letterSpacing: 1.2, color: const Color(0xFF7E756A))),
+          Text(
+            label.toUpperCase(),
+            style: GoogleFonts.oswald(
+              fontSize: 11,
+              letterSpacing: 1.2,
+              color: const Color(0xFF7E756A),
+            ),
+          ),
           const SizedBox(height: 4),
-          Text(value, maxLines: 2, overflow: TextOverflow.ellipsis, style: GoogleFonts.oswald(fontSize: 19, height: 1, color: const Color(0xFF171412))),
+          Text(
+            value,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.oswald(
+              fontSize: 19,
+              height: 1,
+              color: const Color(0xFF171412),
+            ),
+          ),
         ],
       ),
     );

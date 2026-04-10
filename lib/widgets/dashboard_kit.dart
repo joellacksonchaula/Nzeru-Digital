@@ -29,7 +29,9 @@ class DashboardPage extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF091018) : const Color(0xFFF7F4EE),
+      backgroundColor: isDark
+          ? const Color(0xFF091018)
+          : const Color(0xFFF7F4EE),
       body: Stack(
         children: [
           DashboardBackdrop(darkMode: isDark),
@@ -101,27 +103,27 @@ class DashboardHeader extends StatelessWidget {
                   color: isDark ? Colors.white : const Color(0xFF171412),
                 ),
               ),
-              const SizedBox(height: 8),
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 760),
-                child: Text(
-                  subtitle,
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
-                    height: 1.45,
-                    color:
-                        isDark ? const Color(0xFFD0D5DC) : const Color(0xFF6F665C),
-                    fontWeight: FontWeight.w500,
+              if (subtitle.trim().isNotEmpty) ...[
+                const SizedBox(height: 8),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 760),
+                  child: Text(
+                    subtitle,
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      height: 1.45,
+                      color: isDark
+                          ? const Color(0xFFD0D5DC)
+                          : const Color(0xFF6F665C),
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
-              ),
+              ],
             ],
           ),
         ),
-        if (trailing != null) ...[
-          const SizedBox(width: 12),
-          trailing!,
-        ],
+        if (trailing != null) ...[const SizedBox(width: 12), trailing!],
       ],
     );
   }
@@ -260,20 +262,15 @@ class DashboardSectionTitle extends StatelessWidget {
 class DashboardStatGrid extends StatelessWidget {
   final List<DashboardStatItem> items;
 
-  const DashboardStatGrid({
-    super.key,
-    required this.items,
-  });
+  const DashboardStatGrid({super.key, required this.items});
 
   @override
   Widget build(BuildContext context) {
     return DashboardHorizontalRail(
       children: items
           .map(
-            (item) => SizedBox(
-              width: 260,
-              child: DashboardStatCard(item: item),
-            ),
+            (item) =>
+                SizedBox(width: 260, child: DashboardStatCard(item: item)),
           )
           .toList(),
     );
@@ -299,10 +296,7 @@ class DashboardStatItem {
 class DashboardStatCard extends StatelessWidget {
   final DashboardStatItem item;
 
-  const DashboardStatCard({
-    super.key,
-    required this.item,
-  });
+  const DashboardStatCard({super.key, required this.item});
 
   @override
   Widget build(BuildContext context) {
@@ -332,8 +326,9 @@ class DashboardStatCard extends StatelessWidget {
                   style: GoogleFonts.oswald(
                     fontSize: 12,
                     letterSpacing: 1.4,
-                    color:
-                        isDark ? const Color(0xFFD0D5DC) : const Color(0xFF6F665C),
+                    color: isDark
+                        ? const Color(0xFFD0D5DC)
+                        : const Color(0xFF6F665C),
                   ),
                 ),
               ],
@@ -354,8 +349,9 @@ class DashboardStatCard extends StatelessWidget {
               style: GoogleFonts.inter(
                 fontSize: 13,
                 height: 1.35,
-                color:
-                    isDark ? const Color(0xFFD0D5DC) : const Color(0xFF6F665C),
+                color: isDark
+                    ? const Color(0xFFD0D5DC)
+                    : const Color(0xFF6F665C),
               ),
             ),
           ],
@@ -369,11 +365,7 @@ class DashboardPlanCarousel extends StatefulWidget {
   final List<SavingsPlan> plans;
   final void Function(SavingsPlan)? onTap;
 
-  const DashboardPlanCarousel({
-    super.key,
-    required this.plans,
-    this.onTap,
-  });
+  const DashboardPlanCarousel({super.key, required this.plans, this.onTap});
 
   @override
   State<DashboardPlanCarousel> createState() => _DashboardPlanCarouselState();
@@ -397,8 +389,8 @@ class _DashboardPlanCarouselState extends State<DashboardPlanCarousel> {
         final fraction = width < 700
             ? 0.92
             : width < 1100
-                ? 0.62
-                : 0.42;
+            ? 0.62
+            : 0.42;
 
         if (_controller == null || _viewportFraction != fraction) {
           _controller?.dispose();
@@ -421,7 +413,9 @@ class _DashboardPlanCarouselState extends State<DashboardPlanCarousel> {
                 ),
                 child: DashboardSavingsPlanCard(
                   plan: plan,
-                  onTap: widget.onTap == null ? null : () => widget.onTap!(plan),
+                  onTap: widget.onTap == null
+                      ? null
+                      : () => widget.onTap!(plan),
                 ),
               );
             },
@@ -436,11 +430,7 @@ class DashboardSavingsPlanCard extends StatelessWidget {
   final SavingsPlan plan;
   final VoidCallback? onTap;
 
-  const DashboardSavingsPlanCard({
-    super.key,
-    required this.plan,
-    this.onTap,
-  });
+  const DashboardSavingsPlanCard({super.key, required this.plan, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -464,27 +454,6 @@ class DashboardSavingsPlanCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (plan.isTrial) ...[
-                          Container(
-                            margin: const EdgeInsets.only(bottom: 6),
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFD4AF37).withValues(alpha: 0.16),
-                              borderRadius: BorderRadius.circular(999),
-                              border: Border.all(
-                                color: const Color(0xFFD4AF37).withValues(alpha: 0.32),
-                              ),
-                            ),
-                            child: Text(
-                              'TRIAL MODE',
-                              style: GoogleFonts.oswald(
-                                fontSize: 11,
-                                letterSpacing: 1.2,
-                                color: const Color(0xFFB7821E),
-                              ),
-                            ),
-                          ),
-                        ],
                         Text(
                           plan.title,
                           style: GoogleFonts.oswald(
@@ -507,11 +476,16 @@ class DashboardSavingsPlanCard extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: healthColor.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(999),
-                      border: Border.all(color: healthColor.withValues(alpha: 0.3)),
+                      border: Border.all(
+                        color: healthColor.withValues(alpha: 0.3),
+                      ),
                     ),
                     child: Text(
                       statusLabel,
@@ -566,12 +540,16 @@ class DashboardSavingsPlanCard extends StatelessWidget {
                         const SizedBox(height: 6),
                         _AmountLine(
                           label: 'Saved',
-                          value: CurrencyUtil.formatNoDecimal(plan.currentAmount),
+                          value: CurrencyUtil.formatNoDecimal(
+                            plan.currentAmount,
+                          ),
                         ),
                         const SizedBox(height: 6),
                         _AmountLine(
                           label: 'ETA',
-                          value: DateFormat('dd MMM').format(plan.estimatedCompletionDate),
+                          value: DateFormat(
+                            'dd MMM',
+                          ).format(plan.estimatedCompletionDate),
                         ),
                       ],
                     ),
@@ -596,17 +574,20 @@ class DashboardSavingsPlanCard extends StatelessWidget {
                 child: Row(
                   children: [
                     _RateChip(
-                      label: 'Month ${CurrencyUtil.formatNoDecimal(plan.requiredPerMonth)}',
+                      label:
+                          'Month ${CurrencyUtil.formatNoDecimal(plan.requiredPerMonth)}',
                       color: const Color(0xFFE0B449),
                     ),
                     const SizedBox(width: 8),
                     _RateChip(
-                      label: 'Week ${CurrencyUtil.formatNoDecimal(plan.requiredPerWeek)}',
+                      label:
+                          'Week ${CurrencyUtil.formatNoDecimal(plan.requiredPerWeek)}',
                       color: const Color(0xFF56D68D),
                     ),
                     const SizedBox(width: 8),
                     _RateChip(
-                      label: 'Day ${CurrencyUtil.formatNoDecimal(plan.requiredPerDay)}',
+                      label:
+                          'Day ${CurrencyUtil.formatNoDecimal(plan.requiredPerDay)}',
                       color: const Color(0xFFE36A5B),
                     ),
                   ],
@@ -666,10 +647,7 @@ class _AmountLine extends StatelessWidget {
   final String label;
   final String value;
 
-  const _AmountLine({
-    required this.label,
-    required this.value,
-  });
+  const _AmountLine({required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -703,10 +681,7 @@ class _RateChip extends StatelessWidget {
   final String label;
   final Color color;
 
-  const _RateChip({
-    required this.label,
-    required this.color,
-  });
+  const _RateChip({required this.label, required this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -754,8 +729,9 @@ class DashboardInfoRow extends StatelessWidget {
               label,
               style: GoogleFonts.inter(
                 fontSize: 13,
-                color:
-                    isDark ? const Color(0xFFD0D5DC) : const Color(0xFF7E756A),
+                color: isDark
+                    ? const Color(0xFFD0D5DC)
+                    : const Color(0xFF7E756A),
               ),
             ),
           ),
@@ -763,7 +739,9 @@ class DashboardInfoRow extends StatelessWidget {
             value,
             style: GoogleFonts.oswald(
               fontSize: 15,
-              color: valueColor ?? (isDark ? Colors.white : const Color(0xFF171412)),
+              color:
+                  valueColor ??
+                  (isDark ? Colors.white : const Color(0xFF171412)),
             ),
           ),
         ],
@@ -775,10 +753,7 @@ class DashboardInfoRow extends StatelessWidget {
 class DashboardBackdrop extends StatelessWidget {
   final bool? darkMode;
 
-  const DashboardBackdrop({
-    super.key,
-    this.darkMode,
-  });
+  const DashboardBackdrop({super.key, this.darkMode});
 
   @override
   Widget build(BuildContext context) {
@@ -786,16 +761,13 @@ class DashboardBackdrop extends StatelessWidget {
         darkMode ?? Theme.of(context).brightness == Brightness.dark;
 
     Widget orb(double size, Color color) => ImageFiltered(
-          imageFilter: ImageFilter.blur(sigmaX: 38, sigmaY: 38),
-          child: Container(
-            width: size,
-            height: size,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: color,
-            ),
-          ),
-        );
+      imageFilter: ImageFilter.blur(sigmaX: 38, sigmaY: 38),
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+      ),
+    );
 
     return Stack(
       children: [
@@ -819,14 +791,18 @@ class DashboardBackdrop extends StatelessWidget {
           ),
         ),
         Positioned.fill(
-          child: CustomPaint(painter: _GridGlowPainter(darkMode: resolvedDarkMode)),
+          child: CustomPaint(
+            painter: _GridGlowPainter(darkMode: resolvedDarkMode),
+          ),
         ),
         Positioned(
           top: -70,
           left: -40,
           child: orb(
             220,
-            resolvedDarkMode ? const Color(0x140ABAB5) : const Color(0x148FD7A5),
+            resolvedDarkMode
+                ? const Color(0x140ABAB5)
+                : const Color(0x148FD7A5),
           ),
         ),
         Positioned(
@@ -834,7 +810,9 @@ class DashboardBackdrop extends StatelessWidget {
           right: -40,
           child: orb(
             220,
-            resolvedDarkMode ? const Color(0x12D4AF37) : const Color(0x16D4AF37),
+            resolvedDarkMode
+                ? const Color(0x12D4AF37)
+                : const Color(0x16D4AF37),
           ),
         ),
         Positioned(
@@ -842,7 +820,9 @@ class DashboardBackdrop extends StatelessWidget {
           left: 100,
           child: orb(
             240,
-            resolvedDarkMode ? const Color(0x12801818) : const Color(0x14801818),
+            resolvedDarkMode
+                ? const Color(0x12801818)
+                : const Color(0x14801818),
           ),
         ),
       ],
@@ -853,9 +833,7 @@ class DashboardBackdrop extends StatelessWidget {
 class _GridGlowPainter extends CustomPainter {
   final bool darkMode;
 
-  _GridGlowPainter({
-    this.darkMode = false,
-  });
+  _GridGlowPainter({this.darkMode = false});
 
   @override
   void paint(Canvas canvas, Size size) {

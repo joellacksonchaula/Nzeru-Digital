@@ -44,7 +44,9 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
     final darkMode = themeMode.isDarkMode;
 
     return Scaffold(
-      backgroundColor: darkMode ? const Color(0xFF091018) : const Color(0xFFF7F4EC),
+      backgroundColor: darkMode
+          ? const Color(0xFF091018)
+          : const Color(0xFFF7F4EC),
       body: Stack(
         children: [
           DashboardBackdrop(darkMode: darkMode),
@@ -72,9 +74,7 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                   const SizedBox(height: 26),
                   _SectionRow(
                     title: 'Nzelu Savings Plans',
-                    trailing: plans.isEmpty
-                        ? null
-                        : '${plans.length} tracked • ${finance.trialPlans.length} trial',
+                    trailing: plans.isEmpty ? null : '${plans.length} tracked',
                     darkMode: darkMode,
                   ),
                   const SizedBox(height: 14),
@@ -83,10 +83,7 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                           height: 170,
                           child: _EmptyCard(message: 'No savings plans yet.'),
                         )
-                      : _TopPlansRail(
-                          plans: plans,
-                          darkMode: darkMode,
-                        ),
+                      : _TopPlansRail(plans: plans, darkMode: darkMode),
                   const SizedBox(height: 18),
                   _PerformanceCard(candles: candles),
                   const SizedBox(height: 18),
@@ -100,7 +97,9 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                     darkMode: darkMode,
                   ),
                   const SizedBox(height: 14),
-                  _TransactionsPanel(transactions: transactions.take(5).toList()),
+                  _TransactionsPanel(
+                    transactions: transactions.take(5).toList(),
+                  ),
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
@@ -123,10 +122,14 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                     child: FilledButton.icon(
                       onPressed: () => themeMode.toggle(),
                       style: FilledButton.styleFrom(
-                        backgroundColor:
-                            darkMode ? const Color(0xFF161F2A) : AppColors.faluRed,
+                        backgroundColor: darkMode
+                            ? const Color(0xFF161F2A)
+                            : AppColors.faluRed,
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 18,
+                          vertical: 12,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
@@ -181,9 +184,7 @@ class _PhoneHeader extends StatelessWidget {
             : Colors.white.withValues(alpha: 0.76),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: darkMode
-              ? const Color(0x335F6E80)
-              : const Color(0xFFE3DACC),
+          color: darkMode ? const Color(0x335F6E80) : const Color(0xFFE3DACC),
         ),
         boxShadow: [
           BoxShadow(
@@ -203,10 +204,7 @@ class _PhoneHeader extends StatelessWidget {
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: LinearGradient(
-                    colors: [
-                      Color(0xFFD6F5F4),
-                      Color(0xFF8DE8E5),
-                    ],
+                    colors: [Color(0xFFD6F5F4), Color(0xFF8DE8E5)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -251,7 +249,9 @@ class _PhoneHeader extends StatelessWidget {
                         fontSize: 30,
                         height: 0.95,
                         fontWeight: FontWeight.w700,
-                        color: darkMode ? Colors.white : const Color(0xFF111111),
+                        color: darkMode
+                            ? Colors.white
+                            : const Color(0xFF111111),
                       ),
                     ),
                   ],
@@ -263,9 +263,7 @@ class _PhoneHeader extends StatelessWidget {
                   width: 58,
                   height: 58,
                   decoration: BoxDecoration(
-                    color: darkMode
-                        ? const Color(0xFFF4F2EC)
-                        : Colors.white,
+                    color: darkMode ? const Color(0xFFF4F2EC) : Colors.white,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
@@ -376,10 +374,7 @@ class _TopSavingsPlanCard extends StatelessWidget {
   final SavingsPlan plan;
   final bool darkMode;
 
-  const _TopSavingsPlanCard({
-    required this.plan,
-    required this.darkMode,
-  });
+  const _TopSavingsPlanCard({required this.plan, required this.darkMode});
 
   @override
   Widget build(BuildContext context) {
@@ -417,23 +412,6 @@ class _TopSavingsPlanCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (plan.isTrial)
-                        Container(
-                          margin: const EdgeInsets.only(bottom: 6),
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFD4AF37).withValues(alpha: 0.18),
-                            borderRadius: BorderRadius.circular(999),
-                          ),
-                          child: Text(
-                            'TRIAL',
-                            style: GoogleFonts.oswald(
-                              fontSize: 10,
-                              letterSpacing: 1.1,
-                              color: const Color(0xFFB7821E),
-                            ),
-                          ),
-                        ),
                       Text(
                         _displayTopTitle(plan.title),
                         maxLines: 2,
@@ -442,7 +420,9 @@ class _TopSavingsPlanCard extends StatelessWidget {
                           fontSize: 14,
                           height: 0.95,
                           fontWeight: FontWeight.w700,
-                          color: darkMode ? Colors.white : const Color(0xFF111111),
+                          color: darkMode
+                              ? Colors.white
+                              : const Color(0xFF111111),
                         ),
                       ),
                     ],
@@ -624,10 +604,7 @@ class _TopPlansRail extends StatelessWidget {
   final List<SavingsPlan> plans;
   final bool darkMode;
 
-  const _TopPlansRail({
-    required this.plans,
-    required this.darkMode,
-  });
+  const _TopPlansRail({required this.plans, required this.darkMode});
 
   @override
   Widget build(BuildContext context) {
@@ -641,10 +618,7 @@ class _TopPlansRail extends StatelessWidget {
         itemBuilder: (context, index) {
           return SizedBox(
             width: 156,
-            child: _TopSavingsPlanCard(
-              plan: plans[index],
-              darkMode: darkMode,
-            ),
+            child: _TopSavingsPlanCard(plan: plans[index], darkMode: darkMode),
           );
         },
       ),
@@ -655,9 +629,7 @@ class _TopPlansRail extends StatelessWidget {
 class _PerformanceCard extends StatelessWidget {
   final List<CandleData> candles;
 
-  const _PerformanceCard({
-    required this.candles,
-  });
+  const _PerformanceCard({required this.candles});
 
   @override
   Widget build(BuildContext context) {
@@ -666,7 +638,9 @@ class _PerformanceCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF111721),
         borderRadius: BorderRadius.circular(26),
-        border: Border.all(color: const Color(0xFF801818).withValues(alpha: 0.3)),
+        border: Border.all(
+          color: const Color(0xFF801818).withValues(alpha: 0.3),
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.18),
@@ -704,8 +678,10 @@ class _PerformanceCard extends StatelessWidget {
                 ),
               ),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFF202736),
                   borderRadius: BorderRadius.circular(18),
@@ -757,9 +733,21 @@ class _QuickActionsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = [
-      (label: 'Deposit', icon: Icons.download_rounded, route: AppRoutes.deposit),
-      (label: 'New Plan', icon: Icons.note_alt_rounded, route: AppRoutes.createPlan),
-                      (label: 'Credit', icon: Icons.account_balance_wallet_rounded, route: AppRoutes.requestLoan),
+      (
+        label: 'Deposit',
+        icon: Icons.download_rounded,
+        route: AppRoutes.deposit,
+      ),
+      (
+        label: 'New Plan',
+        icon: Icons.note_alt_rounded,
+        route: AppRoutes.createPlan,
+      ),
+      (
+        label: 'Credit',
+        icon: Icons.account_balance_wallet_rounded,
+        route: AppRoutes.requestLoan,
+      ),
       (label: 'Repay', icon: Icons.refresh_rounded, route: AppRoutes.repayment),
     ];
 
@@ -822,9 +810,7 @@ class _QuickActionsRow extends StatelessWidget {
 class _TransactionsPanel extends StatelessWidget {
   final List<SavingsTransaction> transactions;
 
-  const _TransactionsPanel({
-    required this.transactions,
-  });
+  const _TransactionsPanel({required this.transactions});
 
   @override
   Widget build(BuildContext context) {
@@ -861,14 +847,13 @@ class _TransactionsPanel extends StatelessWidget {
 class _TransactionRow extends StatelessWidget {
   final SavingsTransaction txn;
 
-  const _TransactionRow({
-    required this.txn,
-  });
+  const _TransactionRow({required this.txn});
 
   @override
   Widget build(BuildContext context) {
-    final color =
-        txn.isCredit ? const Color(0xFF0ABAB5) : const Color(0xFF801818);
+    final color = txn.isCredit
+        ? const Color(0xFF0ABAB5)
+        : const Color(0xFF801818);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       child: Row(
@@ -928,9 +913,7 @@ class _TransactionRow extends StatelessWidget {
 class _EmptyCard extends StatelessWidget {
   final String message;
 
-  const _EmptyCard({
-    required this.message,
-  });
+  const _EmptyCard({required this.message});
 
   @override
   Widget build(BuildContext context) {
@@ -980,21 +963,24 @@ List<CandleData> _buildSavingsCandles(FinanceOverviewProvider finance) {
 
   if (finance.prioritizedPlans.isNotEmpty) {
     return finance.prioritizedPlans
-        .expand((plan) => List.generate(10, (index) {
-              final base =
-                  plan.goalAmount == 0 ? 0.0 : plan.goalAmount * (0.10 + (index * 0.03));
-              final close = (base + (plan.currentAmount * (index / 10)))
-                  .clamp(0.0, plan.goalAmount)
-                  .toDouble();
-              return CandleData(
-                time: plan.startDate.add(Duration(days: index * 3)),
-                open: index == 0 ? base * 0.94 : base,
-                high: close + (plan.requiredPerWeek * 0.16),
-                low: (base * 0.90).clamp(0.0, double.infinity).toDouble(),
-                close: close,
-                volume: plan.currentAmount,
-              );
-            }))
+        .expand(
+          (plan) => List.generate(10, (index) {
+            final base = plan.goalAmount == 0
+                ? 0.0
+                : plan.goalAmount * (0.10 + (index * 0.03));
+            final close = (base + (plan.currentAmount * (index / 10)))
+                .clamp(0.0, plan.goalAmount)
+                .toDouble();
+            return CandleData(
+              time: plan.startDate.add(Duration(days: index * 3)),
+              open: index == 0 ? base * 0.94 : base,
+              high: close + (plan.requiredPerWeek * 0.16),
+              low: (base * 0.90).clamp(0.0, double.infinity).toDouble(),
+              close: close,
+              volume: plan.currentAmount,
+            );
+          }),
+        )
         .take(42)
         .toList();
   }

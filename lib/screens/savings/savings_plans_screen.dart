@@ -7,7 +7,6 @@ import '../../providers/finance_overview_provider.dart';
 import '../../providers/savings_provider.dart';
 import '../../utils/currency_util.dart';
 import '../../widgets/dashboard_kit.dart';
-import '../../widgets/gold_button.dart';
 
 class SavingsPlansScreen extends StatelessWidget {
   const SavingsPlansScreen({super.key});
@@ -17,150 +16,208 @@ class SavingsPlansScreen extends StatelessWidget {
     final finance = context.watch<FinanceOverviewProvider>();
     final savings = context.watch<SavingsProvider>();
     final plans = finance.prioritizedPlans;
-    final trialPlans = plans.where((plan) => plan.isTrial).toList();
-    final trialPlan = trialPlans.isEmpty ? null : trialPlans.first;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return DashboardPage(
-      eyebrow: 'Nzelu Savings',
-      title: 'Your Savings',
-      subtitle:
-          'Browse all your active and completed plans. Create a new one, or tap a plan to inspect it closely.',
-      trailing: GoldButton(
-        label: 'NEW PLAN',
-        icon: Icons.add_rounded,
+      eyebrow: 'Savings',
+      title: 'Savings',
+      subtitle: '',
+      trailing: FilledButton.icon(
         onPressed: () => Navigator.pushNamed(context, AppRoutes.createPlan),
+        style: FilledButton.styleFrom(
+          backgroundColor: const Color(0xFF0F9D8A),
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+          ),
+        ),
+        icon: const Icon(Icons.add_rounded, size: 18),
+        label: Text(
+          'New',
+          style: GoogleFonts.manrope(fontWeight: FontWeight.w800),
+        ),
       ),
       children: [
-        DashboardStatGrid(
-          items: [
-            DashboardStatItem(
-              label: 'Total Saved',
-              value: CurrencyUtil.formatCompact(finance.totalSaved),
-              detail: 'All plans combined',
-              icon: Icons.savings_rounded,
-              accent: const Color(0xFF0ABAB5),
-            ),
-            DashboardStatItem(
-              label: 'Monthly Goal',
-              value: CurrencyUtil.formatCompact(finance.monthlyCommitment),
-              detail: 'Combined commitment',
-              icon: Icons.calendar_month_rounded,
-              accent: const Color(0xFFD4AF37),
-            ),
-            DashboardStatItem(
-              label: 'Deposits',
-              value: CurrencyUtil.formatCompact(finance.totalDeposits),
-              detail: 'Money added so far',
-              icon: Icons.south_west_rounded,
-              accent: const Color(0xFF3B9D5D),
-            ),
-            DashboardStatItem(
-              label: 'Interest',
-              value: CurrencyUtil.formatCompact(finance.interestEarned),
-              detail: 'Rewards earned so far',
-              icon: Icons.trending_up_rounded,
-              accent: const Color(0xFF801818),
-            ),
-            if (finance.trialPlans.isNotEmpty)
-              DashboardStatItem(
-                label: 'Trial',
-                value: CurrencyUtil.formatCompact(
-                  finance.trialPlans.fold(0.0, (sum, plan) => sum + plan.currentAmount),
+        DashboardPanel(
+          glowColor: const Color(0x660F9D8A),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Your live savings',
+                style: GoogleFonts.sora(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFF171412),
                 ),
-                detail: 'Sandbox savings total',
-                icon: Icons.science_rounded,
-                accent: const Color(0xFFD4AF37),
               ),
-          ],
-        ),
-        const SizedBox(height: 18),
-        if (trialPlan != null) ...[
-          DashboardPanel(
-            glowColor: const Color(0x66D4AF37),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    'Trial plan detected. Use it to test deposits, credit requests, repayments, and penalties safely.',
-                    style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF6E5626)),
+              const SizedBox(height: 6),
+              Text(
+                'All savings plans are stacked below so you can scan them quickly.',
+                style: GoogleFonts.manrope(
+                  fontSize: 13,
+                  color: const Color(0xFF6F665C),
+                ),
+              ),
+              const SizedBox(height: 14),
+              Row(
+                children: [
+                  Expanded(
+                    child: _SummaryStat(
+                      label: 'Saved',
+                      value: CurrencyUtil.formatCompact(finance.totalSaved),
+                      accent: const Color(0xFF0F9D8A),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: _SummaryStat(
+                      label: 'Monthly target',
+                      value: CurrencyUtil.formatCompact(
+                        finance.monthlyCommitment,
+                      ),
+                      accent: const Color(0xFFB88E5A),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: plans.isEmpty
+                      ? null
+                      : () => Navigator.pushNamed(context, AppRoutes.deposit),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFF0F9D8A),
+                    side: const BorderSide(color: Color(0xFFBDE0DB)),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                  ),
+                  icon: const Icon(Icons.south_west_rounded, size: 18),
+                  label: Text(
+                    'Deposit to savings',
+                    style: GoogleFonts.manrope(fontWeight: FontWeight.w800),
                   ),
                 ),
-                const SizedBox(width: 12),
-                OutlinedButton.icon(
-                  onPressed: () async {
-                    final messenger = ScaffoldMessenger.of(context);
-                    final success = await savings.simulateTrialPenalty(planId: trialPlan.id);
-                    if (!context.mounted) return;
-                    messenger.showSnackBar(
-                      SnackBar(
-                        content: Text(success ? 'Trial penalty applied.' : (savings.error ?? 'Penalty simulation failed.')),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.warning_amber_rounded),
-                  label: const Text('Apply Trial Penalty'),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-          const SizedBox(height: 18),
-        ],
+        ),
+        const SizedBox(height: 18),
         if (plans.isEmpty)
           DashboardPanel(
             child: SizedBox(
-              height: 160,
+              height: 180,
               child: Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      Icons.savings_outlined,
+                    const Icon(
+                      Icons.savings_rounded,
                       size: 40,
-                      color: isDark
-                          ? const Color(0xFF8DE8E5)
-                          : const Color(0xFF088F8B),
+                      color: Color(0xFF0F9D8A),
                     ),
                     const SizedBox(height: 12),
                     Text(
                       'No savings plans yet.',
-                      style: GoogleFonts.inter(
+                      style: GoogleFonts.manrope(
                         fontSize: 14,
-                        color: isDark
-                            ? const Color(0xFFD0D5DC)
-                            : const Color(0xFF6F665C),
+                        color: const Color(0xFF6F665C),
                       ),
                     ),
                     const SizedBox(height: 14),
-                    GoldButton(
-                      label: 'CREATE FIRST PLAN',
-                      icon: Icons.rocket_launch_rounded,
+                    FilledButton(
                       onPressed: () =>
                           Navigator.pushNamed(context, AppRoutes.createPlan),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: const Color(0xFF0F9D8A),
+                        foregroundColor: Colors.white,
+                      ),
+                      child: Text(
+                        'Create first plan',
+                        style: GoogleFonts.manrope(fontWeight: FontWeight.w800),
+                      ),
                     ),
                   ],
                 ),
               ),
             ),
           )
-        else ...[
-          DashboardSectionTitle(
-            title: 'Active Plans',
-            actionLabel: 'Deposit',
-            onAction: () =>
-                Navigator.pushNamed(context, AppRoutes.deposit),
+        else
+          Column(
+            children: [
+              for (final plan in plans) ...[
+                DashboardSavingsPlanCard(
+                  plan: plan,
+                  onTap: () => Navigator.pushNamed(
+                    context,
+                    AppRoutes.planDetail,
+                    arguments: plan.id,
+                  ),
+                ),
+                if (plan != plans.last) const SizedBox(height: 14),
+              ],
+            ],
           ),
-          const SizedBox(height: 10),
-          DashboardPlanCarousel(
-            plans: plans,
-            onTap: (plan) => Navigator.pushNamed(
-              context,
-              AppRoutes.planDetail,
-              arguments: plan.id,
+        if (savings.error != null) ...[
+          const SizedBox(height: 12),
+          Text(
+            savings.error!,
+            style: GoogleFonts.manrope(
+              fontSize: 12,
+              color: const Color(0xFFC2545E),
             ),
           ),
         ],
       ],
+    );
+  }
+}
+
+class _SummaryStat extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color accent;
+
+  const _SummaryStat({
+    required this.label,
+    required this.value,
+    required this.accent,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.manrope(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: const Color(0xFF6F665C),
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            value,
+            style: GoogleFonts.sora(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: const Color(0xFF171412),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

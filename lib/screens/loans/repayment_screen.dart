@@ -62,7 +62,10 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
                             ),
                             Text(
                               'Repay Credit',
-                              style: GoogleFonts.oswald(fontSize: 28, color: const Color(0xFF171412)),
+                              style: GoogleFonts.oswald(
+                                fontSize: 28,
+                                color: const Color(0xFF171412),
+                              ),
                             ),
                           ],
                         ),
@@ -74,7 +77,10 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
                     DashboardPanel(
                       child: Text(
                         'No active credit right now.',
-                        style: GoogleFonts.inter(fontSize: 14, color: AppColors.textMuted),
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          color: AppColors.textMuted,
+                        ),
                       ),
                     )
                   else ...[
@@ -84,43 +90,51 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
                           Expanded(
                             child: _BalanceItem(
                               label: 'Remaining balance',
-                              value: CurrencyUtil.format(activeCredit.remainingBalance),
+                              value: CurrencyUtil.format(
+                                activeCredit.remainingBalance,
+                              ),
                             ),
                           ),
                           Expanded(
                             child: _BalanceItem(
                               label: 'Suggested payment',
-                              value: CurrencyUtil.format(activeCredit.suggestedRepayment),
+                              value: CurrencyUtil.format(
+                                activeCredit.suggestedRepayment,
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
-                    if (activeCredit.isTrial) ...[
-                      const SizedBox(height: 12),
-                      DashboardPanel(
-                        glowColor: const Color(0x66D4AF37),
-                        child: Text(
-                          'This repayment belongs to trial mode and does not touch real balances.',
-                          style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF6E5626)),
-                        ),
-                      ),
-                    ],
                     const SizedBox(height: 16),
                     DashboardPanel(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Payment amount', style: GoogleFonts.oswald(fontSize: 20, color: const Color(0xFF171412))),
+                          Text(
+                            'Payment amount',
+                            style: GoogleFonts.oswald(
+                              fontSize: 20,
+                              color: const Color(0xFF171412),
+                            ),
+                          ),
                           const SizedBox(height: 12),
                           TextFormField(
                             controller: _amountController,
-                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                            style: GoogleFonts.oswald(fontSize: 32, color: AppColors.tiffanyBlue),
+                            keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true,
+                            ),
+                            style: GoogleFonts.oswald(
+                              fontSize: 32,
+                              color: AppColors.tiffanyBlue,
+                            ),
                             decoration: InputDecoration(
                               hintText: '0.00',
                               prefixText: 'MK ',
-                              prefixStyle: GoogleFonts.oswald(fontSize: 32, color: AppColors.tiffanyBlue),
+                              prefixStyle: GoogleFonts.oswald(
+                                fontSize: 32,
+                                color: AppColors.tiffanyBlue,
+                              ),
                             ),
                           ),
                         ],
@@ -136,13 +150,17 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
                         final amount = double.tryParse(_amountController.text);
                         if (amount == null || amount <= 0) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Enter a valid amount')),
+                            const SnackBar(
+                              content: Text('Enter a valid amount'),
+                            ),
                           );
                           return;
                         }
                         if (amount > activeCredit.remainingBalance) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Amount exceeds remaining balance')),
+                            const SnackBar(
+                              content: Text('Amount exceeds remaining balance'),
+                            ),
                           );
                           return;
                         }
@@ -156,7 +174,8 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
                             creditId: activeCredit.id,
                             amountPaid: amount,
                             paymentDate: DateTime.now(),
-                            remainingBalance: activeCredit.remainingBalance - amount,
+                            remainingBalance:
+                                activeCredit.remainingBalance - amount,
                           ),
                         );
 
@@ -165,11 +184,19 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
                         if (success) {
                           navigator.pop();
                           messenger.showSnackBar(
-                            SnackBar(content: Text('Payment of ${CurrencyUtil.format(amount)} successful.')),
+                            SnackBar(
+                              content: Text(
+                                'Payment of ${CurrencyUtil.format(amount)} successful.',
+                              ),
+                            ),
                           );
                         } else {
                           messenger.showSnackBar(
-                            SnackBar(content: Text(credits.error ?? 'Failed to make payment.')),
+                            SnackBar(
+                              content: Text(
+                                credits.error ?? 'Failed to make payment.',
+                              ),
+                            ),
                           );
                         }
                       },
@@ -189,10 +216,7 @@ class _BalanceItem extends StatelessWidget {
   final String label;
   final String value;
 
-  const _BalanceItem({
-    required this.label,
-    required this.value,
-  });
+  const _BalanceItem({required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -201,9 +225,18 @@ class _BalanceItem extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMuted)),
+          Text(
+            label,
+            style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMuted),
+          ),
           const SizedBox(height: 4),
-          Text(value, style: GoogleFonts.oswald(fontSize: 20, color: AppColors.textPrimary)),
+          Text(
+            value,
+            style: GoogleFonts.oswald(
+              fontSize: 20,
+              color: AppColors.textPrimary,
+            ),
+          ),
         ],
       ),
     );
