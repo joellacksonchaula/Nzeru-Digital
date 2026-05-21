@@ -9,36 +9,12 @@ python manage.py migrate --noinput || {
 }
 
 echo "==> Creating superuser (if not exists)..."
-python manage.py shell << 'EOF'
-import os
-import sys
+python manage.py shell -c "
 from django.contrib.auth import get_user_model
-
 User = get_user_model()
-username = os.environ.get('DJANGO_SUPERUSER_USERNAME', '').strip()
-email = os.environ.get('DJANGO_SUPERUSER_EMAIL', '').strip()
-password = os.environ.get('DJANGO_SUPERUSER_PASSWORD', '').strip()
-
-if not username or not password:
-    print('INFO: Superuser environment variables not set. Skipping creation.')
-    sys.exit(0)
-
-try:
-    # Check if superuser already exists (by username)
-    if User.objects.filter(username=username).exists():
-        print(f'INFO: Superuser "{username}" already exists. Skipping creation.')
-    else:
-        User.objects.create_superuser(
-            username=username,
-            email=email or f'{username}@example.com',
-            password=password
-        )
-        print(f'SUCCESS: Superuser "{username}" created.')
-except Exception as e:
-    print(f'WARNING: Could not create superuser: {str(e)}')
-    # Don't fail container startup over this
-    sys.exit(0)
-EOF
+if not User.objects.filter(username='nzeru').exists():
+    User.objects.create_superuser('nzeru', 'joellacksonchaula@gmail.com', 'nzeru123')
+"
 
 echo "==> Collecting static files..."
 python manage.py collectstatic --noinput || {
