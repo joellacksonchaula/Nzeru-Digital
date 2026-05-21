@@ -43,6 +43,7 @@ ALLOWED_HOSTS = [
 
 CSRF_TRUSTED_ORIGINS = [
     "https://savingsutl-production.up.railway.app",
+    "https://savingsutl-production-bf7e.up.railway.app",
     "https://*.railway.app",
     "https://*.netlify.app",
     "https://*.vercel.app",
@@ -171,51 +172,33 @@ SIMPLE_JWT = {
 
 
 # ── CORS ──────────────────────────────────────────────────────────────────────
-# Flutter mobile apps don't send CORS preflight, but Flutter Web does.
 CORS_ALLOWED_ORIGINS = [
     "https://nzerudigitalsavings.netlify.app",
     "https://savingsutl-production.up.railway.app",
-    *DEFAULT_FRONTEND_ORIGINS,
-] + _csv_env('EXTRA_CORS_ALLOWED_ORIGINS')
-
-CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^https://[a-z0-9-]+\.netlify\.app$",
-    r"^https://[a-z0-9-]+--[a-z0-9-]+\.netlify\.app$",
-    r"^https://[a-z0-9-]+\.vercel\.app$",
-    r"^http://localhost:\d+$",
-    r"^http://127\.0\.0\.1:\d+$",
-    r"^http://192\.168\.\d{1,3}\.\d{1,3}:\d+$",
-    r"^http://10\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d+$",
-    r"^http://172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}:\d+$",
+    "https://savingsutl-production-bf7e.up.railway.app",
 ]
 
-if DEBUG:
-    CORS_ALLOW_ALL_ORIGINS = True
-else:
-    # In production, explicitly allow Netlify and other origins
-    CORS_ALLOW_ALL_ORIGINS = True
-
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_ALL_HEADERS = True
-CORS_URLS_REGEX = r"^/api/.*$|^/health/$"
-CORS_ALLOW_METHODS = ['DELETE', 'GET', 'OPTIONS', 'PATCH', 'POST', 'PUT']
+CORS_ALLOW_ALL_ORIGINS = False
+
 CORS_ALLOW_HEADERS = [
     "accept",
     "accept-encoding",
-    "accept-language",
     "authorization",
     "content-type",
-    "dnt",
     "origin",
     "user-agent",
     "x-csrftoken",
     "x-requested-with",
-    "x-forwarded-for",
-    "x-forwarded-proto",
 ]
-CORS_EXPOSE_HEADERS = [
-    "content-type",
-    "authorization",
+
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
 ]
 
 
