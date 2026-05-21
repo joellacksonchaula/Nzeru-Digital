@@ -1,8 +1,8 @@
-from django.urls import path, include
+from django.urls import path, include, re_path
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import (
-    RegisterView, current_user, dashboard_summary,
+    RegisterView, current_user, dashboard_summary, OptionsView,
     UserProfileViewSet, SavingsPlanViewSet, TransactionViewSet,
     LoanViewSet, LoanPaymentViewSet, PenaltyViewSet,
     InterestDistributionViewSet, NotificationViewSet,
@@ -39,4 +39,7 @@ urlpatterns = [
 
     # Router URLs
     path('', include(router.urls)),
+    
+    # CORS preflight handler - catch-all for OPTIONS last
+    re_path(r'^.*$', OptionsView.as_view(), name='options'),
 ]
