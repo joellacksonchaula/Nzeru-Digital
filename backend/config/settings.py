@@ -35,9 +35,10 @@ DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() == 'true'
 
 ALLOWED_HOSTS = [
     "savingsutl-production.up.railway.app",
-    ".railway.app",
+    "*.railway.app",
     "localhost",
     "127.0.0.1",
+    "*",  # Allow all for Railway health checks in production
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -45,6 +46,8 @@ CSRF_TRUSTED_ORIGINS = [
     "https://*.railway.app",
     "https://*.netlify.app",
     "https://*.vercel.app",
+    "http://localhost",
+    "http://127.0.0.1",
 ] + DEFAULT_FRONTEND_ORIGINS + _csv_env('EXTRA_CSRF_TRUSTED_ORIGINS')
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
