@@ -2,12 +2,10 @@ from rest_framework import viewsets, permissions, status, generics, serializers
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.views import APIView
 from django.contrib.auth.models import User
 from django.db.models import Sum
 from django.db.models.functions import TruncMonth
 from django.utils import timezone
-from django.http import HttpResponse
 from decimal import Decimal
 
 from .models import (
@@ -20,16 +18,6 @@ from .serializers import (
     LoanPaymentSerializer, PenaltySerializer, InterestDistributionSerializer,
     NotificationSerializer
 )
-
-
-# ─── CORS Options Handler ───────────────────────────
-
-class OptionsView(APIView):
-    """Handle CORS preflight OPTIONS requests"""
-    permission_classes = [AllowAny]
-    
-    def options(self, request, *args, **kwargs):
-        return HttpResponse()
 
 
 # ─── Auth ───────────────────────────────────────────
