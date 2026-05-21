@@ -20,12 +20,18 @@ def _csv_env(name: str) -> list[str]:
 
 
 DEFAULT_FRONTEND_ORIGINS = [
+    "https://nzerudigitalsavings.netlify.app",
     "https://glittering-cobbler-1d32f6.netlify.app",
     "http://localhost:3000",
     "http://localhost:8080",
     "http://localhost:8081",
     "http://127.0.0.1:8080",
     "http://127.0.0.1:8081",
+]
+
+DEFAULT_BACKEND_ORIGINS = [
+    "https://savingsutl-production.up.railway.app",
+    "https://savingsutl-production-bf7e.up.railway.app",
 ]
 
 # ── Security ────────────────────────────────────────────────────────────────
@@ -172,24 +178,40 @@ SIMPLE_JWT = {
 
 
 # ── CORS ──────────────────────────────────────────────────────────────────────
-CORS_ALLOWED_ORIGINS = [
-    "https://nzerudigitalsavings.netlify.app",
-    "https://savingsutl-production.up.railway.app",
-    "https://savingsutl-production-bf7e.up.railway.app",
+CORS_ALLOWED_ORIGINS = list(
+    dict.fromkeys(
+        DEFAULT_FRONTEND_ORIGINS
+        + DEFAULT_BACKEND_ORIGINS
+        + _csv_env("CORS_ALLOWED_ORIGINS")
+    )
+)
+
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://[a-z0-9-]+\.netlify\.app$",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = False
 
+# Allow CORS for ALL URLs in the API
+CORS_URLS_REGEX = r"^/api/.*$"
+
 CORS_ALLOW_HEADERS = [
     "accept",
     "accept-encoding",
+    "accept-language",
     "authorization",
     "content-type",
+    "dnt",
     "origin",
     "user-agent",
     "x-csrftoken",
     "x-requested-with",
+]
+
+CORS_EXPOSE_HEADERS = [
+    "content-type",
+    "authorization",
 ]
 
 CORS_ALLOW_METHODS = [
