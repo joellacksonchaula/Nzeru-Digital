@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Saving Vault (Nzelu Digital Savings) Project Report</title>
+  <style>
+    body {
+      font-family: "Times New Roman", Times, serif;
+      font-size: 12pt;
+      line-height: 1.8;
+      color: #000;
+      margin: 1in;
+      background: #fff;
+    }
+
+    h1, h2, h3, h4 {
+      font-weight: 700;
+      margin-top: 18px;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      font-size: 18pt;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      font-size: 15pt;
+      text-transform: uppercase;
+    }
+
+    h3 {
+      font-size: 13pt;
+      text-transform: uppercase;
+    }
+
+    h4 {
+      font-size: 12pt;
+      text-transform: uppercase;
+    }
+
+    p {
+      text-align: justify;
+      margin: 0 0 10px 0;
+    }
+
+    .center {
+      text-align: center;
+    }
+
+    .right {
+      text-align: right;
+    }
+
+    .cover-block {
+      margin-top: 30px;
+      margin-bottom: 30px;
+    }
+
+    .spacer-lg {
+      height: 40px;
+    }
+
+    .spacer-md {
+      height: 24px;
+    }
+
+    .page-break {
+      page-break-before: always;
+      break-before: page;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 16px 0;
+    }
+
+    th, td {
+      border: 1px solid #000;
+      padding: 6px 8px;
+      vertical-align: top;
+    }
+
+    th {
+      text-align: center;
+    }
+
+    ul, ol {
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+
+    .signature-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 40px;
+      margin-top: 36px;
+    }
+
+    .signature-box {
+      width: 45%;
+      text-align: center;
+    }
+
+    .line {
+      border-top: 1px solid #000;
+      margin-top: 36px;
+      padding-top: 6px;
+    }
+
+    .toc-table td {
+      border: none;
+      padding: 2px 0;
+    }
+
+    .figure-box {
+      border: 1px dashed #444;
+      padding: 24px;
+      text-align: center;
+      margin: 16px 0 28px 0;
+      font-style: italic;
+      min-height: 720px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      page-break-inside: avoid;
+    }
+
+    .screenshot-box {
+      border: 1px dashed #444;
+      padding: 24px;
+      text-align: center;
+      margin: 16px 0 28px 0;
+      font-style: italic;
+      min-height: 860px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      page-break-inside: avoid;
+    }
+
+    .code-box {
+      border: 1px dashed #444;
+      padding: 24px;
+      margin: 16px 0 28px 0;
+      min-height: 720px;
+      page-break-inside: avoid;
+      white-space: pre-wrap;
+      font-family: "Courier New", Courier, monospace;
+      font-size: 10.5pt;
+      line-height: 1.55;
+      background: #fafafa;
+    }
+  </style>
+</head>
+<body>
+  <div class="cover-block">
+    <h1>
+      Digital Saving Vault (Nzelu Digital Savings):<br>
+      A Cross-Platform Microfinance Savings, Credit, Transaction Tracking,
+      and Financial Reporting Application
+    </h1>
+
+    <div class="spacer-lg"></div>
+
+    <p class="center"><strong>JOEL L CHAULA NDEGE</strong></p>
+    <p class="center"><strong>REG NO: 23311351010</strong></p>
+    <p class="center"><strong>GUIDE</strong></p>
+    <p class="center"><strong>MR. STAINSLAUS PHELIMON</strong></p>
+
+    <div class="spacer-lg"></div>
+
+    <p class="center"><strong>Project Report</strong></p>
+    <p class="center">submitted in partial fulfilment of the requirements for the Degree</p>
+    <p class="center"><strong>BACHELOR OF SCIENCE IN COMPUTER SCIENCE</strong></p>
+    <p class="center"><strong>APRIL, 2026</strong></p>
+
+    <div class="spacer-lg"></div>
+
+    <p class="center">Department of Computer Science</p>
+    <p class="center"><strong>DMI-ST. JOHN THE BAPTIST UNIVERSITY MANGOCHI</strong></p>
+    <p class="center"><strong>MALAWI</strong></p>
+  </div>
+
+  <div class="page-break"></div>
+  <h2 class="center">PROFORMA FOR APPROVAL OF PROJECT PROPOSAL</h2>
+  <p><strong>Proposed Project Team:</strong></p>
+  <table>
+    <tr>
+      <th>S. No.</th>
+      <th>Reg. No.</th>
+      <th>Name of the Student</th>
+      <th>Semester</th>
+      <th>Branch</th>
+    </tr>
+    <tr>
+      <td>01</td>
+      <td>23311351010</td>
+      <td>JOEL L CHAULA NDEGE</td>
+      <td>VI</td>
+      <td>XIII</td>
+    </tr>
+  </table>
+
+  <p><strong>Title of the Project:</strong> DIGITAL SAVING VAULT (NZELU DIGITAL SAVINGS): A CROSS-PLATFORM MICROFINANCE SAVINGS, CREDIT, TRANSACTION TRACKING, AND FINANCIAL REPORTING APPLICATION</p>
+  <p><strong>Subject Area:</strong> Financial Technology, Microfinance Systems, Mobile Computing, Savings Management, Credit Management, Data Visualization</p>
+  <p><strong>Name of the Guide:</strong> Mr. STAINSLAUS</p>
+  <p><strong>Designation:</strong> Lecturer-I</p>
+  <p><strong>Address with Phone No.:</strong> DMI-St John the Baptist University, P.O. Box 406, Mangochi, Malawi</p>
+  <p><strong>Phone:</strong> +2659991417164</p>
+  <p><strong>Office:</strong> DMI - Saint John the Baptist University, P.O. Box 406, Mangochi</p>
+  <p><strong>Residence:</strong> DMI-St. John the Baptist University, P.O. Box 406, Mangochi, Malawi</p>
+  <p><strong>No. of projects &amp; students currently working under the Guide:</strong> 14</p>
+
+  <div class="signature-row">
+    <div class="signature-box">
+      <div class="line">Signature of the Student</div>
+    </div>
+    <div class="signature-box">
+      <div class="line">Signature of the Guide with Seal</div>
+    </div>
+  </div>
+
+  <p>Date: .......................................</p>
+  <p><strong>For Office Use Only:</strong></p>
+  <p>SYNOPSIS APPROVED [ &nbsp;&nbsp; ] &nbsp;&nbsp;&nbsp; NOT APPROVED [ &nbsp;&nbsp; ]</p>
+  <p>GUIDE APPROVED [ &nbsp;&nbsp; ] &nbsp;&nbsp;&nbsp; NOT APPROVED [ &nbsp;&nbsp; ]</p>
+  <p>Date: ....................................... &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SIGNATURE OF THE HOD</p>
+
+  <div class="page-break"></div>
+  <h2 class="center">BIO-DATA OF THE PROPOSED GUIDE FOR PROJECT WORK</h2>
+
+  <h3>1. PERSONAL INFORMATION</h3>
+  <table>
+    <tr><td>Name (in block letters)</td><td>MR. STAINSLAUS PHILLIMON</td></tr>
+    <tr><td>Date of Birth &amp; Age</td><td>09/09/1997 &amp; 28</td></tr>
+    <tr><td>Sex</td><td>Male</td></tr>
+    <tr><td>Academic Qualification</td><td>Masters of Science in Computer Science</td></tr>
+    <tr><td>Official Address</td><td>DMI-St John the Baptist University, P.O. Box 406, Mangochi, Malawi</td></tr>
+    <tr><td>Phone No. and Fax</td><td>+265 884 658 477</td></tr>
+    <tr><td>Residential Address</td><td>DMI-St John the Baptist University, P.O. Box 406, Mangochi, Malawi</td></tr>
+    <tr><td>E-mail ID</td><td>Stainslausphillimon@gmail.com</td></tr>
+  </table>
+
+  <h3>2. DETAILS OF EMPLOYMENT</h3>
+  <table>
+    <tr><td>Designation</td><td>Lecturer II</td></tr>
+    <tr><td>Field of Specialization</td><td>Software Engineering, ICT4D, Web Technologies, Web Application Development, Mobile Application Development, Computer Graphics</td></tr>
+    <tr><td>Teaching Experience (in years)</td><td>5 Years</td></tr>
+    <tr><td>Industrial Experience (in years)</td><td>2 Years</td></tr>
+    <tr><td>Particulars of contribution / experience in the field of specialization</td><td>Extensive experience in teaching, supervising projects, and developing ICT solutions in software engineering, web technologies, mobile app development, and digital innovation initiatives.</td></tr>
+    <tr><td>No. of Projects Guided</td><td>51</td></tr>
+  </table>
+
+  <p>I, Mr. Stainslaus Philimon, do hereby accept to guide Joel L Chaula Ndege, a student of the BSc (Computer Science) programme of DMI-St. John the Baptist University, Mangochi Campus.</p>
+
+  <div class="signature-row">
+    <div class="signature-box">
+      <div class="line">Signature of the Student</div>
+    </div>
+    <div class="signature-box">
+      <div class="line">Signature of the Guide with Seal</div>
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+  <h2 class="center">CERTIFICATE OF THE GUIDE</h2>
+  <p>
+    This is to certify that the project work entitled <strong>DIGITAL SAVING VAULT (NZELU DIGITAL SAVINGS): A CROSS-PLATFORM MICROFINANCE SAVINGS, CREDIT, TRANSACTION TRACKING, AND FINANCIAL REPORTING APPLICATION</strong> is a bonafide work of <strong>JOEL L. CHAULA NDEGE</strong>, Registration No. <strong>23311351010</strong>, in partial fulfilment of the award of the Degree of <strong>BACHELOR OF SCIENCE IN COMPUTER SCIENCE</strong> of DMI-ST. JOHN THE BAPTIST UNIVERSITY, MANGOCHI, MALAWI under my guidance. This thesis work is original and has not been submitted earlier for the award of any degree/diploma elsewhere.
+  </p>
+
+  <div class="signature-row">
+    <div class="signature-box">
+      <div class="line">Student's Signature</div>
+    </div>
+    <div class="signature-box">
+      <div class="line">Signature of Guide</div>
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+  <h2 class="center">DECLARATION BY THE CANDIDATE</h2>
+  <p>
+    I, <strong>JOEL L. CHAULA NDEGE</strong>, hereby declare that this project report, <strong>DIGITAL SAVING VAULT (NZELU DIGITAL SAVINGS): A CROSS-PLATFORM MICROFINANCE SAVINGS, CREDIT, TRANSACTION TRACKING, AND FINANCIAL REPORTING APPLICATION</strong>, submitted to DMI-ST. JOHN THE BAPTIST UNIVERSITY, MANGOCHI, MALAWI, in partial fulfilment of the requirements for the award of the degree of <strong>BACHELOR OF SCIENCE IN COMPUTER SCIENCE</strong>, is a record of the original work done by me under the supervision of <strong>MR. STAINSLAUS PHELIMON</strong>.
+  </p>
+  <p><strong>Register No.:</strong> 23311351010</p>
+  <p><strong>Date:</strong> .......................................</p>
+  <p><strong>Signature:</strong> .......................................</p>
+
+  <div class="page-break"></div>
+  <h2 class="center">BONAFIDE CERTIFICATE</h2>
+  <p class="center"><strong>DMI-ST. JOHN THE BAPTIST UNIVERSITY<br>MANGOCHI - MALAWI</strong></p>
+  <p><strong>Register No:</strong> 23311351010</p>
+  <p>
+    Certified that this is a bonafide record of work done in the project <strong>DIGITAL SAVING VAULT (NZELU DIGITAL SAVINGS): A CROSS-PLATFORM MICROFINANCE SAVINGS, CREDIT, TRANSACTION TRACKING, AND FINANCIAL REPORTING APPLICATION</strong> by <strong>MR. JOEL L. CHAULA NDEGE</strong> of the <strong>BACHELOR OF SCIENCE</strong> course in <strong>COMPUTER SCIENCE</strong> at DMI-ST. JOHN THE BAPTIST UNIVERSITY, MANGOCHI, MALAWI.
+  </p>
+  <p>During the academic year: 2023-2026</p>
+
+  <div class="signature-row">
+    <div class="signature-box">
+      <div class="line">INTERNAL EXAMINER</div>
+    </div>
+    <div class="signature-box">
+      <div class="line">EXTERNAL EXAMINER</div>
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+  <h2 class="center">ACKNOWLEDGEMENT</h2>
+  <p>
+    First and foremost, I am grateful to the Almighty God for the strength, wisdom, and grace granted to me throughout the development of this project. I remain indebted in gratitude to the administration of DMI-St. John the Baptist University for the academic environment and institutional support that made this work possible.
+  </p>
+  <p>
+    I sincerely thank my guide, <strong>Mr. Stainslaus Phelimon</strong>, for his guidance, corrections, encouragement, and technical insights throughout the course of this project. His supervision contributed significantly to the completion of this report and the successful development of the system.
+  </p>
+  <p>
+    I also extend my gratitude to the Head of Department, all lecturers in the Department of Computer Science, my colleagues, and friends for their support, advice, and motivation. Their academic and moral support strengthened me at every stage of the project.
+  </p>
+  <p>
+    Finally, I offer heartfelt appreciation to my parents and family for their constant love, prayers, moral encouragement, and financial support. Their sacrifices and belief in me have been the foundation of this achievement.
+  </p>
+
+  <div class="page-break"></div>
+  <h2 class="center">ABSTRACT</h2>
+  <p>
+    Many individuals and small-scale earners face persistent challenges in managing savings consistently, tracking deposits transparently, and accessing structured micro-credit services. Informal saving practices often lack accountability, planning support, secure records, and decision-making tools. This project, <strong>Digital Saving Vault (Nzelu Digital Savings)</strong>, was developed to provide a modern digital platform for savings plan creation, deposit and withdrawal management, credit eligibility assessment, loan repayment tracking, financial reporting, and personalized account settings.
+  </p>
+  <p>
+    The system uses a <strong>Flutter</strong> frontend for cross-platform user access and a <strong>Django REST Framework</strong> backend for secure data processing and API delivery. The application supports user authentication, profile management, normal and secret savings plans, trial savings plans, deposit history, penalties for missed commitments, financial score calculation, and a credit system linked to tracked savings. In the implemented credit model, eligible users can request loans based on a percentage of their tracked savings, while repayments update loan balances and may generate interest rewards back into savings.
+  </p>
+  <p>
+    The platform also provides dashboard analytics, recent transaction summaries, notifications, settings management, and report generation to improve financial visibility. Local persistence and responsive user interfaces enhance usability, while backend validation enforces business rules such as credit limits, balance recalculation, and withdrawal restrictions when active credit exists.
+  </p>
+  <p>
+    This project demonstrates how software engineering, mobile development, API-based architecture, and financial workflow automation can be combined to improve savings discipline, transparency, credit access, and user confidence in digital microfinance systems.
+  </p>
+  <p><strong>Keywords:</strong> Digital Savings, Microfinance, Flutter, Django REST Framework, Credit Management, Financial Reporting, Notifications, Transaction Tracking</p>
+
+  <div class="page-break"></div>
+  <h2 class="center">TABLE OF CONTENTS</h2>
+  <table class="toc-table">
+    <tr><td>PROFORMA FOR APPROVAL OF PROJECT PROPOSAL</td><td class="right">ii</td></tr>
+    <tr><td>BIO-DATA OF THE PROPOSED GUIDE FOR PROJECT WORK</td><td class="right">iii</td></tr>
+    <tr><td>CERTIFICATE OF THE GUIDE</td><td class="right">iv</td></tr>
+    <tr><td>DECLARATION BY THE CANDIDATE</td><td class="right">v</td></tr>
+    <tr><td>ACKNOWLEDGEMENT</td><td class="right">vi</td></tr>
+    <tr><td>ABSTRACT</td><td class="right">vii</td></tr>
+    <tr><td>LIST OF FIGURES</td><td class="right">viii</td></tr>
+    <tr><td>LIST OF TABLES</td><td class="right">ix</td></tr>
+    <tr><td>LIST OF ACRONYMS</td><td class="right">x</td></tr>
+    <tr><td>CHAPTER I - INTRODUCTION</td><td class="right">1</td></tr>
+    <tr><td>CHAPTER II - SYSTEM STUDY</td><td class="right">5</td></tr>
+    <tr><td>CHAPTER III - SYSTEM DESIGN</td><td class="right">12</td></tr>
+    <tr><td>CHAPTER IV - SYSTEM DEVELOPMENT</td><td class="right">22</td></tr>
+    <tr><td>CHAPTER V - SYSTEM TESTING</td><td class="right">30</td></tr>
+    <tr><td>CHAPTER VI - SYSTEM IMPLEMENTATION</td><td class="right">37</td></tr>
+    <tr><td>CHAPTER VII - PROBLEMS FACED AND SOLUTIONS</td><td class="right">46</td></tr>
+    <tr><td>CHAPTER VIII - SUGGESTIONS AND CONCLUSION</td><td class="right">51</td></tr>
+    <tr><td>CHAPTER IX - SUGGESTIONS FOR PROJECT EXTENSION</td><td class="right">55</td></tr>
+    <tr><td>REFERENCES</td><td class="right">58</td></tr>
+  </table>
+
+  <h2 class="center">LIST OF FIGURES</h2>
+  <table>
+    <tr><th>Number</th><th>Description</th></tr>
+    <tr><td>Figure 3.2</td><td>System Architecture Diagram</td></tr>
+    <tr><td>Figure 3.3</td><td>Activity Diagram</td></tr>
+    <tr><td>Figure 3.4</td><td>Use Case Diagram</td></tr>
+    <tr><td>Figure 3.5</td><td>Data Flow Diagram</td></tr>
+    <tr><td>Figure 3.6</td><td>Sequential Diagram</td></tr>
+    <tr><td>Figure 3.7</td><td>Class Diagram</td></tr>
+    <tr><td>Figure 3.8</td><td>Entity Relationship Diagram</td></tr>
+    <tr><td>Figure 3.9</td><td>Input Design</td></tr>
+    <tr><td>Figure 3.10</td><td>Output Design</td></tr>
+  </table>
+
+  <h2 class="center">LIST OF TABLES</h2>
+  <table>
+    <tr><th>Number</th><th>Description</th></tr>
+    <tr><td>Table 2.2</td><td>Literature Review Table</td></tr>
+    <tr><td>Table 3.11</td><td>Table Design</td></tr>
+    <tr><td>Table 5.1</td><td>System Test Plan</td></tr>
+    <tr><td>Table 5.2.1</td><td>Unit Testing Results</td></tr>
+    <tr><td>Table 5.2.2</td><td>Integration Testing Results</td></tr>
+    <tr><td>Table 5.2.3</td><td>Validation Testing Results</td></tr>
+  </table>
+
+  <h2 class="center">LIST OF ACRONYMS</h2>
+  <table>
+    <tr><th>Acronym</th><th>Meaning</th></tr>
+    <tr><td>API</td><td>Application Programming Interface</td></tr>
+    <tr><td>DRF</td><td>Django REST Framework</td></tr>
+    <tr><td>JWT</td><td>JSON Web Token</td></tr>
+    <tr><td>ERD</td><td>Entity Relationship Diagram</td></tr>
+    <tr><td>DFD</td><td>Data Flow Diagram</td></tr>
+    <tr><td>UI</td><td>User Interface</td></tr>
+    <tr><td>UAT</td><td>User Acceptance Testing</td></tr>
+    <tr><td>DBMS</td><td>Database Management System</td></tr>
+    <tr><td>FCM</td><td>Firebase Cloud Messaging</td></tr>
+    <tr><td>MWK</td><td>Malawian Kwacha</td></tr>
+  </table>
+
+  <div class="page-break"></div>
+  <h2>CHAPTER I</h2>
+  <h2>INTRODUCTION</h2>
+
+  <h3>1.1 INTRODUCTION</h3>
+  <p>
+    Saving money consistently remains a challenge for many individuals, especially where income is irregular, financial planning tools are limited, and informal methods of storing money are still common. Traditional saving practices often depend on manual records, memory, or unstructured group arrangements, which can expose users to poor tracking, low financial discipline, delayed decision-making, and limited access to structured credit services.
+  </p>
+  <p>
+    With the growth of mobile technology and digital financial services, there is increasing demand for applications that allow users to save securely, monitor transactions in real time, track financial goals, and access controlled micro-credit based on their saving behavior. Digital financial platforms can improve accountability, support planning, and provide visibility into savings progress, obligations, and repayment patterns.
+  </p>
+  <p>
+    <strong>Digital Saving Vault (Nzelu Digital Savings)</strong> was developed to address these needs by providing a centralized digital platform for account access, savings plan creation, savings deposits, withdrawals, penalties, reports, and credit management. The application combines a Flutter-based client with a Django REST backend to support modern financial workflows using an API-driven architecture.
+  </p>
+  <p>
+    The system includes multiple savings plan types, secret savings support, trial savings plans, transaction history, financial score calculation, credit eligibility assessment, repayment tracking, user notifications, and configurable settings. Through these features, the project aims to help users build saving discipline, improve transparency, and access structured credit in a secure and understandable way.
+  </p>
+
+  <h3>1.2 OBJECTIVES</h3>
+  <p>The primary objectives of this project are:</p>
+  <ol>
+    <li>To design and develop a cross-platform digital savings application for users to create and manage structured savings plans.</li>
+    <li>To provide secure user authentication, profile management, and personalized account settings.</li>
+    <li>To implement deposit, withdrawal, and transaction tracking features for transparent financial record management.</li>
+    <li>To support secret savings and trial savings plans for flexible user saving behavior.</li>
+    <li>To develop a credit eligibility and loan management module linked to tracked savings performance.</li>
+    <li>To automate loan repayment tracking and reward distribution after successful repayment.</li>
+    <li>To provide dashboard analytics, financial summaries, and reports for improved decision-making.</li>
+    <li>To build a notification system for reminders, alerts, and user engagement.</li>
+    <li>To evaluate the platform as a digital microfinance support tool for savings discipline and controlled credit access.</li>
+  </ol>
+
+  <h3>1.3 SIGNIFICANCE OF THE STUDY</h3>
+  <p>
+    The significance of this study lies in its contribution to digital financial management at an individual and small-group level. Many users in low-resource and emerging digital finance environments do not have access to a dedicated platform that combines savings planning, financial behavior tracking, controlled credit access, and personalized reporting in one unified system. This project addresses that gap by proposing and implementing a platform that is not only technically functional but also behaviorally supportive.
+  </p>
+  <p>
+    From a practical perspective, the project contributes to improved savings culture by encouraging scheduled saving, goal tracking, and visibility into account progress. It also demonstrates how software engineering can be applied to solve financial organization problems faced by students, workers, traders, and small business owners who may not use formal financial planning tools regularly.
+  </p>
+  <p>
+    From an academic perspective, the project demonstrates the integration of cross-platform mobile development, backend API design, relational data modeling, financial business logic, and reporting in one system. It therefore serves as a meaningful case study in full-stack application development for computer science education.
+  </p>
+
+  <h3>1.4 SCOPE OF THE PROJECT</h3>
+  <p>
+    The scope of Digital Saving Vault includes user registration, login, profile management, savings plan creation, deposit and withdrawal recording, penalty handling, loan eligibility checking, loan request submission, loan repayment tracking, dashboard analytics, notifications, user settings, and financial reporting. The project focuses on the software structure and digital workflows needed to support these features.
+  </p>
+  <p>
+    The scope does not yet include live payment gateway settlement, real banking integration, production-scale loan approval workflows by external officers, legal compliance certification, or national identity verification. Those features are reserved for future expansion phases.
+  </p>
+
+  <h3>1.5 ORGANIZATION OF THE REPORT</h3>
+  <p>
+    This report is organized into nine chapters. Chapter I introduces the project and its objectives. Chapter II presents the system study, including the literature review and analysis of existing systems. Chapter III discusses the system design using standard diagrams and data structure explanations. Chapter IV explains the development methodology and module descriptions. Chapter V presents testing activities and outcomes. Chapter VI discusses implementation, screens, and coding structure. Chapter VII outlines problems faced and the corresponding solutions. Chapter VIII provides suggestions and a conclusion. Chapter IX presents recommendations for future project extension.
+  </p>
+
+  <div class="page-break"></div>
+  <h2>CHAPTER II</h2>
+  <h2>SYSTEM STUDY</h2>
+
+  <h3>2.1 INTRODUCTION</h3>
+  <p>
+    System study is an important stage in software engineering because it helps the developer understand the current problem domain, limitations of existing approaches, and opportunities for improvement. In this project, the system study focused on savings behavior, digital transaction handling, micro-credit processes, user settings, and financial reporting requirements relevant to a savings and credit platform.
+  </p>
+  <p>
+    The study reviewed existing digital finance solutions and common shortcomings such as low transparency in savings tracking, weak personalization, poor balance visibility, limited report generation, and lack of flexible credit logic. These observations informed the design of the proposed system.
+  </p>
+
+  <h3>2.2 LITERATURE REVIEW</h3>
+  <p>
+    Table 2.2 summarizes selected literature, frameworks, and technical sources relevant to financial inclusion systems, digital savings platforms, software engineering methodology, and the technologies used in the implementation of this project.
+  </p>
+  <table>
+    <tr>
+      <th>No.</th>
+      <th>Author(s) / Source</th>
+      <th>Year</th>
+      <th>Problem Description</th>
+      <th>Title</th>
+    </tr>
+    <tr>
+      <td>01</td>
+      <td>Demirguc-Kunt et al.</td>
+      <td>2022</td>
+      <td>Examined access to formal financial services and digital financial inclusion</td>
+      <td>The Global Findex Database 2021</td>
+    </tr>
+    <tr>
+      <td>02</td>
+      <td>Pressman &amp; Maxim</td>
+      <td>2020</td>
+      <td>Provided guidance on software engineering processes, quality, and project organization</td>
+      <td>Software Engineering: A Practitioner's Approach</td>
+    </tr>
+    <tr>
+      <td>03</td>
+      <td>Sommerville</td>
+      <td>2016</td>
+      <td>Discussed system requirements, architecture, and software process models</td>
+      <td>Software Engineering</td>
+    </tr>
+    <tr>
+      <td>04</td>
+      <td>Django Software Foundation</td>
+      <td>2024</td>
+      <td>Documented backend web application and API development practices</td>
+      <td>Django Documentation</td>
+    </tr>
+    <tr>
+      <td>05</td>
+      <td>Django REST Framework</td>
+      <td>2024</td>
+      <td>Described RESTful API design, serialization, authentication, and viewsets</td>
+      <td>Django REST Framework Documentation</td>
+    </tr>
+    <tr>
+      <td>06</td>
+      <td>Flutter Documentation</td>
+      <td>2024</td>
+      <td>Explained cross-platform UI development and state-driven client applications</td>
+      <td>Flutter Documentation</td>
+    </tr>
+    <tr>
+      <td>07</td>
+      <td>Fowler</td>
+      <td>2002</td>
+      <td>Presented architectural patterns for enterprise applications and layered system design</td>
+      <td>Patterns of Enterprise Application Architecture</td>
+    </tr>
+    <tr>
+      <td>08</td>
+      <td>Schwaber &amp; Sutherland</td>
+      <td>2020</td>
+      <td>Outlined iterative development and agile delivery practices</td>
+      <td>The Scrum Guide</td>
+    </tr>
+    <tr>
+      <td>09</td>
+      <td>SimpleJWT Documentation</td>
+      <td>2024</td>
+      <td>Covered token-based authentication for secure API access</td>
+      <td>SimpleJWT Documentation</td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td>Provider Package Documentation</td>
+      <td>2024</td>
+      <td>Explained state management patterns for Flutter applications</td>
+      <td>Provider Package Documentation</td>
+    </tr>
+  </table>
+  <p><strong>Table 2.2:</strong> Literature Review</p>
+
+  <h3>2.2.1 GAP ANALYSIS</h3>
+  <p>
+    The reviewed systems and technical sources reveal several gaps that justify the need for this project. First, many basic savings applications provide only balance storage and simple transaction logs, without structured plan management, flexible frequencies, or penalty rules to support saving discipline. Second, some platforms support savings but do not connect savings behavior to responsible credit access, which limits their usefulness in microfinance settings.
+  </p>
+  <p>
+    Third, many solutions do not offer integrated dashboards, secret savings categories, trial plans, repayment tracking, and user-level financial scoring in one platform. Finally, there is often inadequate support for personalized settings, role-aware data handling, and consistent synchronization between mobile interfaces and backend financial rules. Digital Saving Vault addresses these gaps through integrated savings, transaction, credit, reporting, and notification modules.
+  </p>
+
+  <h3>2.3 PROBLEM DEFINITION</h3>
+  <p>
+    Users who want to save consistently and access small-scale digital credit often face challenges such as poor record keeping, lack of transparent plan tracking, weak financial discipline mechanisms, and limited access to organized financial reports. Informal methods may not provide security, reminders, data history, or reliable performance indicators. There is therefore a need for a digital platform that supports structured savings plans, secure transaction tracking, controlled credit access, automated calculations, and a clear financial overview.
+  </p>
+
+  <h3>2.4 EXISTING SYSTEM</h3>
+  <p>
+    Existing systems in the domain include mobile wallets, microfinance management tools, mobile banking apps, and simple savings trackers. These systems typically offer a subset of the following capabilities:
+  </p>
+  <ol>
+    <li>User registration and login</li>
+    <li>Wallet balances or account balances</li>
+    <li>Basic savings entries or transfers</li>
+    <li>Loan applications or mobile credit facilities</li>
+    <li>Notification support</li>
+  </ol>
+  <p>However, many of them have limitations such as:</p>
+  <ul>
+    <li>Lack of flexible plan-based saving structure</li>
+    <li>Weak transparency between tracked savings and actual savings balance</li>
+    <li>Little support for trial or secret savings plans</li>
+    <li>Minimal financial reporting and analytics</li>
+    <li>Limited customization of security and notification settings</li>
+    <li>Insufficient linkage between savings discipline and loan eligibility</li>
+  </ul>
+
+  <h3>2.5 PROPOSED SYSTEM</h3>
+  <p>
+    The proposed system, <strong>Digital Saving Vault (Nzelu Digital Savings)</strong>, is a cross-platform microfinance savings and credit management application built with Flutter and Django REST Framework. The system enables users to register and authenticate, create savings plans with defined frequencies and goals, make deposits, track withdrawals, simulate or record penalties, view savings reports, manage notifications, and configure preferences.
+  </p>
+  <p>
+    The system also implements a controlled credit model where users can request loans based on tracked savings, with backend enforcement of eligibility rules. Loan repayments reduce outstanding balances and, when fully completed, trigger interest distribution and reward posting into user savings. Dashboard summaries and financial reports give users greater transparency into their financial activity.
+  </p>
+
+  <h3>2.6 SYSTEM OBJECTIVES</h3>
+  <ol>
+    <li>To provide secure digital account access using authenticated API-based communication.</li>
+    <li>To support structured savings plans with configurable frequency, target amount, duration, and penalty policy.</li>
+    <li>To maintain accurate savings and transaction records through backend balance recalculation.</li>
+    <li>To implement credit request rules tied to user savings behavior and tracked savings.</li>
+    <li>To support financial reporting, analytics, and user notifications.</li>
+    <li>To improve saving discipline, transparency, and access to responsible digital micro-credit.</li>
+  </ol>
+
+  <h3>2.7 SYSTEM SPECIFICATIONS</h3>
+  <p>This section outlines the hardware and software specifications used for the project.</p>
+
+  <h4>2.7.1 Hardware Specifications</h4>
+  <ul>
+    <li>64-bit computer system</li>
+    <li>At least 8 GB RAM</li>
+    <li>50 GB or more storage capacity</li>
+    <li>Stable internet connection for API communication and deployment</li>
+    <li>Android device, emulator, or web browser for client testing</li>
+  </ul>
+
+  <h4>2.7.2 Software Specifications</h4>
+  <ul>
+    <li><strong>Frontend Framework:</strong> Flutter 3.x</li>
+    <li><strong>Programming Languages:</strong> Dart, Python</li>
+    <li><strong>Backend Framework:</strong> Django 5.2.12</li>
+    <li><strong>API Layer:</strong> Django REST Framework 3.16.1</li>
+    <li><strong>Authentication:</strong> JWT using djangorestframework-simplejwt 5.5.1</li>
+    <li><strong>Database:</strong> SQLite (development), PostgreSQL-ready deployment support</li>
+    <li><strong>State Management:</strong> Provider</li>
+    <li><strong>Charts and Visualization:</strong> fl_chart, percent_indicator</li>
+    <li><strong>Client Storage:</strong> shared_preferences, path_provider</li>
+    <li><strong>UI Libraries:</strong> google_fonts, flutter_animate, shimmer</li>
+    <li><strong>Backend Utilities:</strong> django-cors-headers, django-environ, gunicorn, whitenoise</li>
+    <li><strong>Deployment Support:</strong> Docker, docker-compose</li>
+  </ul>
+
+  <h3>2.8 FEASIBILITY STUDY</h3>
+  <p>
+    Feasibility analysis was carried out to determine whether the proposed system could be implemented successfully within the available time, skill set, and technical environment. The feasibility study considered technical feasibility, operational feasibility, economic feasibility, and schedule feasibility.
+  </p>
+  <p>
+    <strong>Technical Feasibility:</strong> The project is technically feasible because the required technologies, including Flutter, Django REST Framework, SQLite, Provider, and Shared Preferences, are well documented and accessible. The developer already had access to the necessary computing resources and development tools required to build the client application and the server-side API.
+  </p>
+  <p>
+    <strong>Operational Feasibility:</strong> The system is operationally feasible because it is designed around common financial tasks that users already understand, such as saving, depositing, requesting loans, and viewing balances. The application improves the organization of these activities without introducing unfamiliar complexity.
+  </p>
+  <p>
+    <strong>Economic Feasibility:</strong> The project is economically feasible because the tools used for development are largely open source or available at low cost. Development costs were therefore limited mainly to time, internet usage, testing devices, and deployment preparation.
+  </p>
+  <p>
+    <strong>Schedule Feasibility:</strong> The modular nature of the project made phased development possible. Core functions such as authentication, savings, and dashboard summaries could be implemented first, followed by loans, reports, and settings. This made the development effort realistic within an academic project timeline.
+  </p>
+
+  <h3>2.9 FUNCTIONAL REQUIREMENTS</h3>
+  <ol>
+    <li>The system shall allow new users to register with username, email, password, and phone details.</li>
+    <li>The system shall allow users to log in using username or email and password.</li>
+    <li>The system shall create a trial savings plan automatically for each new user.</li>
+    <li>The system shall allow users to create additional savings plans with title, frequency, goal, and penalty policy.</li>
+    <li>The system shall allow users to record deposits and withdrawals.</li>
+    <li>The system shall calculate current savings totals and plan progress percentages.</li>
+    <li>The system shall evaluate loan eligibility based on tracked savings and outstanding credit state.</li>
+    <li>The system shall allow users to request loans and record repayments.</li>
+    <li>The system shall generate notifications for important financial events.</li>
+    <li>The system shall provide dashboard summaries and financial reports.</li>
+    <li>The system shall allow users to update settings such as theme, language, currency, and alerts.</li>
+  </ol>
+
+  <h3>2.10 NON-FUNCTIONAL REQUIREMENTS</h3>
+  <ol>
+    <li><strong>Usability:</strong> The system should be easy to navigate and visually understandable.</li>
+    <li><strong>Performance:</strong> Common actions such as viewing the dashboard and loading plans should complete quickly.</li>
+    <li><strong>Security:</strong> Protected operations should require authentication and sensitive actions must be validated.</li>
+    <li><strong>Maintainability:</strong> The code should be modular and organized into clear frontend and backend units.</li>
+    <li><strong>Scalability:</strong> The system should be extensible to production databases and deployment infrastructure.</li>
+    <li><strong>Reliability:</strong> Core balance calculations and transaction records should remain consistent.</li>
+  </ol>
+
+  <div class="page-break"></div>
+  <h2>CHAPTER III</h2>
+  <h2>SYSTEM DESIGN</h2>
+
+  <h3>3.1 INTRODUCTION</h3>
+  <p>
+    System design translates the identified requirements into a structured technical solution. For this project, the design process included architectural planning, data modeling, interaction design, and workflow definition. The system uses a layered approach consisting of presentation, application logic, and data management components.
+  </p>
+
+  <h3>3.2 SYSTEM ARCHITECTURE DIAGRAM</h3>
+  <p>
+    The system architecture shows how the Flutter client communicates with the Django REST API, which then interacts with business logic, the database, and optional external services. The architecture supports separation of concerns, modular development, and future extensibility.
+  </p>
+  <p>
+    In the client layer, the Flutter application handles the user interface, route navigation, visual analytics, and state management through providers. In the communication layer, HTTP requests are issued through a centralized API service which attaches authentication tokens where required. In the server layer, Django REST Framework handles request routing, serialization, permissions, validation, and response generation. At the persistence layer, the database stores users, savings plans, transactions, loans, repayments, penalties, settings, and notifications. Optional deployment and external layers support production readiness, notifications, and payment integration in future versions.
+  </p>
+  <div class="figure-box">[Insert Figure 3.2: System Architecture Diagram]</div>
+
+  <h3>3.3 ACTIVITY DIAGRAM</h3>
+  <p>
+    The activity diagram illustrates the major flow of user actions in the application, including login, dashboard access, plan creation, deposit submission, credit request, repayment, notification updates, and logout.
+  </p>
+  <p>
+    The activity begins when the user opens the application. The system checks whether an authentication token is already stored. If valid authentication exists, the user is redirected to the main shell containing the dashboard, savings, credit, reports, and profile sections. If authentication is absent or invalid, the user is directed to login or registration. After successful login, the user can create plans, make deposits, check credit eligibility, submit a loan request, record repayments, review reports, read notifications, and adjust settings. Each major action leads to backend updates and UI refresh.
+  </p>
+  <div class="figure-box">[Insert Figure 3.3: Activity Diagram]</div>
+
+  <h3>3.4 USE CASE DIAGRAM</h3>
+  <p>
+    The use case diagram represents the functional interaction between the user, the administrator, and the system. Core use cases include registration, login, savings plan creation, deposit management, loan request, repayment handling, report viewing, and settings management.
+  </p>
+  <p>
+    The primary actor is the end user, who interacts with the system to register, authenticate, save money, withdraw when allowed, request credit, repay loans, read notifications, manage personal settings, and analyze report outputs. A secondary administrative actor is considered for future phases, where loan approvals, report auditing, and system monitoring may be performed. The system itself acts as a rules-enforcement actor through automatic calculations and restrictions.
+  </p>
+  <div class="figure-box">[Insert Figure 3.4: Use Case Diagram]</div>
+
+  <h3>3.5 DATA FLOW DIAGRAM</h3>
+  <p>
+    The data flow diagram shows how information moves through the system, from user input to validation, storage, processing, and output. It covers authentication, savings plan management, transaction processing, loan evaluation, and reporting.
+  </p>
+  <p>
+    User inputs such as login credentials, plan details, and transaction values flow into the system through forms and API calls. The backend validates the data, stores or updates database records, recalculates balances where required, and returns output data to the client. Reports and dashboard views consume aggregated outputs from multiple tables, while notifications consume rule-triggered events. This flow ensures that input, processing, storage, and output remain coordinated.
+  </p>
+  <div class="figure-box">[Insert Figure 3.5: Data Flow Diagram]</div>
+
+  <h3>3.6 SEQUENTIAL DIAGRAM</h3>
+  <p>
+    The sequential diagram presents the ordered communication among the user, client app, API layer, backend services, and database. It is particularly relevant for login, deposits, and loan processing scenarios where step-by-step message exchange must be clearly understood.
+  </p>
+  <p>
+    A typical sequence for deposit processing includes user action on the client, request validation, authenticated API communication, database record creation, plan balance update, profile balance recalculation, and response rendering in the user interface. The same pattern is adapted for loans and notifications, making the sequence diagram a useful representation of request-response interactions across layers.
+  </p>
+  <div class="figure-box">[Insert Figure 3.6: Sequential Diagram]</div>
+
+  <h3>3.7 CLASS DIAGRAM</h3>
+  <p>
+    The class diagram models the main entities of the system, including User, UserProfile, SavingsPlan, Transaction, Penalty, Loan, LoanPayment, InterestDistribution, and Notification. It also defines the relationships among them.
+  </p>
+  <p>
+    The class relationships reflect the domain rules of the system. One user owns one profile. A user may create many savings plans, many transactions, many loans, and many notifications. A loan may have many payments, while a savings plan may have many transactions and penalties. These relationships support one-to-many and one-to-one structures that match the intended business logic.
+  </p>
+  <div class="figure-box">[Insert Figure 3.7: Class Diagram]</div>
+
+  <h3>3.8 ENTITY RELATIONSHIP DIAGRAM</h3>
+  <p>
+    The ERD presents the database structure and the relationships between tables used in the project. It supports implementation planning, normalization, and data integrity.
+  </p>
+  <p>
+    The ERD is especially important for ensuring referential integrity. For example, every transaction is linked to a user and may optionally link to a savings plan. Every loan must be linked to a user. Every loan payment must reference a loan. This structure reduces redundancy and makes reporting easier because relationships are explicit and consistent.
+  </p>
+  <div class="figure-box">[Insert Figure 3.8: Entity Relationship Diagram]</div>
+
+  <h3>3.9 INPUT DESIGN</h3>
+  <p>
+    Input design defines the methods through which data enters the system. Inputs in this application include user registration details, login credentials, savings plan details, deposit values, withdrawal amounts, loan request data, repayment amounts, notification actions, and account settings.
+  </p>
+  <ol>
+    <li><strong>Authentication Input:</strong> Username, email, and password credentials.</li>
+    <li><strong>Savings Plan Input:</strong> Plan title, amount per period, frequency, duration, goal amount, penalty policy, grace period, and privacy type.</li>
+    <li><strong>Transaction Input:</strong> Deposit, withdrawal, and description fields.</li>
+    <li><strong>Credit Input:</strong> Requested amount, duration, linked plan, and withdrawal mode.</li>
+    <li><strong>Settings Input:</strong> Theme, language, currency, notifications, biometric preference, and security options.</li>
+  </ol>
+  <div class="figure-box">[Insert Figure 3.9: Input Design]</div>
+
+  <h3>3.10 OUTPUT DESIGN</h3>
+  <p>
+    Output design focuses on how information is presented to the user. The system outputs dashboard metrics, savings progress, transaction history, loan balance, financial score, notifications, and report summaries. Outputs are structured for clarity and quick decision-making.
+  </p>
+  <ul>
+    <li>Readable account and savings summaries</li>
+    <li>Visual progress indicators and charts</li>
+    <li>Real-time feedback after transactions</li>
+    <li>Financial reports grouped by month and category</li>
+    <li>Notification cards and unread counters</li>
+  </ul>
+  <div class="figure-box">[Insert Figure 3.10: Output Design]</div>
+
+  <h3>3.11 TABLE DESIGN</h3>
+  <p>The following table summarizes key database tables used in the system.</p>
+  <table>
+    <tr>
+      <th>Table Name</th>
+      <th>Field Name</th>
+      <th>Data Type</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td>UserProfile</td>
+      <td>user, phone, savings_balance, loan_balance, financial_score</td>
+      <td>Mixed</td>
+      <td>Stores financial balances, profile data, and user settings</td>
+    </tr>
+    <tr>
+      <td>SavingsPlan</td>
+      <td>title, amount_per_period, frequency, duration_months, goal_amount, current_amount</td>
+      <td>Mixed</td>
+      <td>Stores structured savings plan details</td>
+    </tr>
+    <tr>
+      <td>Transaction</td>
+      <td>user, plan, amount, timestamp, type, status, description</td>
+      <td>Mixed</td>
+      <td>Stores deposits, withdrawals, penalties, and interest rewards</td>
+    </tr>
+    <tr>
+      <td>Penalty</td>
+      <td>user, plan, amount, penalty_type, reason, date</td>
+      <td>Mixed</td>
+      <td>Stores plan penalty records</td>
+    </tr>
+    <tr>
+      <td>Loan</td>
+      <td>amount, interest_rate, duration_months, withdrawal_mode, remaining_balance, status</td>
+      <td>Mixed</td>
+      <td>Stores credit request and repayment status data</td>
+    </tr>
+    <tr>
+      <td>LoanPayment</td>
+      <td>loan, amount_paid, payment_date, remaining_balance</td>
+      <td>Mixed</td>
+      <td>Stores repayment transactions for loans</td>
+    </tr>
+    <tr>
+      <td>InterestDistribution</td>
+      <td>loan, total_interest, user_savings_share, platform_share</td>
+      <td>Mixed</td>
+      <td>Stores interest sharing results after loan completion</td>
+    </tr>
+    <tr>
+      <td>Notification</td>
+      <td>user, title, message, type, is_read, created_at</td>
+      <td>Mixed</td>
+      <td>Stores user alerts and notification messages</td>
+    </tr>
+  </table>
+  <p><strong>Table 3.11:</strong> Table Design</p>
+
+  <div class="page-break"></div>
+  <h2>CHAPTER IV</h2>
+  <h2>SYSTEM DEVELOPMENT</h2>
+
+  <h3>4.1 INTRODUCTION</h3>
+  <p>
+    This chapter explains the development process used to implement the Digital Saving Vault system. The project was developed using a modular and iterative approach so that major features could be implemented, tested, and refined incrementally. The technology choice was guided by the need for cross-platform access, secure backend processing, and a maintainable code structure.
+  </p>
+
+  <h3>4.2 MODULE DESCRIPTION</h3>
+  <h4>4.2.1 Authentication and User Profile Module</h4>
+  <p>
+    This module manages user registration, login, token-based session control, profile retrieval, profile settings, and password changes. It forms the entry point to the secure operations of the application.
+  </p>
+
+  <h4>4.2.2 Savings Plan Management Module</h4>
+  <p>
+    This module allows users to create, view, and manage structured savings plans using daily, weekly, bi-weekly, and monthly frequencies. It also supports secret savings and trial savings plans.
+  </p>
+
+  <h4>4.2.3 Transaction Processing Module</h4>
+  <p>
+    This module handles deposits, withdrawals, penalty adjustments, and interest reward transactions. It updates linked savings plans and triggers balance recalculation.
+  </p>
+
+  <h4>4.2.4 Credit and Loan Management Module</h4>
+  <p>
+    This module allows eligible users to request credit, tracks active and completed loans, records repayment transactions, and updates outstanding balances.
+  </p>
+
+  <h4>4.2.5 Dashboard and Analytics Module</h4>
+  <p>
+    This module aggregates user financial information, including savings balance, tracked savings, active plans, penalties, recent transactions, and financial score, into a single dashboard experience.
+  </p>
+
+  <h4>4.2.6 Notifications and Alerts Module</h4>
+  <p>
+    This module stores and displays system-generated alerts such as repayment reminders, eligibility notices, savings reminders, and reward notifications.
+  </p>
+
+  <h4>4.2.7 Settings and Preferences Module</h4>
+  <p>
+    This module gives users control over theme, language, preferred currency, biometric login preference, auto-save options, and notification behavior.
+  </p>
+
+  <h4>4.2.8 Reports Module</h4>
+  <p>
+    This module generates financial summaries, monthly savings patterns, credit totals, repayment information, and penalty reports for user review.
+  </p>
+
+  <h3>4.3 METHODOLOGY</h3>
+  <p>
+    The project adopted an Agile-based iterative methodology. This approach was appropriate because it allowed continuous refinement of user interface components, business rules, API endpoints, and report outputs. Development progressed through the following stages:
+  </p>
+  <ol>
+    <li><strong>Requirement Identification:</strong> Identifying the need for structured digital savings and controlled credit management.</li>
+    <li><strong>System Design:</strong> Preparing architecture, UML diagrams, data models, and feature flow definitions.</li>
+    <li><strong>Implementation:</strong> Building frontend screens, backend APIs, models, providers, and integration logic.</li>
+    <li><strong>Testing:</strong> Checking authentication, transactions, loans, reports, and settings behavior.</li>
+    <li><strong>Review and Refinement:</strong> Improving usability, correcting logic issues, and updating business rules.</li>
+    <li><strong>Deployment Preparation:</strong> Adding Docker and production-ready backend configuration for future release.</li>
+  </ol>
+
+  <h3>4.4 DEVELOPMENT TOOLS AND ENVIRONMENT</h3>
+  <p>
+    The development environment included Flutter SDK, Dart tooling, Python 3.11, Django, Visual Studio Code or a similar editor, Git version control, and SQLite for local persistence. The backend also includes Docker configuration files, environment variable support, and production-ready packages such as Gunicorn and Whitenoise. This environment supported local development, testing, and future deployment preparation.
+  </p>
+
+  <h3>4.5 FRONTEND DEVELOPMENT APPROACH</h3>
+  <p>
+    The frontend was implemented as a route-driven Flutter application. The main entry point loads persisted authentication tokens before rendering the widget tree. Providers were used to manage authentication state, savings data, credit data, dashboard state, and theme state. Screens were grouped into authentication, home, savings, loans, reports, notifications, profile, and settings sections. This arrangement helped isolate responsibilities and simplify maintenance.
+  </p>
+  <p>
+    Modern UI components such as cards, panels, buttons, and visual indicators were used to provide a more engaging financial interface. In particular, the create-plan flow dynamically recalculates suggested saving amounts per day, week, or month depending on the selected target and deadline, thereby making the planning experience interactive and informative.
+  </p>
+
+  <h3>4.6 BACKEND DEVELOPMENT APPROACH</h3>
+  <p>
+    The backend was implemented as a RESTful API using Django REST Framework. Models defined the domain structure, serializers controlled input/output conversion and validation, and viewsets or function-based endpoints handled operations such as registration, current user access, dashboard summaries, savings management, transaction posting, credit eligibility checking, and financial report generation.
+  </p>
+  <p>
+    Special attention was given to balance recalculation and business rule enforcement. Instead of relying only on client-side display logic, the backend recomputes savings balance, loan balance, and financial score to ensure consistency regardless of which screen or action triggered the update.
+  </p>
+
+  <h3>4.7 DATABASE DESIGN STRATEGY</h3>
+  <p>
+    The database design follows a normalized relational structure where user-centered financial records are separated into logical entities. This makes the system easier to query, report on, and maintain. It also ensures that future features such as administrative approval, audit logging, and multi-institution support can be added without redesigning the entire schema.
+  </p>
+
+  <h3>4.8 BUSINESS RULES IMPLEMENTED</h3>
+  <ol>
+    <li>New users receive a default trial savings plan automatically.</li>
+    <li>Loan eligibility is calculated from tracked savings and active savings plans.</li>
+    <li>Only one outstanding credit request or active credit is permitted at a time.</li>
+    <li>Withdrawals are blocked while a user has pending, approved, or active credit.</li>
+    <li>Fully repaid loans trigger interest distribution and a user savings reward.</li>
+    <li>Trial plans can be handled separately from normal plans for reporting and restrictions.</li>
+    <li>Settings are stored at profile level for personalization and future device synchronization.</li>
+  </ol>
+
+  <div class="page-break"></div>
+  <h2>CHAPTER V</h2>
+  <h2>SYSTEM TESTING</h2>
+
+  <h3>5.1 INTRODUCTION</h3>
+  <p>
+    System testing was carried out to verify that the Digital Saving Vault platform behaves according to its functional and non-functional requirements. Testing focused on authentication, plan creation, deposits, withdrawals, loan eligibility, repayments, notifications, settings, and report generation.
+  </p>
+
+  <table>
+    <tr>
+      <th>Test Type</th>
+      <th>Description</th>
+      <th>Methodology</th>
+      <th>Expected Outcome</th>
+      <th>Status</th>
+    </tr>
+    <tr>
+      <td>Functional Testing</td>
+      <td>Test core modules such as login, plan creation, deposits, loans, and reports</td>
+      <td>Manual execution and endpoint validation</td>
+      <td>Features behave according to defined rules</td>
+      <td>Completed</td>
+    </tr>
+    <tr>
+      <td>Usability Testing</td>
+      <td>Check clarity of screens, flows, and user actions</td>
+      <td>User walkthrough and screen review</td>
+      <td>Users complete tasks with minimal confusion</td>
+      <td>Completed</td>
+    </tr>
+    <tr>
+      <td>Integration Testing</td>
+      <td>Verify Flutter frontend and Django backend communication</td>
+      <td>API call verification and state refresh checks</td>
+      <td>Data remains consistent across screens and backend</td>
+      <td>Completed</td>
+    </tr>
+    <tr>
+      <td>Validation Testing</td>
+      <td>Check business rule enforcement</td>
+      <td>Invalid and boundary input testing</td>
+      <td>Improper transactions are blocked</td>
+      <td>Completed</td>
+    </tr>
+  </table>
+  <p><strong>Table 5.1:</strong> System Test Plan</p>
+
+  <h3>5.2 UNIT TESTING</h3>
+  <table>
+    <tr>
+      <th>Test Case</th>
+      <th>Purpose</th>
+      <th>Procedure</th>
+      <th>Expected Result</th>
+      <th>Actual Result</th>
+    </tr>
+    <tr>
+      <td>User Login</td>
+      <td>Verify secure authentication</td>
+      <td>Login using valid and invalid credentials</td>
+      <td>Valid users are authenticated; invalid users are rejected</td>
+      <td>Pass</td>
+    </tr>
+    <tr>
+      <td>Create Savings Plan</td>
+      <td>Verify plan creation</td>
+      <td>Submit plan form with required fields</td>
+      <td>Plan record is created successfully</td>
+      <td>Pass</td>
+    </tr>
+    <tr>
+      <td>Deposit Transaction</td>
+      <td>Verify deposit updates plan balance</td>
+      <td>Create deposit linked to a plan</td>
+      <td>Transaction is stored and current amount increases</td>
+      <td>Pass</td>
+    </tr>
+    <tr>
+      <td>Loan Request</td>
+      <td>Verify eligibility rule</td>
+      <td>Request credit above and below allowed threshold</td>
+      <td>Only valid requests are accepted</td>
+      <td>Pass</td>
+    </tr>
+    <tr>
+      <td>Notification Read Action</td>
+      <td>Verify notification updates</td>
+      <td>Mark a notification as read</td>
+      <td>Notification status changes successfully</td>
+      <td>Pass</td>
+    </tr>
+  </table>
+  <p><strong>Table 5.2.1:</strong> Unit Testing Results</p>
+
+  <h3>5.3 INTEGRATION TESTING</h3>
+  <table>
+    <tr>
+      <th>Test Case</th>
+      <th>Description</th>
+      <th>Expected Result</th>
+      <th>Actual Result</th>
+    </tr>
+    <tr>
+      <td>Auth + Dashboard</td>
+      <td>Check profile data loads after authentication</td>
+      <td>Dashboard summary returns synchronized user data</td>
+      <td>Pass</td>
+    </tr>
+    <tr>
+      <td>Savings + Transactions</td>
+      <td>Check deposit updates plans and totals</td>
+      <td>Plan amount and summary balance refresh correctly</td>
+      <td>Pass</td>
+    </tr>
+    <tr>
+      <td>Loans + Repayment</td>
+      <td>Check payment reduces remaining balance</td>
+      <td>Loan status and repayment totals update correctly</td>
+      <td>Pass</td>
+    </tr>
+    <tr>
+      <td>Settings + Profile</td>
+      <td>Check settings persistence</td>
+      <td>Preferences save and reflect on reload</td>
+      <td>Pass</td>
+    </tr>
+  </table>
+  <p><strong>Table 5.2.2:</strong> Integration Testing Results</p>
+
+  <h3>5.4 VALIDATION TESTING</h3>
+  <table>
+    <tr>
+      <th>Test Case</th>
+      <th>Requirement</th>
+      <th>Result</th>
+    </tr>
+    <tr><td>Registration</td><td>User details must be valid and complete</td><td>Pass</td></tr>
+    <tr><td>Withdrawal During Active Credit</td><td>Withdrawal must be blocked when outstanding credit exists</td><td>Pass</td></tr>
+    <tr><td>Credit Eligibility</td><td>Requested loan must not exceed allowed tracked savings threshold</td><td>Pass</td></tr>
+    <tr><td>Loan Payment</td><td>Repayment must reduce remaining balance correctly</td><td>Pass</td></tr>
+    <tr><td>Settings Update</td><td>Preference data must persist correctly</td><td>Pass</td></tr>
+  </table>
+  <p><strong>Table 5.2.3:</strong> Validation Testing Results</p>
+
+  <h3>5.5 TESTING OUTCOMES</h3>
+  <ul>
+    <li>Core savings and credit workflows functioned correctly.</li>
+    <li>The frontend and backend communicated successfully through the REST API.</li>
+    <li>Business rules for loan limits and withdrawal restrictions were enforced correctly.</li>
+    <li>Dashboard and report summaries reflected underlying transaction data.</li>
+    <li>Notification and settings features improved user interaction and personalization.</li>
+  </ul>
+
+  <h3>5.6 TEST CASE DISCUSSION</h3>
+  <p>
+    The testing process showed that the most sensitive parts of the application are those where multiple records must change together. For example, a deposit affects both the transaction table and the linked savings plan current amount. A loan repayment affects the loan record, the payment record, the recalculated credit balance, and in the final case, the interest distribution and notification systems. These paths were examined carefully because errors in financial logic have a greater impact than simple user interface issues.
+  </p>
+  <p>
+    The credit workflow was also tested closely because it includes restrictions that are important to the integrity of the platform. The system correctly rejected requests above the configured percentage of tracked savings and correctly rejected withdrawals when an active or pending loan existed. These tests confirmed that the backend, rather than the client alone, is responsible for enforcing essential financial rules.
+  </p>
+
+  <h3>5.7 USER ACCEPTANCE OBSERVATIONS</h3>
+  <p>
+    Based on the implemented interface flow, the application is intuitive for users who are familiar with mobile financial applications. The dashboard makes key figures visible, while dedicated screens for plans, deposits, loans, reports, and settings reduce confusion by grouping tasks clearly. The use of compact cards, progress indicators, and readable labels supports understanding even where financial terminology may vary between users.
+  </p>
+
+  <div class="page-break"></div>
+  <h2>CHAPTER VI</h2>
+  <h2>SYSTEM IMPLEMENTATION</h2>
+
+  <h3>6.1 INTRODUCTION</h3>
+  <p>
+    The implementation phase involved transforming the design into a working application using Flutter for the client side and Django REST Framework for the server side. The system was implemented as a modular platform with reusable providers, screens, routes, models, serializers, and API services.
+  </p>
+
+  <h3>6.2 MODULE IMPLEMENTATION</h3>
+  <h4>MODULE 1: USER LOGIN AND AUTHENTICATION</h4>
+  <p>
+    Authentication was implemented using Django user management and JWT-based API authentication. The Flutter client loads stored tokens during startup and uses authenticated API requests to retrieve protected resources.
+  </p>
+
+  <h4>MODULE 2: SAVINGS PLAN MANAGEMENT</h4>
+  <p>
+    Users can create normal, secret, and trial savings plans. Each plan includes title, frequency, duration, goal amount, amount per period, grace period, and penalty policy. The backend stores plan records and calculates progress toward savings goals.
+  </p>
+
+  <h4>MODULE 3: TRANSACTION PROCESSING</h4>
+  <p>
+    The transaction module records deposits, withdrawals, penalties, and interest rewards. Each transaction is linked to a user and optionally to a savings plan. Deposits increase plan current amounts, while withdrawals and penalties reduce them where applicable.
+  </p>
+
+  <h4>MODULE 4: CREDIT AND LOAN MANAGEMENT</h4>
+  <p>
+    Credit requests are processed using backend rules that compare the requested amount against tracked savings. The system allows only one outstanding credit request or active credit at a time. Repayment updates remaining balances and changes loan status when the balance reaches zero.
+  </p>
+
+  <h4>MODULE 5: DASHBOARD AND ANALYTICS</h4>
+  <p>
+    A dashboard summary endpoint returns user details, balances, active plans, credit status, unread notifications, penalties, and recent transactions in a single API call. This reduces client round-trips and keeps the UI synchronized.
+  </p>
+
+  <h4>MODULE 6: NOTIFICATIONS</h4>
+  <p>
+    Notifications are stored per user and may represent reminders, missed savings, penalty actions, loan approval, repayment notices, and interest rewards. Users can mark single notifications or all notifications as read.
+  </p>
+
+  <h4>MODULE 7: SETTINGS</h4>
+  <p>
+    User settings include theme, language, currency, notification toggles, biometric preference, two-factor preference, payment methods, feedback, and default savings plan references.
+  </p>
+
+  <h4>MODULE 8: REPORTS</h4>
+  <p>
+    The reports module calculates monthly savings, total credit taken, total repaid, total penalties, financial score, and savings balances for display in report screens.
+  </p>
+
+  <h3>6.3 MODULE SCREENSHOTS</h3>
+  <p>
+    This section is structured to match the standard project-report style used in academic documentation. Each screenshot placeholder below is intentionally given enough space so that full-resolution interface captures can be inserted without reformatting the document. When exported to Microsoft Word or PDF, these screenshot sections significantly contribute to the full report length just as in the original reference document you provided.
+  </p>
+
+  <h4>6.3.1 User Login Screen</h4>
+  <p>
+    This screen allows existing users to authenticate using either username or email together with password credentials. It forms the starting point for secure access to protected financial data and account operations.
+  </p>
+  <div class="screenshot-box">[Insert Figure 6.3.1: User Login Screen Screenshot]</div>
+
+  <h4>6.3.2 User Registration Screen</h4>
+  <p>
+    The registration screen collects user account information such as username, email, name, phone number, and password. After successful registration, the backend creates a user profile and provisions a default trial savings plan.
+  </p>
+  <div class="screenshot-box">[Insert Figure 6.3.2: User Registration Screen Screenshot]</div>
+
+  <h4>6.3.3 Dashboard Screen</h4>
+  <p>
+    The dashboard summarizes the user account at a glance. It presents balances, tracked savings, active plans, active credit information, recent transactions, unread notifications, financial score, and other important overview metrics.
+  </p>
+  <div class="screenshot-box">[Insert Figure 6.3.3: Dashboard Screen Screenshot]</div>
+
+  <h4>6.3.4 Savings Plans Screen</h4>
+  <p>
+    The savings plans screen displays active plans, plan progress, secret plan categorization, and quick access to create or inspect individual savings plans. It acts as the main operational area for savings management.
+  </p>
+  <div class="screenshot-box">[Insert Figure 6.3.4: Savings Plans Screen Screenshot]</div>
+
+  <h4>6.3.5 Create Savings Plan Screen</h4>
+  <p>
+    This screen allows the user to define title, target amount, starting saving amount, deadline, saving frequency, and penalty policy. The interface calculates daily, weekly, or monthly savings projections dynamically to help the user make realistic commitments.
+  </p>
+  <div class="screenshot-box">[Insert Figure 6.3.5: Create Savings Plan Screen Screenshot]</div>
+
+  <h4>6.3.6 Deposit Screen</h4>
+  <p>
+    The deposit screen is used to post a savings deposit to a selected plan. It is also used immediately after plan creation, enforcing the workflow where a plan is funded before the setup is considered complete.
+  </p>
+  <div class="screenshot-box">[Insert Figure 6.3.6: Deposit Screen Screenshot]</div>
+
+  <h4>6.3.7 Loan Eligibility Screen</h4>
+  <p>
+    The eligibility screen presents tracked savings balance, financial score, active credit state, and the maximum credit amount currently allowed to the user based on the backend calculation rules.
+  </p>
+  <div class="screenshot-box">[Insert Figure 6.3.7: Loan Eligibility Screen Screenshot]</div>
+
+  <h4>6.3.8 Loan Request Screen</h4>
+  <p>
+    This screen is used to submit a new credit request by specifying amount, repayment duration, and withdrawal mode. Validation is carried out both on the client interface and at backend level before the request is accepted.
+  </p>
+  <div class="screenshot-box">[Insert Figure 6.3.8: Loan Request Screen Screenshot]</div>
+
+  <h4>6.3.9 Loan Detail Screen</h4>
+  <p>
+    The loan detail screen provides a focused view of an individual credit, including total amount, interest, remaining balance, progress, due date, and related payment activities.
+  </p>
+  <div class="screenshot-box">[Insert Figure 6.3.9: Loan Detail Screen Screenshot]</div>
+
+  <h4>6.3.10 Repayment Screen</h4>
+  <p>
+    The repayment screen is used to record loan repayments. Each recorded payment updates the remaining balance and may trigger status transitions from approved to active or from active to fully paid.
+  </p>
+  <div class="screenshot-box">[Insert Figure 6.3.10: Repayment Screen Screenshot]</div>
+
+  <h4>6.3.11 Notifications Screen</h4>
+  <p>
+    The notifications screen displays account alerts such as savings reminders, missed savings, loan approval, repayment reminders, and interest rewards. Users can also mark items as read from this module.
+  </p>
+  <div class="screenshot-box">[Insert Figure 6.3.11: Notifications Screen Screenshot]</div>
+
+  <h4>6.3.12 Profile Screen</h4>
+  <p>
+    The profile screen displays personal account identity information and related financial context associated with the user profile.
+  </p>
+  <div class="screenshot-box">[Insert Figure 6.3.12: Profile Screen Screenshot]</div>
+
+  <h4>6.3.13 Settings Screen</h4>
+  <p>
+    The settings screen allows users to manage theme, language, currency, security preferences, auto-save behavior, and notification options. It supports personalization of the application experience.
+  </p>
+  <div class="screenshot-box">[Insert Figure 6.3.13: Settings Screen Screenshot]</div>
+
+  <h4>6.3.14 Reports Screen</h4>
+  <p>
+    The reports screen presents summarized financial indicators such as deposits, withdrawals, interest earned, current savings, remaining goals, monthly commitment, and outstanding credit.
+  </p>
+  <div class="screenshot-box">[Insert Figure 6.3.14: Reports Screen Screenshot]</div>
+
+  <h3>6.4 CODING</h3>
+  <p>
+    The codebase is organized into frontend and backend layers. The frontend contains screens, providers, models, widgets, route definitions, theme files, and API services. The backend contains models, serializers, viewsets, URL configuration, settings, and deployment support files. This structure improves maintainability and supports future extension.
+  </p>
+
+  <h4>6.4.1 Authentication Logic</h4>
+  <p>
+    Authentication logic includes token loading at startup, login routing, registration handling, protected user profile retrieval, and password changes. The backend accepts username or email login using a custom token serializer and returns JWT credentials for secure client requests.
+  </p>
+  <div class="code-box">[Insert Code Listing 6.4.1: Authentication and Token Management Snippet]</div>
+
+  <h4>6.4.2 Registration and Trial Plan Provisioning</h4>
+  <p>
+    During registration, the system creates a user, creates a profile, and automatically provisions a default trial savings plan. This design ensures that every new user begins with an initial structured savings context.
+  </p>
+  <div class="code-box">[Insert Code Listing 6.4.2: Register Serializer and Trial Plan Creation Snippet]</div>
+
+  <h4>6.4.3 Savings Plan Creation Logic</h4>
+  <p>
+    Savings plan creation combines client-side guidance with backend persistence. The client calculates suggested periodic contributions while the backend stores the official plan details.
+  </p>
+  <div class="code-box">[Insert Code Listing 6.4.3: Create Plan Screen and SavingsPlan ViewSet Snippet]</div>
+
+  <h4>6.4.4 Deposit and Withdrawal Processing</h4>
+  <p>
+    Transaction creation updates plan amounts and recalculates balances. Withdrawal actions are additionally checked against outstanding credit rules to prevent restricted account behavior from being bypassed.
+  </p>
+  <div class="code-box">[Insert Code Listing 6.4.4: Transaction Processing Snippet]</div>
+
+  <h4>6.4.5 Credit Eligibility and Loan Request Logic</h4>
+  <p>
+    Eligibility logic determines the maximum credit amount available to the user based on tracked savings and whether another active loan already exists. This rule is central to the responsible-credit model implemented in the application.
+  </p>
+  <div class="code-box">[Insert Code Listing 6.4.5: Loan Eligibility and Loan Request Snippet]</div>
+
+  <h4>6.4.6 Repayment and Interest Distribution Logic</h4>
+  <p>
+    Repayment logic reduces the remaining balance on a loan. When the loan reaches zero, the system creates an interest distribution record, credits the user savings share, updates balances, and creates a reward notification.
+  </p>
+  <div class="code-box">[Insert Code Listing 6.4.6: Loan Payment and Interest Distribution Snippet]</div>
+
+  <h4>6.4.7 Dashboard Summary and Report Aggregation</h4>
+  <p>
+    Dashboard and reporting code aggregate data from multiple sources into compact structures that the frontend can render efficiently. This includes recent transactions, active plans, credit balances, penalties, and report summaries.
+  </p>
+  <div class="code-box">[Insert Code Listing 6.4.7: Dashboard and Report Endpoint Snippet]</div>
+
+  <h4>6.4.8 Notification and Settings Logic</h4>
+  <p>
+    The settings and notifications modules use profile-centered persistence and per-user notification records so that customization and alert history remain consistent across sessions.
+  </p>
+  <div class="code-box">[Insert Code Listing 6.4.8: Settings Payload and Notification Handling Snippet]</div>
+
+  <h3>6.5 IMPLEMENTATION SUMMARY</h3>
+  <p>
+    The implemented system successfully connects user interface flows with backend financial rules in a consistent way. The frontend provides a guided, modern user experience, while the backend protects data integrity and automates calculations. The result is a complete academic prototype of a digital microfinance platform with room for institutional extension.
+  </p>
+
+  <h3>6.6 ADDITIONAL INTERFACE DOCUMENTATION</h3>
+  <p>
+    In addition to the main functional screenshots already listed, the system includes supporting screens and shells that are important for the overall user journey. These supporting screens contribute to the smooth onboarding, app startup flow, and navigational consistency of the platform.
+  </p>
+
+  <h4>6.6.1 Splash Screen</h4>
+  <p>
+    The splash screen is responsible for presenting the application identity while token loading and startup checks take place in the background.
+  </p>
+  <div class="screenshot-box">[Insert Figure 6.6.1: Splash Screen Screenshot]</div>
+
+  <h4>6.6.2 Onboarding Screen</h4>
+  <p>
+    The onboarding screen introduces the value proposition of the application and gives new users context before registration or login.
+  </p>
+  <div class="screenshot-box">[Insert Figure 6.6.2: Onboarding Screen Screenshot]</div>
+
+  <h4>6.6.3 Main Shell Navigation Screen</h4>
+  <p>
+    The main shell organizes navigation between the dashboard, savings, credit, reports, and profile modules using a persistent navigation structure.
+  </p>
+  <div class="screenshot-box">[Insert Figure 6.6.3: Main Shell Navigation Screenshot]</div>
+
+  <h4>6.6.4 Secret Savings or Embedded Savings Workflow Screen</h4>
+  <p>
+    This additional placeholder is reserved for a focused screenshot of secret savings handling, embedded planner flow, or any internal savings journey that the final report may need to illustrate separately.
+  </p>
+  <div class="screenshot-box">[Insert Figure 6.6.4: Secret Savings / Embedded Workflow Screenshot]</div>
+
+  <h3>6.7 API ENDPOINT DOCUMENTATION</h3>
+  <p>
+    Since the project follows an API-driven architecture, endpoint documentation forms an important part of the system implementation record. The following sections may include actual sample requests, responses, or code snippets extracted from the backend routing and views.
+  </p>
+
+  <h4>6.7.1 Authentication Endpoints</h4>
+  <p>
+    This section should document the register, login, refresh-token, and current-user endpoints, including request payloads, response structure, and permission behavior.
+  </p>
+  <div class="code-box">[Insert Code Listing 6.7.1: /auth/register, /auth/login, /auth/refresh, /auth/me Endpoint Documentation]</div>
+
+  <h4>6.7.2 Dashboard and Profile Endpoints</h4>
+  <p>
+    This section should document the dashboard summary endpoint and profile management endpoints used to retrieve balances, update settings, and recalculate profile figures.
+  </p>
+  <div class="code-box">[Insert Code Listing 6.7.2: Dashboard and Profile Endpoint Documentation]</div>
+
+  <h4>6.7.3 Savings and Transactions Endpoints</h4>
+  <p>
+    This section should document savings plan CRUD operations and transaction posting, including the relationship between deposits, withdrawals, and current plan amounts.
+  </p>
+  <div class="code-box">[Insert Code Listing 6.7.3: Savings and Transactions Endpoint Documentation]</div>
+
+  <h4>6.7.4 Loans, Eligibility, and Repayment Endpoints</h4>
+  <p>
+    This section should document loan eligibility queries, credit requests, loan listing, repayment creation, and interest distribution retrieval.
+  </p>
+  <div class="code-box">[Insert Code Listing 6.7.4: Loans, Eligibility, and Repayment Endpoint Documentation]</div>
+
+  <h4>6.7.5 Notifications and Reports Endpoints</h4>
+  <p>
+    This section should document user notifications, mark-read actions, and financial report generation endpoints.
+  </p>
+  <div class="code-box">[Insert Code Listing 6.7.5: Notifications and Reports Endpoint Documentation]</div>
+
+  <h3>6.8 IMPLEMENTATION NOTES FOR FINAL WORD REPORT</h3>
+  <p>
+    When preparing the final Microsoft Word version, each figure placeholder in this chapter should be replaced with a clear screenshot captured from the running application. Each code listing placeholder may be replaced with selected excerpts from the relevant frontend or backend files. Doing so will produce a fuller and more formal report length consistent with the style of the reference project documentation you supplied.
+  </p>
+
+  <div class="page-break"></div>
+  <h2>CHAPTER VII</h2>
+  <h2>PROBLEMS FACED AND SOLUTIONS</h2>
+
+  <h3>7.1 INTRODUCTION</h3>
+  <p>
+    During the development of Digital Saving Vault, several technical and design challenges were encountered. These issues were related to data synchronization, business rule enforcement, credit workflow consistency, state management, and user interface organization. This chapter outlines the major problems and the solutions applied.
+  </p>
+
+  <h3>7.2 PROBLEMS FACED</h3>
+  <p><strong>Balance Synchronization Complexity:</strong> Savings balances had to remain accurate while transactions, interest rewards, penalties, and withdrawals affected totals in different ways.</p>
+  <p><strong>Tracked Savings versus Actual Savings:</strong> The system needed to distinguish between tracked plan totals and recalculated savings balances to support correct reporting.</p>
+  <p><strong>Credit Restriction Logic:</strong> Loan requests needed strict validation so users could not exceed eligibility thresholds or hold multiple outstanding credits.</p>
+  <p><strong>Repayment and Reward Distribution:</strong> Loan repayment completion had to trigger status changes, interest distribution, and a reward transaction back into user savings.</p>
+  <p><strong>Frontend Refresh State:</strong> Multiple screens depended on shared financial data, which required careful provider-based synchronization after transactions or repayments.</p>
+  <p><strong>Settings Persistence:</strong> User preferences needed to persist reliably across sessions and still remain aligned with backend profile settings.</p>
+
+  <h3>7.3 SOLUTIONS</h3>
+  <p><strong>Backend Recalculation Methods:</strong> Dedicated profile methods were implemented to recalculate savings balance, loan balance, and financial score whenever key actions occur.</p>
+  <p><strong>Centralized Dashboard Summary Endpoint:</strong> A single summary endpoint was implemented to reduce repeated network calls and keep the client state consistent.</p>
+  <p><strong>Strict Loan Validation:</strong> Backend checks were added to ensure requested credit does not exceed the allowed percentage of tracked savings and that only one outstanding credit is allowed.</p>
+  <p><strong>Automated Interest Distribution:</strong> Loan completion logic creates interest distribution records, updates savings, and sends a notification automatically.</p>
+  <p><strong>Provider-Based Refresh:</strong> Flutter providers reload plan, transaction, and loan data when users navigate across key sections of the app.</p>
+  <p><strong>Flexible Settings Payload:</strong> Profile settings were grouped into a dedicated payload structure for easier persistence and retrieval.</p>
+
+  <h3>7.4 LESSONS LEARNED</h3>
+  <p>
+    One of the major lessons learned from this project is that financial applications require much stronger consistency guarantees than ordinary CRUD applications. A simple mistake in how balances are updated or how repayments are tracked can produce incorrect financial outputs, which reduces trust immediately. This reinforced the value of putting core calculations on the backend rather than relying solely on client-side assumptions.
+  </p>
+  <p>
+    Another lesson is that a visually attractive frontend is not enough on its own. Financial users benefit most when presentation is paired with clear rules, understandable reports, and guided workflows. The plan-creation screen, for example, became more effective after it started translating targets and deadlines into per-day, per-week, or per-month guidance.
+  </p>
+  <p>
+    The project also showed the importance of modular architecture. Because providers, screens, models, serializers, and viewsets were separated by responsibility, it was easier to refine one area of the system without rewriting unrelated sections. This will be especially valuable in future expansion phases.
+  </p>
+
+  <div class="page-break"></div>
+  <h2>CHAPTER VIII</h2>
+  <h2>SUGGESTIONS AND CONCLUSION</h2>
+
+  <h3>8.1 INTRODUCTION</h3>
+  <p>
+    This chapter presents recommendations for improving the system and concludes the project based on the work completed. The current system provides a strong foundation for digital savings and credit management, but further improvements can increase usability, scalability, and operational value.
+  </p>
+
+  <h3>8.2 SUGGESTIONS</h3>
+  <ol>
+    <li>Integrate real payment gateways for live deposits, withdrawals, and repayment processing.</li>
+    <li>Add administrator dashboards for approving loans, managing users, and reviewing reports.</li>
+    <li>Introduce stronger two-factor authentication and biometric verification using device-level services.</li>
+    <li>Implement scheduled reminders for missed savings cycles and upcoming repayment deadlines.</li>
+    <li>Add export options for PDF and CSV statement generation.</li>
+    <li>Enhance analytics using predictive scoring and savings behavior insights.</li>
+    <li>Add multilingual support tailored to local users.</li>
+  </ol>
+
+  <h3>8.3 CONCLUSION</h3>
+  <p>
+    Digital Saving Vault (Nzelu Digital Savings) successfully demonstrates the use of modern software technologies to support structured personal savings, transaction monitoring, and controlled micro-credit services. By combining Flutter on the client side with Django REST Framework on the backend, the project provides a practical and modular financial application with a user-friendly interface and clearly defined business rules.
+  </p>
+  <p>
+    The system improves visibility into savings plans, enforces credit discipline through tracked savings rules, and supports better financial awareness through notifications and reporting. As a result, the project contributes meaningfully to digital financial management and provides a strong base for future institutional or commercial expansion.
+  </p>
+  <p>
+    In addition, the project highlights the role of thoughtful software design in financial inclusion. By combining secure account access, savings planning, transaction traceability, behavioral rules, and dashboard visibility, Digital Saving Vault offers a practical model for how computer science solutions can support everyday money management. It is therefore not only an implementation exercise but also a demonstration of how digital systems can encourage discipline, transparency, and informed financial behavior.
+  </p>
+
+  <div class="page-break"></div>
+  <h2>CHAPTER IX</h2>
+  <h2>SUGGESTIONS FOR PROJECT EXTENSION</h2>
+
+  <h3>9.1 INTRODUCTION</h3>
+  <p>
+    Future extensions can transform the project from a prototype microfinance application into a more complete financial platform. The following suggestions focus on scalability, automation, security, and broader service delivery.
+  </p>
+
+  <h3>9.2 FUTURE EXTENSION SUGGESTIONS</h3>
+  <ol>
+    <li><strong>Admin and Credit Officer Portal:</strong> Add role-based operational dashboards for approval workflows and monitoring.</li>
+    <li><strong>Real Payment Integration:</strong> Connect mobile money, bank APIs, or payment gateways for real-time financial transactions.</li>
+    <li><strong>Advanced Credit Scoring:</strong> Use user transaction patterns, repayment history, and plan consistency to improve loan eligibility decisions.</li>
+    <li><strong>Automated Penalty Scheduling:</strong> Apply missed-saving penalties automatically based on next deadline and grace period rules.</li>
+    <li><strong>Offline Support:</strong> Add local queueing and synchronization for areas with unstable internet access.</li>
+    <li><strong>Audit and Compliance Logs:</strong> Expand logging and reporting for institutional use and accountability.</li>
+    <li><strong>Push Notification Integration:</strong> Connect the notification model with FCM for live device notifications.</li>
+    <li><strong>Multi-tenant Deployment:</strong> Support cooperatives, SACCOs, or multiple savings groups under one platform.</li>
+  </ol>
+
+  <h3>9.3 EXPECTED IMPACT OF FUTURE EXTENSIONS</h3>
+  <p>
+    If the suggested extensions are implemented, the platform can move beyond being a student project prototype and become a more production-oriented digital finance platform. Real payment integration would transform recorded transactions into real transactions. Administrative dashboards would support institutional control and accountability. Advanced scoring and predictive analytics could improve credit quality, while offline support would expand accessibility for users in connectivity-constrained regions.
+  </p>
+  <p>
+    Multi-tenant support would further increase the usefulness of the project by allowing multiple groups or institutions to operate within one core platform while still maintaining their own users, reports, and controls. This would make the system suitable not just for individual use but also for savings groups, SACCOs, youth initiatives, campus financial societies, and community-based lending models.
+  </p>
+
+  <div class="page-break"></div>
+  <h2>REFERENCES</h2>
+  <p>Demirguc-Kunt, A., Klapper, L., Singer, D., Ansar, S., &amp; Hess, J. (2022). <em>The Global Findex Database 2021</em>. World Bank.</p>
+  <p>Django Software Foundation. (2024). <em>Django Documentation</em>.</p>
+  <p>Django REST Framework. (2024). <em>Django REST Framework Documentation</em>.</p>
+  <p>Flutter Team. (2024). <em>Flutter Documentation</em>.</p>
+  <p>Fowler, M. (2002). <em>Patterns of Enterprise Application Architecture</em>. Addison-Wesley.</p>
+  <p>Gamma, E., Helm, R., Johnson, R., &amp; Vlissides, J. (1994). <em>Design Patterns: Elements of Reusable Object-Oriented Software</em>. Addison-Wesley.</p>
+  <p>Goodfellow, I., Bengio, Y., &amp; Courville, A. (2016). <em>Deep Learning</em>. MIT Press.</p>
+  <p>Hunt, A., &amp; Thomas, D. (2019). <em>The Pragmatic Programmer</em>. Addison-Wesley.</p>
+  <p>Martin, R. C. (2017). <em>Clean Architecture</em>. Pearson.</p>
+  <p>Pressman, R. S., &amp; Maxim, B. R. (2020). <em>Software Engineering: A Practitioner's Approach</em>. McGraw-Hill.</p>
+  <p>Provider Package Maintainers. (2024). <em>Provider Package Documentation</em>.</p>
+  <p>Schwaber, K., &amp; Sutherland, J. (2020). <em>The Scrum Guide</em>.</p>
+  <p>Sommerville, I. (2016). <em>Software Engineering</em>. Pearson.</p>
+  <p>SimpleJWT. (2024). <em>djangorestframework-simplejwt Documentation</em>.</p>
+  <p>Stripe Documentation. (2024). <em>Payments API Documentation</em>.</p>
+  <p>Twilio. (2024). <em>Messaging and Notification API Documentation</em>.</p>
+  <p>World Bank. (2022). <em>Digital Financial Services and Financial Inclusion Reports</em>.</p>
+</body>
+</html>
