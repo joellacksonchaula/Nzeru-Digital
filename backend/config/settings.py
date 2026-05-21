@@ -192,7 +192,8 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
 if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
 else:
-    CORS_ALLOW_ALL_ORIGINS = False
+    # In production, explicitly allow Netlify and other origins
+    CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_HEADERS = True
