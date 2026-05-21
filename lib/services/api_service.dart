@@ -8,15 +8,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// Tokens are persisted to SharedPreferences so sessions survive app restarts.
 class ApiService {
   static const String _defaultBaseUrl =
-      'https://savingsutl-production-bf7e.up.railway.app/api';
+      'https://nzeru-digital-production.up.railway.app/api';
   static const String _envBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
     defaultValue: _defaultBaseUrl,
   );
 
-  static String get baseUrl => _envBaseUrl.endsWith('/')
-      ? _envBaseUrl.substring(0, _envBaseUrl.length - 1)
-      : _envBaseUrl;
+  static String get baseUrl {
+    final configuredUrl = _envBaseUrl.trim();
+    return configuredUrl.endsWith('/')
+        ? configuredUrl.substring(0, configuredUrl.length - 1)
+        : configuredUrl;
+  }
 
   String? _accessToken;
   String? _refreshToken;
@@ -179,6 +182,10 @@ class ApiService {
       throw Exception(
         'Network error: ${e.message}. Check your internet connection.',
       );
+    } on http.ClientException {
+      throw Exception(
+        'Unable to reach the API. Check API_BASE_URL and confirm the backend URL is live.',
+      );
     } on TimeoutException {
       throw Exception('Request timeout. Server took too long to respond.');
     } catch (e) {
@@ -205,6 +212,10 @@ class ApiService {
     } on SocketException catch (e) {
       throw Exception(
         'Network error: ${e.message}. Check your internet connection.',
+      );
+    } on http.ClientException {
+      throw Exception(
+        'Unable to reach the API. Check API_BASE_URL and confirm the backend URL is live.',
       );
     } on TimeoutException {
       throw Exception('Login timeout. Server took too long to respond.');
@@ -459,4 +470,13 @@ class ApiException implements Exception {
 
   @override
   String toString() => 'ApiException($statusCode): $body';
+}
+
+class ApiConfigurationException implements Exception {
+  final String message;
+
+  const ApiConfigurationException(this.message);
+
+  @override
+  String toString() => message;
 }

@@ -75,9 +75,14 @@ class AuthProvider with ChangeNotifier {
       }
       notifyListeners();
       return false;
+    } on ApiConfigurationException catch (e) {
+      _isLoading = false;
+      _error = e.message;
+      notifyListeners();
+      return false;
     } catch (e) {
       _isLoading = false;
-      _error = 'Network error. Please check your connection.';
+      _error = e.toString().replaceFirst('Exception: ', '');
       notifyListeners();
       return false;
     }
@@ -121,9 +126,14 @@ class AuthProvider with ChangeNotifier {
       _error = 'Registration failed (${e.statusCode}): ${e.body}';
       notifyListeners();
       return false;
+    } on ApiConfigurationException catch (e) {
+      _isLoading = false;
+      _error = e.message;
+      notifyListeners();
+      return false;
     } catch (e) {
       _isLoading = false;
-      _error = 'Network error. Please check your connection.';
+      _error = e.toString().replaceFirst('Exception: ', '');
       notifyListeners();
       return false;
     }

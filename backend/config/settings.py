@@ -30,6 +30,7 @@ DEFAULT_FRONTEND_ORIGINS = [
 ]
 
 DEFAULT_BACKEND_ORIGINS = [
+    "https://nzeru-digital-production.up.railway.app",
     "https://savingsutl-production.up.railway.app",
     "https://savingsutl-production-bf7e.up.railway.app",
 ]
@@ -40,6 +41,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'super-long-secret-key-at-least
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() == 'true'
 
 ALLOWED_HOSTS = [
+    "nzeru-digital-production.up.railway.app",
     "savingsutl-production.up.railway.app",
     "*.railway.app",
     "localhost",
@@ -48,6 +50,7 @@ ALLOWED_HOSTS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
+    "https://nzeru-digital-production.up.railway.app",
     "https://savingsutl-production.up.railway.app",
     "https://savingsutl-production-bf7e.up.railway.app",
     "https://*.railway.app",
