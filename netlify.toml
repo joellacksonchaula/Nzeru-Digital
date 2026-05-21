@@ -1,7 +1,9 @@
 [build]
 command = """
-git clone https://github.com/flutter/flutter.git --depth 1 -b stable
-export PATH="$PATH:`pwd`/flutter/bin"
+export PATH="$PATH:/opt/buildhome/flutter/bin"
+if [ ! -d "/opt/buildhome/flutter" ]; then
+  git clone https://github.com/flutter/flutter.git /opt/buildhome/flutter --depth 1 -b stable
+fi
 flutter config --enable-web
 flutter pub get
 flutter build web --release
