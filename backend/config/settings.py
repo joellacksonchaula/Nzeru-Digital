@@ -173,6 +173,7 @@ SIMPLE_JWT = {
 # ── CORS ──────────────────────────────────────────────────────────────────────
 # Flutter mobile apps don't send CORS preflight, but Flutter Web does.
 CORS_ALLOWED_ORIGINS = [
+    "https://nzerudigitalsavings.netlify.app",
     "https://savingsutl-production.up.railway.app",
     *DEFAULT_FRONTEND_ORIGINS,
 ] + _csv_env('EXTRA_CORS_ALLOWED_ORIGINS')
