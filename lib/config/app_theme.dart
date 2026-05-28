@@ -10,7 +10,7 @@ class AppTheme {
       brightness: Brightness.light,
       scaffoldBackgroundColor: AppColors.background,
       primaryColor: AppColors.abyssalTeal,
-      colorScheme: const ColorScheme.light(
+      colorScheme: ColorScheme.light(
         primary: AppColors.abyssalTeal,
         secondary: AppColors.brightCrimson,
         tertiary: AppColors.gold,
@@ -178,7 +178,7 @@ class AppTheme {
       brightness: Brightness.dark,
       scaffoldBackgroundColor: AppColors.darkBackground,
       primaryColor: AppColors.abyssalTealLight,
-      colorScheme: const ColorScheme.dark(
+      colorScheme: ColorScheme.dark(
         primary: AppColors.abyssalTealLight,
         secondary: AppColors.brightCrimsonLight,
         tertiary: AppColors.gold,
@@ -572,28 +572,4 @@ class AppTheme {
     );
   }
 }
-        color: AppColors.textSecondary,
-      ),
-      bodySmall: GoogleFonts.inter(
-        fontSize: 12,
-        fontWeight: FontWeight.w400,
-        color: AppColors.textMuted,
-      ),
-      labelLarge: GoogleFonts.playfairDisplay(
-        fontSize: 14,
-        fontWeight: FontWeight.bold,
-        color: AppColors.textPrimary,
-      ),
-      labelMedium: GoogleFonts.inter(
-        fontSize: 12,
-        fontWeight: FontWeight.w500,
-        color: AppColors.textSecondary,
-      ),
-      labelSmall: GoogleFonts.inter(
-        fontSize: 10,
-        fontWeight: FontWeight.w500,
-        color: AppColors.textMuted,
-      ),
-    );
-  }
-}
+     

@@ -20,7 +20,7 @@ class ProgressRing extends StatefulWidget {
     this.centerText,
     this.label,
     this.progressColor = AppColors.loadingGreen,
-    this.trackColor = AppColors.faluMist,
+    this.trackColor = AppColors.surface, // FIXED HERE
   });
 
   @override
@@ -39,20 +39,35 @@ class _ProgressRingState extends State<ProgressRing>
       duration: const Duration(milliseconds: 1500),
       vsync: this,
     );
-    _animation = Tween<double>(begin: 0, end: widget.progress).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
+
+    _animation = Tween<double>(
+      begin: 0,
+      end: widget.progress,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeOutCubic,
+      ),
     );
+
     _controller.forward();
   }
 
   @override
   void didUpdateWidget(ProgressRing oldWidget) {
     super.didUpdateWidget(oldWidget);
+
     if (oldWidget.progress != widget.progress) {
-      _animation =
-          Tween<double>(begin: _animation.value, end: widget.progress).animate(
-        CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
+      _animation = Tween<double>(
+        begin: _animation.value,
+        end: widget.progress,
+      ).animate(
+        CurvedAnimation(
+          parent: _controller,
+          curve: Curves.easeOutCubic,
+        ),
       );
+
       _controller
         ..reset()
         ..forward();
@@ -71,6 +86,7 @@ class _ProgressRingState extends State<ProgressRing>
       animation: _animation,
       builder: (context, child) {
         final percent = (_animation.value * 100).toInt();
+
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -90,7 +106,7 @@ class _ProgressRingState extends State<ProgressRing>
                     children: [
                       Text(
                         widget.centerText ?? '$percent%',
-                        style: GoogleFonts.playfairDisplay(
+                        style: GoogleFonts.poppins(
                           fontSize: widget.size * 0.18,
                           fontWeight: FontWeight.w700,
                           color: widget.progressColor,
@@ -100,7 +116,7 @@ class _ProgressRingState extends State<ProgressRing>
                         const SizedBox(height: 4),
                         Text(
                           widget.label!,
-                          style: GoogleFonts.inter(
+                          style: GoogleFonts.poppins(
                             fontSize: 11,
                             color: AppColors.textMuted,
                             letterSpacing: 1,
@@ -137,7 +153,7 @@ class _RingPainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = (size.width - strokeWidth) / 2;
 
-    // Track
+    // TRACK
     final trackPaint = Paint()
       ..color = trackColor
       ..style = PaintingStyle.stroke
@@ -146,7 +162,7 @@ class _RingPainter extends CustomPainter {
 
     canvas.drawCircle(center, radius, trackPaint);
 
-    // Progress arc
+    // PROGRESS
     final progressPaint = Paint()
       ..shader = SweepGradient(
         startAngle: -math.pi / 2,
@@ -156,7 +172,9 @@ class _RingPainter extends CustomPainter {
           progressColor,
           progressColor.withAlpha(220),
         ],
-      ).createShader(Rect.fromCircle(center: center, radius: radius))
+      ).createShader(
+        Rect.fromCircle(center: center, radius: radius),
+      )
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeWidth
       ..strokeCap = StrokeCap.round;
@@ -169,17 +187,23 @@ class _RingPainter extends CustomPainter {
       progressPaint,
     );
 
-    // Glow effect at the tip
+    // GLOW TIP
     if (progress > 0) {
       final angle = -math.pi / 2 + progress * 2 * math.pi;
-      final tipX = center.dx + radius * math.cos(angle);
-      final tipY = center.dy + radius * math.sin(angle);
+
+      final tip = Offset(
+        center.dx + radius * math.cos(angle),
+        center.dy + radius * math.sin(angle),
+      );
 
       final glowPaint = Paint()
         ..color = progressColor.withAlpha(60)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
+        ..maskFilter = const MaskFilter.blur(
+          BlurStyle.normal,
+          8,
+        );
 
-      canvas.drawCircle(Offset(tipX, tipY), strokeWidth * 0.8, glowPaint);
+      canvas.drawCircle(tip, strokeWidth * 0.8, glowPaint);
     }
   }
 
