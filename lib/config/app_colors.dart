@@ -69,12 +69,14 @@ class AppColors {
   static const Color tiffanyBlueDark = abyssalTeal;
   static const Color tiffanyBlueGlow = abyssalTealLight;
   static const Color tiffanyBlueMuted = abyssalTealMuted;
-  
+  static const Color tiffanyMist = Color(0xFFE6F9F6);
+
   static const Color faluRed = crimsonBurgundy;
   static const Color faluRedLight = crimsonBurgundyLight;
   static const Color faluRedDark = crimsonBurgundyMuted;
   static const Color faluRedGlow = brightCrimson;
   static const Color faluRedMuted = crimsonBurgundyMuted;
+  static const Color faluMist = Color(0xFFFBEAEA);
   
   static const Color actionRed = crimsonBurgundy;
   static const Color actionRedLight = crimsonBurgundyLight;

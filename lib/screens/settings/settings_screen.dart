@@ -938,7 +938,7 @@ class _ThemeButton extends StatelessWidget {
                 : (isDarkMode ? AppColors.darkBorder : AppColors.border),
             width: isSelected ? 2 : 1,
           ),
-          backgroundColor: isSelected
+          color: isSelected
               ? AppColors.abyssalTeal.withAlpha(20)
               : (isDarkMode ? AppColors.darkSurfaceAlt : Colors.transparent),
         ),
