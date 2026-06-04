@@ -30,7 +30,7 @@ class EnhancedSavingsPlanCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final isDarkMode = false;
 
     return GestureDetector(
       onTap: onTap,
@@ -86,7 +86,7 @@ class EnhancedSavingsPlanCard extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            '${plan.frequency.name.capitalize} • ${plan.durationMonths}mo',
+                            '${plan.frequency.capitalize} - ${plan.durationMonths}mo',
                             style: GoogleFonts.poppins(
                               fontSize: 11,
                               fontWeight: FontWeight.w500,
@@ -259,7 +259,7 @@ class PlanLockDetailsSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final isDarkMode = false;
     final isMaturityReached = DateTime.now().isAfter(plan.endDate);
 
     return SingleChildScrollView(

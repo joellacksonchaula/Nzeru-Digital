@@ -11,7 +11,7 @@ class CryptoMarketCard extends StatelessWidget {
   final double marketCap;
   final double volume24h;
   final double changePercent24h;
-  final bool isGold;
+  final bool isPrimary;
 
   const CryptoMarketCard({
     super.key,
@@ -21,7 +21,7 @@ class CryptoMarketCard extends StatelessWidget {
     required this.marketCap,
     required this.volume24h,
     required this.changePercent24h,
-    this.isGold = false,
+    this.isPrimary = false,
   });
 
   @override
@@ -33,7 +33,9 @@ class CryptoMarketCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       borderRadius: 16,
       blurAmount: 10,
-      borderColor: isGold ? AppColors.gold.withAlpha(120) : AppColors.gold.withAlpha(40),
+      borderColor: isPrimary
+          ? AppColors.primaryRed.withAlpha(120)
+          : AppColors.primaryRed.withAlpha(40),
       child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -68,7 +70,7 @@ class CryptoMarketCard extends StatelessWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: isPositive ? AppColors.gold : AppColors.actionRed,
+                    color: isPositive ? AppColors.primaryRed : AppColors.actionRed,
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(

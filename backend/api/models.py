@@ -1,4 +1,4 @@
-from django.db import models
+﻿from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from decimal import Decimal
@@ -188,6 +188,7 @@ class SavingsPlan(models.Model):
     penalty_policy = models.CharField(max_length=15, choices=PENALTY_CHOICES)
     goal_amount = models.DecimalField(max_digits=12, decimal_places=2)
     current_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    goal_lock_enabled = models.BooleanField(default=False)
     grace_period_days = models.IntegerField(default=3)
     is_active = models.BooleanField(default=True)
     is_secret = models.BooleanField(default=False)
@@ -205,6 +206,22 @@ class SavingsPlan(models.Model):
         if self.goal_amount > 0:
             return min(100, float(self.current_amount / self.goal_amount * 100))
         return 0
+
+    @property
+    def lock_status(self):
+        if self.goal_lock_enabled and self.current_amount < self.goal_amount:
+            return 'LOCKED'
+        return 'UNLOCKED'
+
+    @property
+    def goal_lock_remaining_amount(self):
+        if not self.goal_lock_enabled:
+            return Decimal('0')
+        return max(Decimal('0'), self.goal_amount - self.current_amount)
+
+    @property
+    def is_goal_locked(self):
+        return self.lock_status == 'LOCKED'
 
     def get_next_deadline(self):
         """Calculate the next savings deadline based on frequency."""
@@ -401,8 +418,10 @@ class Notification(models.Model):
         ('INTEREST_REWARD', 'Interest Reward'),
         ('IJC_MEMBER_JOINED', 'IJC Member Joined'),
         ('IJC_DEPOSIT_RECEIVED', 'IJC Deposit Received'),
-        ('IJC_GOAL_REACHED', 'IJC Goal Reached'),
-        ('IJC_CASHOUT_AVAILABLE', 'IJC Cash-Out Available'),
+        ('IJC_POLICY_UPDATED', 'IJC Policy Updated'),
+        ('IJC_LIMIT_REACHED', 'IJC Limit Reached'),
+        ('IJC_LIMIT_ATTEMPT', 'IJC Limit Attempt'),
+        ('IJC_ALLOWANCE_RESET', 'IJC Allowance Reset'),
         ('IJC_WITHDRAWAL_COMPLETED', 'IJC Withdrawal Completed'),
         ('GENERAL', 'General'),
     ]
@@ -426,7 +445,18 @@ class IJCGroup(models.Model):
         ('WEEKLY', 'Weekly Cash-Out'),
         ('MONTHLY', 'Monthly Cash-Out'),
     ]
+    RESET_TYPE_CHOICES = [
+        ('MIDNIGHT', 'Calendar Midnight'),
+        ('ROLLING_24H', 'Rolling 24 Hours'),
+    ]
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owned_ijc_groups')
+    controller = models.ForeignKey(
+        User,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='controlled_ijc_groups',
+    )
     name = models.CharField(max_length=140)
     ijc_id = models.CharField(max_length=20, unique=True, editable=False)
     join_code = models.CharField(max_length=12, unique=True, editable=False)
@@ -434,6 +464,11 @@ class IJCGroup(models.Model):
     balance = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     cash_out_policy = models.CharField(max_length=10, choices=CASH_OUT_CHOICES, default='WEEKLY')
     last_cash_out_at = models.DateTimeField(null=True, blank=True)
+    daily_limit = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    weekly_limit = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    monthly_limit = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    reset_type = models.CharField(max_length=12, choices=RESET_TYPE_CHOICES, default='MIDNIGHT')
+    allow_rollover = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -486,13 +521,61 @@ class IJCGroup(models.Model):
 
     @property
     def progress_percent(self):
-        if self.goal_amount > 0:
-            return min(100, float(self.balance / self.goal_amount * 100))
+        if self.daily_limit > 0:
+            available = max(Decimal('0'), self.daily_limit - self.daily_spent)
+            return min(100, float(available / self.daily_limit * 100))
         return 0
+
+    def period_start(self, period, now=None):
+        from datetime import timedelta
+        now = now or timezone.now()
+        if period == 'daily':
+            if self.reset_type == 'ROLLING_24H':
+                return now - timedelta(hours=24)
+            return now.replace(hour=0, minute=0, second=0, microsecond=0)
+        if period == 'weekly':
+            return now - timedelta(days=7)
+        return now - timedelta(days=30)
+
+    def spent_since(self, period, now=None):
+        return self.transactions.filter(
+            type='WITHDRAWAL',
+            created_at__gte=self.period_start(period, now),
+        ).aggregate(total=models.Sum('amount'))['total'] or Decimal('0')
+
+    @property
+    def daily_spent(self):
+        return self.spent_since('daily')
+
+    @property
+    def weekly_spent(self):
+        return self.spent_since('weekly')
+
+    @property
+    def monthly_spent(self):
+        return self.spent_since('monthly')
+
+    @property
+    def available_today(self):
+        if self.daily_limit <= 0:
+            return self.balance
+        return max(Decimal('0'), min(self.balance, self.daily_limit - self.daily_spent))
+
+    @property
+    def next_daily_reset_at(self):
+        from datetime import timedelta
+        now = timezone.now()
+        if self.reset_type == 'ROLLING_24H':
+            latest = self.transactions.filter(type='WITHDRAWAL').order_by('-created_at').first()
+            return (latest.created_at if latest else now) + timedelta(hours=24)
+        tomorrow = now + timedelta(days=1)
+        return tomorrow.replace(hour=0, minute=0, second=0, microsecond=0)
 
 
 class IJCMember(models.Model):
     ROLE_CHOICES = [
+        ('USER', 'User'),
+        ('CONTROLLER', 'Controller'),
         ('OWNER', 'Owner'),
         ('MEMBER', 'Member'),
     ]
@@ -527,10 +610,18 @@ class IJCTransaction(models.Model):
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     type = models.CharField(max_length=10, choices=TYPE_CHOICES)
     description = models.TextField(blank=True)
+    client_reference = models.CharField(max_length=80, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['-created_at']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['group', 'client_reference'],
+                condition=models.Q(client_reference__isnull=False),
+                name='unique_ijc_transaction_reference',
+            ),
+        ]
 
     def __str__(self):
         return f"{self.group.ijc_id} - {self.type} - {self.amount}"

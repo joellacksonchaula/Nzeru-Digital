@@ -214,7 +214,7 @@ class _IjcGroupCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark = false;
     final pendingMembers =
         group.members.where((member) => member.status == 'PENDING').toList();
 

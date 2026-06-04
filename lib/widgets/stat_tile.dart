@@ -15,7 +15,7 @@ class StatTile extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.value,
-    this.iconColor = AppColors.gold,
+    this.iconColor = AppColors.primaryRed,
     this.valueColor,
     this.onTap,
   });

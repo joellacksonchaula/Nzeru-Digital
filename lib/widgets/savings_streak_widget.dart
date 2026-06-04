@@ -18,7 +18,7 @@ class SavingsStreakWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final isDarkMode = false;
 
     return Container(
       decoration: BoxDecoration(

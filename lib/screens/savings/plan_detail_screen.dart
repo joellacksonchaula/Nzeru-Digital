@@ -33,6 +33,8 @@ class PlanDetailScreen extends StatelessWidget {
           ..sort((a, b) => b.date.compareTo(a.date));
     final hasActiveDebt =
         (context.watch<AuthProvider>().user?.creditBalance ?? 0) > 0;
+    final isGoalLocked = plan?.isGoalLocked ?? false;
+    final canWithdraw = plan != null && plan.isMature && !hasActiveDebt && !isGoalLocked;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -98,8 +100,12 @@ class PlanDetailScreen extends StatelessWidget {
                   WithdrawalLockCard(
                     maturityDate: plan.endDate,
                     createdDate: plan.createdAt ?? plan.startDate,
-                    isLocked: !plan.isMature || hasActiveDebt,
+                    isLocked: !canWithdraw,
                     hasActiveDebt: hasActiveDebt,
+                    goalLockEnabled: plan.goalLockEnabled,
+                    currentAmount: plan.currentAmount,
+                    targetAmount: plan.goalAmount,
+                    remainingTarget: plan.goalLockRemainingAmount,
                   ).animate().fadeIn(delay: 220.ms),
                   const SizedBox(height: 18),
                   Row(
@@ -134,7 +140,7 @@ class PlanDetailScreen extends StatelessWidget {
                       const SizedBox(width: 10),
                       Expanded(
                         child: OutlinedButton.icon(
-                          onPressed: plan.isMature && !hasActiveDebt
+                          onPressed: canWithdraw
                               ? () => _showWithdrawalDialog(context, plan)
                               : null,
                           style: OutlinedButton.styleFrom(
@@ -156,12 +162,14 @@ class PlanDetailScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  if (!plan.isMature || hasActiveDebt) ...[
+                  if (!canWithdraw) ...[
                     const SizedBox(height: 10),
                     _LockMessage(
                       message: hasActiveDebt
                           ? 'Withdrawal unavailable while outstanding debt exists.'
-                          : 'Withdrawals are locked until your savings maturity date is reached.',
+                          : (isGoalLocked
+                              ? 'You cannot withdraw funds until your target of ${CurrencyUtil.format(plan.goalAmount)} is reached.'
+                              : 'Withdrawals are locked until your savings maturity date is reached.'),
                     ),
                   ],
                   const SizedBox(height: 18),
@@ -210,6 +218,16 @@ class PlanDetailScreen extends StatelessWidget {
                           value: CurrencyUtil.format(plan.remainingAmount),
                           valueColor: const Color(0xFFD96069),
                         ),
+                        if (plan.goalLockEnabled) ...[
+                          const Divider(height: 24, color: Color(0xFFE6DAC7)),
+                          _InfoRow(
+                            label: 'Goal lock',
+                            value: plan.isGoalLocked ? 'LOCKED' : 'UNLOCKED',
+                            valueColor: plan.isGoalLocked
+                                ? const Color(0xFFD96069)
+                                : const Color(0xFF0F9D8A),
+                          ),
+                        ],
                       ],
                     ),
                   ).animate().fadeIn(delay: 240.ms),

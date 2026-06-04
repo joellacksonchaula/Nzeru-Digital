@@ -39,7 +39,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (dashboardProvider.isLoading) {
       return const Scaffold(
         backgroundColor: AppColors.background,
-        body: Center(child: CircularProgressIndicator(color: AppColors.gold)),
+        body: Center(child: CircularProgressIndicator(color: AppColors.primaryRed)),
       );
     }
 
@@ -49,7 +49,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: RefreshIndicator(
-          color: AppColors.gold,
+          color: AppColors.primaryRed,
           backgroundColor: AppColors.cardBg,
           onRefresh: () async {
             await Future.wait([
@@ -120,11 +120,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         const SizedBox(width: 4),
                         CircleAvatar(
                           radius: 20,
-                          backgroundColor: AppColors.gold.withAlpha(30),
+                          backgroundColor: AppColors.primaryRed.withAlpha(30),
                           child: Text(
                             (user?.name ?? 'U')[0].toUpperCase(),
                             style: GoogleFonts.poppins(
-                              color: AppColors.gold,
+                              color: AppColors.primaryRed,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
@@ -213,8 +213,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         icon: Icons.speed_rounded,
                         label: 'FINANCIAL SCORE',
                         value: '${dashboard?['financial_score'] ?? 0}',
-                        iconColor: AppColors.gold,
-                        valueColor: AppColors.gold,
+                        iconColor: AppColors.primaryRed,
+                        valueColor: AppColors.primaryRed,
                       ),
                     ),
                   ],
@@ -274,7 +274,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     _QuickAction(
                       icon: Icons.add_circle_outline,
                       label: 'Deposit',
-                      color: AppColors.gold,
+                      color: AppColors.primaryRed,
                       onTap: () =>
                           Navigator.pushNamed(context, AppRoutes.deposit),
                     ),
@@ -325,7 +325,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       child: Text(
                         'View All',
                         style: GoogleFonts.poppins(
-                          color: AppColors.gold,
+                          color: AppColors.primaryRed,
                           fontSize: 12,
                         ),
                       ),

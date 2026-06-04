@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
 
@@ -32,32 +31,22 @@ class GlassCard extends StatelessWidget {
       margin: margin ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: GestureDetector(
         onTap: onTap,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(borderRadius),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: blurAmount, sigmaY: blurAmount),
-            child: Container(
-              width: width,
-              height: height,
-              padding: padding ?? const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: AppColors.cardBg.withAlpha(220),
-                borderRadius: BorderRadius.circular(borderRadius),
-                border: Border.all(
-                  color: borderColor ?? AppColors.gold.withAlpha(60),
-                  width: 1.5,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.gold.withAlpha(30),
-                    blurRadius: 15,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
+        child: Container(
+          width: width,
+          height: height,
+          padding: padding ?? const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: AppColors.cardSurface,
+            borderRadius: BorderRadius.circular(borderRadius),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withAlpha(10),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
               ),
-              child: child,
-            ),
+            ],
           ),
+          child: child,
         ),
       ),
     );

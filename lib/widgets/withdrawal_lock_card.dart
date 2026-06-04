@@ -8,6 +8,10 @@ class WithdrawalLockCard extends StatefulWidget {
   final DateTime createdDate;
   final bool isLocked;
   final bool hasActiveDebt;
+  final bool goalLockEnabled;
+  final double currentAmount;
+  final double targetAmount;
+  final double remainingTarget;
   final VoidCallback? onUnlocked;
   final double? width;
 
@@ -16,6 +20,10 @@ class WithdrawalLockCard extends StatefulWidget {
     required this.createdDate,
     this.isLocked = true,
     this.hasActiveDebt = false,
+    this.goalLockEnabled = false,
+    this.currentAmount = 0,
+    this.targetAmount = 0,
+    this.remainingTarget = 0,
     this.onUnlocked,
     this.width,
     super.key,
@@ -78,11 +86,16 @@ class _WithdrawalLockCardState extends State<WithdrawalLockCard>
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final isDarkMode = false;
     final remaining = _calculateRemainingTime();
     final isTimeUp = remaining.compareTo(Duration.zero) <= 0;
-    final isUnlocked = !widget.isLocked && isTimeUp && !widget.hasActiveDebt;
-    final progressPercent = _calculateProgressPercentage();
+    final isGoalLocked = widget.goalLockEnabled &&
+        widget.targetAmount > 0 &&
+        widget.currentAmount < widget.targetAmount;
+    final isUnlocked = !widget.isLocked && isTimeUp && !widget.hasActiveDebt && !isGoalLocked;
+    final progressPercent = widget.goalLockEnabled && widget.targetAmount > 0
+        ? ((widget.currentAmount / widget.targetAmount) * 100).toInt().clamp(0, 100)
+        : _calculateProgressPercentage();
 
     return Container(
       width: widget.width,
@@ -124,7 +137,7 @@ class _WithdrawalLockCardState extends State<WithdrawalLockCard>
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: isTimeUp
+                    color: isUnlocked
                         ? AppColors.success.withAlpha(20)
                         : (widget.hasActiveDebt
                             ? AppColors.brightCrimson.withAlpha(20)
@@ -136,7 +149,9 @@ class _WithdrawalLockCardState extends State<WithdrawalLockCard>
                         ? Icons.lock_open_rounded
                         : (widget.hasActiveDebt
                             ? Icons.warning_rounded
-                            : Icons.lock_rounded),
+                            : (isGoalLocked
+                                ? Icons.flag_circle_rounded
+                                : Icons.lock_rounded)),
                     color: isUnlocked
                         ? AppColors.success
                         : (widget.hasActiveDebt
@@ -155,7 +170,9 @@ class _WithdrawalLockCardState extends State<WithdrawalLockCard>
                             ? 'Withdrawal Available'
                             : (widget.hasActiveDebt
                                 ? 'Withdrawals Restricted'
-                                : 'Savings Locked'),
+                                : (isGoalLocked
+                                    ? 'Withdrawal Locked'
+                                    : 'Savings Locked')),
                         style: GoogleFonts.poppins(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -170,7 +187,9 @@ class _WithdrawalLockCardState extends State<WithdrawalLockCard>
                             ? 'Debt must be cleared first'
                             : (isUnlocked
                                 ? 'Funds unlocked'
-                                : 'Until ${DateFormat('MMM dd, yyyy').format(widget.maturityDate)}'),
+                                : (isGoalLocked
+                                    ? 'Until target is reached'
+                                    : 'Until ${DateFormat('MMM dd, yyyy').format(widget.maturityDate)}')),
                         style: GoogleFonts.poppins(
                           fontSize: 12,
                           fontWeight: FontWeight.w400,
@@ -186,7 +205,7 @@ class _WithdrawalLockCardState extends State<WithdrawalLockCard>
             ),
             const SizedBox(height: 16),
             // Countdown Timer
-            if (!isTimeUp && !widget.hasActiveDebt)
+            if (!isTimeUp && !widget.hasActiveDebt && !isGoalLocked)
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -222,7 +241,7 @@ class _WithdrawalLockCardState extends State<WithdrawalLockCard>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Savings Progress',
+                      widget.goalLockEnabled ? 'Goal Progress' : 'Savings Progress',
                       style: GoogleFonts.poppins(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
@@ -281,6 +300,40 @@ class _WithdrawalLockCardState extends State<WithdrawalLockCard>
                     Expanded(
                       child: Text(
                         'You have active debt. Clear it to withdraw savings.',
+                        style: GoogleFonts.poppins(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.brightCrimson,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            if (isGoalLocked) ...[
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.brightCrimson.withAlpha(15),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: AppColors.brightCrimson.withAlpha(40),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.lock_rounded,
+                      color: AppColors.brightCrimson,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Complete your savings target to unlock withdrawals. Remaining: MK ${widget.remainingTarget.toStringAsFixed(0)}.',
                         style: GoogleFonts.poppins(
                           fontSize: 12,
                           fontWeight: FontWeight.w500,

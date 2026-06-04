@@ -38,7 +38,7 @@ class _CryptoChartState extends State<CryptoChart> {
       padding: const EdgeInsets.all(20),
       borderRadius: 20,
       blurAmount: 15,
-      borderColor: AppColors.gold.withAlpha(40),
+      borderColor: AppColors.primaryRed.withAlpha(40),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

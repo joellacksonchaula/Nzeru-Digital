@@ -35,7 +35,7 @@ class DashboardMetricsOverview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final isDarkMode = false;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -81,7 +81,7 @@ class DashboardMetricsOverview extends StatelessWidget {
                 title: 'Goals Progress',
                 value: '$goalsCompletedCount/$totalGoalsCount',
                 icon: Icons.flag_outlined,
-                backgroundColor: AppColors.gold,
+                backgroundColor: AppColors.primaryRed,
                 isDarkMode: isDarkMode,
               ),
             ),
@@ -408,7 +408,7 @@ class MotivationalMessageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final isDarkMode = false;
     final message = _generateMotivationalMessage();
     final icon = _getMotivationIcon();
     final color = _getMotivationColor();
@@ -511,7 +511,7 @@ class MotivationalMessageWidget extends StatelessWidget {
     if (savingsStreak >= 30) {
       return AppColors.brightCrimson;
     } else if (savingsStreak >= 7) {
-      return AppColors.gold;
+      return AppColors.primaryRed;
     } else if (savingsStreak > 0) {
       return AppColors.success;
     } else if (totalPlans > 0) {

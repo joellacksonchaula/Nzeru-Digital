@@ -76,7 +76,7 @@ class SavingsPlansScreen extends StatelessWidget {
                       value: CurrencyUtil.formatCompact(
                         finance.monthlyCommitment,
                       ),
-                      accent: const Color(0xFFB88E5A),
+                      accent: const Color(0xFF0C6170),
                     ),
                   ),
                 ],

@@ -72,7 +72,7 @@ class ReportsScreen extends StatelessWidget {
                       _MiniReportCard(
                         label: 'Net worth',
                         value: CurrencyUtil.formatCompact(finance.netWorth),
-                        accent: const Color(0xFFB88E5A),
+                        accent: const Color(0xFF0C6170),
                         icon: Icons.analytics_rounded,
                       ),
                     ],

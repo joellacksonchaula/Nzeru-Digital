@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import '../../config/app_colors.dart';
 import '../../config/app_routes.dart';
 import '../../providers/auth_provider.dart';
-import '../../widgets/gold_button.dart';
+import '../../widgets/app_button.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -61,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 8),
                   Text(
                     'Sign in to continue managing your savings and credit.',
-                    style: GoogleFonts.montserrat(
+                    style: GoogleFonts.poppins(
                       fontSize: 13,
                       height: 1.45,
                       color: Colors.white.withValues(alpha: 0.92),
@@ -153,7 +153,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 onPressed: () {},
                                 child: Text(
                                   'Forgot Password?',
-                                  style: GoogleFonts.montserrat(
+                                  style: GoogleFonts.poppins(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,
                                     color: AppColors.faluRed,
@@ -162,7 +162,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                             const SizedBox(height: 8),
-                            GoldButton(
+                            AppButton(
                               label: 'SIGN IN',
                               icon: Icons.login_rounded,
                               isLoading: auth.isLoading,
@@ -196,7 +196,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           Text(
                             "Don't have an account? ",
-                            style: GoogleFonts.montserrat(
+                            style: GoogleFonts.poppins(
                               fontSize: 13,
                               color: AppColors.textSecondary,
                             ),
@@ -205,7 +205,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             onTap: () => Navigator.pushNamed(context, AppRoutes.register),
                             child: Text(
                               'Register',
-                              style: GoogleFonts.montserrat(
+                              style: GoogleFonts.poppins(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                                 color: AppColors.tiffanyBlueDark,

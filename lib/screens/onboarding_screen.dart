@@ -4,7 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../config/app_colors.dart';
 import '../config/app_routes.dart';
 import '../widgets/dashboard_kit.dart';
-import '../widgets/gold_button.dart';
+import '../widgets/app_button.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -101,7 +101,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               end: Alignment.bottomRight,
                             ),
                             border: Border.all(
-                              color: AppColors.goldString,
+                              color: AppColors.primaryRed,
                               width: 2,
                             ),
                           ),
@@ -187,7 +187,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             // Action button
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40),
-              child: GoldButton(
+              child: AppButton(
                 label: _currentPage == _pages.length - 1
                     ? 'GET STARTED'
                     : 'NEXT',

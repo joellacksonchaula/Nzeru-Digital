@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -26,35 +24,26 @@ class DashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Scaffold(
-      backgroundColor: isDark
-          ? const Color(0xFF091018)
-          : const Color(0xFFF7F4EE),
-      body: Stack(
-        children: [
-          DashboardBackdrop(darkMode: isDark),
-          SafeArea(
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(16, 18, 16, 28),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  DashboardHeader(
-                    eyebrow: eyebrow,
-                    title: title,
-                    subtitle: subtitle,
-                    trailing: trailing,
-                  ),
-                  const SizedBox(height: 18),
-                  ...children,
-                ],
+      backgroundColor: AppColors.background,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(16, 18, 16, 28),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              DashboardHeader(
+                eyebrow: eyebrow,
+                title: title,
+                subtitle: subtitle,
+                trailing: trailing,
               ),
-            ),
+              const SizedBox(height: 18),
+              ...children,
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -76,8 +65,6 @@ class DashboardHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -89,8 +76,9 @@ class DashboardHeader extends StatelessWidget {
                 eyebrow.toUpperCase(),
                 style: GoogleFonts.poppins(
                   fontSize: 14,
-                  letterSpacing: 2.8,
-                  color: const Color(0xFF0ABAB5),
+                  letterSpacing: 0,
+                  color: AppColors.secondaryBlue,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
               const SizedBox(height: 6),
@@ -99,8 +87,9 @@ class DashboardHeader extends StatelessWidget {
                 style: GoogleFonts.poppins(
                   fontSize: 34,
                   height: 0.96,
-                  fontWeight: FontWeight.w600,
-                  color: isDark ? Colors.white : const Color(0xFF171412),
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textPrimary,
+                  letterSpacing: 0,
                 ),
               ),
               if (subtitle.trim().isNotEmpty) ...[
@@ -112,9 +101,7 @@ class DashboardHeader extends StatelessWidget {
                     style: GoogleFonts.poppins(
                       fontSize: 14,
                       height: 1.45,
-                      color: isDark
-                          ? const Color(0xFFD0D5DC)
-                          : const Color(0xFF6F665C),
+                      color: AppColors.textSecondary,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -147,42 +134,24 @@ class DashboardPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return SizedBox(
       width: width,
       child: Container(
         margin: margin,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(26),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-            child: Container(
-              padding: padding,
-              decoration: BoxDecoration(
-                color: isDark
-                    ? const Color(0xD9161E28)
-                    : Colors.white.withValues(alpha: 0.82),
-                borderRadius: BorderRadius.circular(26),
-                border: Border.all(
-                  color: AppColors.goldString.withValues(alpha: 0.55),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: glowColor.withValues(alpha: 0.10),
-                    blurRadius: 28,
-                    spreadRadius: 1,
-                  ),
-                  const BoxShadow(
-                    color: Color(0x14000000),
-                    blurRadius: 36,
-                    offset: Offset(0, 20),
-                  ),
-                ],
+        child: Container(
+          padding: padding,
+          decoration: BoxDecoration(
+            color: AppColors.cardSurface,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.06),
+                blurRadius: 14,
+                offset: const Offset(0, 8),
               ),
-              child: child,
-            ),
+            ],
           ),
+          child: child,
         ),
       ),
     );
@@ -230,16 +199,15 @@ class DashboardSectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Row(
       children: [
         Text(
-          title.toUpperCase(),
+          title,
           style: GoogleFonts.poppins(
             fontSize: 16,
-            letterSpacing: 2,
-            color: isDark ? Colors.white : const Color(0xFF171412),
+            letterSpacing: 0,
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w700,
           ),
         ),
         const Spacer(),
@@ -250,7 +218,7 @@ class DashboardSectionTitle extends StatelessWidget {
               actionLabel!,
               style: GoogleFonts.poppins(
                 fontSize: 14,
-                color: const Color(0xFF0ABAB5),
+                color: AppColors.secondaryBlue,
               ),
             ),
           ),
@@ -300,8 +268,6 @@ class DashboardStatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return DashboardPanel(
       glowColor: item.accent,
       child: SizedBox(
@@ -325,10 +291,9 @@ class DashboardStatCard extends StatelessWidget {
                   item.label.toUpperCase(),
                   style: GoogleFonts.poppins(
                     fontSize: 12,
-                    letterSpacing: 1.4,
-                    color: isDark
-                        ? const Color(0xFFD0D5DC)
-                        : const Color(0xFF6F665C),
+                    letterSpacing: 0,
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ],
@@ -339,8 +304,8 @@ class DashboardStatCard extends StatelessWidget {
               style: GoogleFonts.poppins(
                 fontSize: 30,
                 height: 0.95,
-                color: isDark ? Colors.white : const Color(0xFF171412),
-                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w800,
               ),
             ),
             const SizedBox(height: 8),
@@ -349,9 +314,7 @@ class DashboardStatCard extends StatelessWidget {
               style: GoogleFonts.poppins(
                 fontSize: 13,
                 height: 1.35,
-                color: isDark
-                    ? const Color(0xFFD0D5DC)
-                    : const Color(0xFF6F665C),
+                color: AppColors.textSecondary,
               ),
             ),
           ],
@@ -520,8 +483,8 @@ class DashboardSavingsPlanCard extends StatelessWidget {
                           child: Text(
                             '${(plan.progressPercent * 100).round()}%',
                             style: GoogleFonts.poppins(
-                              fontSize: 18,
-                              color: const Color(0xFF171412),
+                            fontSize: 18,
+                              color: AppColors.textPrimary,
                             ),
                           ),
                         ),
@@ -576,19 +539,19 @@ class DashboardSavingsPlanCard extends StatelessWidget {
                     _RateChip(
                       label:
                           'Month ${CurrencyUtil.formatNoDecimal(plan.requiredPerMonth)}',
-                      color: const Color(0xFFE0B449),
+                          color: AppColors.primaryRed,
                     ),
                     const SizedBox(width: 8),
                     _RateChip(
                       label:
                           'Week ${CurrencyUtil.formatNoDecimal(plan.requiredPerWeek)}',
-                      color: const Color(0xFF56D68D),
+                          color: AppColors.secondaryBlue,
                     ),
                     const SizedBox(width: 8),
                     _RateChip(
                       label:
                           'Day ${CurrencyUtil.formatNoDecimal(plan.requiredPerDay)}',
-                      color: const Color(0xFFE36A5B),
+                          color: AppColors.primaryRed,
                     ),
                   ],
                 ),
@@ -598,7 +561,7 @@ class DashboardSavingsPlanCard extends StatelessWidget {
                 'Deadline ${DateFormat('dd MMM yyyy').format(plan.endDate)}',
                 style: GoogleFonts.poppins(
                   fontSize: 13,
-                  color: const Color(0xFF6F665C),
+                  color: AppColors.textSecondary,
                 ),
               ),
             ],
@@ -623,11 +586,11 @@ class DashboardSavingsPlanCard extends StatelessWidget {
   Color _healthColor(PlanHealth health) {
     switch (health) {
       case PlanHealth.onTrack:
-        return const Color(0xFF3B9D5D);
+        return AppColors.secondaryBlue;
       case PlanHealth.watch:
-        return const Color(0xFFBF912C);
+        return AppColors.primaryRed;
       case PlanHealth.behind:
-        return const Color(0xFFD55C4B);
+        return AppColors.primaryRed;
     }
   }
 
@@ -659,7 +622,7 @@ class _AmountLine extends StatelessWidget {
             label,
             style: GoogleFonts.poppins(
               fontSize: 12,
-              color: const Color(0xFF7E756A),
+              color: AppColors.textSecondary,
             ),
           ),
         ),
@@ -668,7 +631,7 @@ class _AmountLine extends StatelessWidget {
             value,
             style: GoogleFonts.poppins(
               fontSize: 16,
-              color: const Color(0xFF171412),
+              color: AppColors.textPrimary,
             ),
           ),
         ),
@@ -718,8 +681,6 @@ class DashboardInfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -729,9 +690,7 @@ class DashboardInfoRow extends StatelessWidget {
               label,
               style: GoogleFonts.poppins(
                 fontSize: 13,
-                color: isDark
-                    ? const Color(0xFFD0D5DC)
-                    : const Color(0xFF7E756A),
+                color: AppColors.textSecondary,
               ),
             ),
           ),
@@ -739,9 +698,7 @@ class DashboardInfoRow extends StatelessWidget {
             value,
             style: GoogleFonts.poppins(
               fontSize: 15,
-              color:
-                  valueColor ??
-                  (isDark ? Colors.white : const Color(0xFF171412)),
+              color: valueColor ?? AppColors.textPrimary,
             ),
           ),
         ],
@@ -757,76 +714,7 @@ class DashboardBackdrop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final resolvedDarkMode =
-        darkMode ?? Theme.of(context).brightness == Brightness.dark;
-
-    Widget orb(double size, Color color) => ImageFiltered(
-      imageFilter: ImageFilter.blur(sigmaX: 38, sigmaY: 38),
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(shape: BoxShape.circle, color: color),
-      ),
-    );
-
-    return Stack(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: resolvedDarkMode
-                  ? const [
-                      Color(0xFF06080C),
-                      Color(0xFF0B1118),
-                      Color(0xFF12161F),
-                    ]
-                  : const [
-                      Color(0xFFF9F7F1),
-                      Color(0xFFF4F0E6),
-                      Color(0xFFF8F5EE),
-                    ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
-        Positioned.fill(
-          child: CustomPaint(
-            painter: _GridGlowPainter(darkMode: resolvedDarkMode),
-          ),
-        ),
-        Positioned(
-          top: -70,
-          left: -40,
-          child: orb(
-            220,
-            resolvedDarkMode
-                ? const Color(0x140ABAB5)
-                : const Color(0x148FD7A5),
-          ),
-        ),
-        Positioned(
-          top: 120,
-          right: -40,
-          child: orb(
-            220,
-            resolvedDarkMode
-                ? const Color(0x12D4AF37)
-                : const Color(0x16D4AF37),
-          ),
-        ),
-        Positioned(
-          bottom: 10,
-          left: 100,
-          child: orb(
-            240,
-            resolvedDarkMode
-                ? const Color(0x12801818)
-                : const Color(0x14801818),
-          ),
-        ),
-      ],
-    );
+    return const ColoredBox(color: AppColors.background);
   }
 }
 

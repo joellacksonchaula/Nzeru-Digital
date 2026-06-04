@@ -26,8 +26,9 @@ class UserProfileAdmin(admin.ModelAdmin):
 @admin.register(SavingsPlan)
 class SavingsPlanAdmin(admin.ModelAdmin):
     list_display = ('user', 'amount_per_period', 'frequency', 'duration_months',
-                    'goal_amount', 'current_amount', 'grace_period_days', 'is_active', 'is_trial')
-    list_filter = ('frequency', 'is_active', 'penalty_policy', 'is_trial')
+                    'goal_amount', 'current_amount', 'goal_lock_enabled',
+                    'grace_period_days', 'is_active', 'is_trial')
+    list_filter = ('frequency', 'is_active', 'penalty_policy', 'goal_lock_enabled', 'is_trial')
     search_fields = ('user__username',)
 
 
@@ -95,9 +96,9 @@ class NotificationAdmin(admin.ModelAdmin):
 
 @admin.register(IJCGroup)
 class IJCGroupAdmin(admin.ModelAdmin):
-    list_display = ('ijc_id', 'name', 'owner', 'cash_out_policy', 'balance', 'goal_amount', 'is_active')
-    list_filter = ('cash_out_policy', 'is_active', 'created_at')
-    search_fields = ('ijc_id', 'join_code', 'name', 'owner__username')
+    list_display = ('ijc_id', 'name', 'owner', 'controller', 'balance', 'daily_limit', 'weekly_limit', 'monthly_limit', 'is_active')
+    list_filter = ('reset_type', 'allow_rollover', 'is_active', 'created_at')
+    search_fields = ('ijc_id', 'join_code', 'name', 'owner__username', 'controller__username')
     readonly_fields = ('ijc_id', 'join_code', 'balance', 'created_at')
 
 

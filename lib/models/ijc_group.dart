@@ -62,9 +62,20 @@ class IjcGroup {
   final String ijcId;
   final String joinCode;
   final String ownerName;
+  final String controllerName;
   final double goalAmount;
   final double balance;
   final String cashOutPolicy;
+  final double dailyLimit;
+  final double weeklyLimit;
+  final double monthlyLimit;
+  final String resetType;
+  final bool allowRollover;
+  final double dailySpent;
+  final double weeklySpent;
+  final double monthlySpent;
+  final double availableToday;
+  final DateTime? nextDailyResetAt;
   final DateTime? nextCashOutDate;
   final bool cashOutAvailable;
   final int daysUntilCashOut;
@@ -81,9 +92,20 @@ class IjcGroup {
     required this.ijcId,
     required this.joinCode,
     required this.ownerName,
+    required this.controllerName,
     required this.goalAmount,
     required this.balance,
     required this.cashOutPolicy,
+    required this.dailyLimit,
+    required this.weeklyLimit,
+    required this.monthlyLimit,
+    required this.resetType,
+    required this.allowRollover,
+    required this.dailySpent,
+    required this.weeklySpent,
+    required this.monthlySpent,
+    required this.availableToday,
+    required this.nextDailyResetAt,
     required this.nextCashOutDate,
     required this.cashOutAvailable,
     required this.daysUntilCashOut,
@@ -95,8 +117,12 @@ class IjcGroup {
     required this.transactions,
   });
 
-  bool get isOwner => currentUserRole == 'OWNER';
+  bool get isController => currentUserRole == 'CONTROLLER';
+  bool get isUser => currentUserRole == 'USER' || currentUserRole == 'OWNER';
+  bool get isOwner => isController;
   bool get isApproved => currentUserStatus == 'APPROVED';
+  double get dailyRemaining =>
+      dailyLimit <= 0 ? balance : (dailyLimit - dailySpent).clamp(0, balance).toDouble();
 
   factory IjcGroup.fromJson(Map<String, dynamic> json) {
     return IjcGroup(
@@ -105,9 +131,21 @@ class IjcGroup {
       ijcId: (json['ijc_id'] ?? '').toString(),
       joinCode: (json['join_code'] ?? '').toString(),
       ownerName: (json['owner_name'] ?? '').toString(),
+      controllerName: (json['controller_name'] ?? '').toString(),
       goalAmount: _parseDouble(json['goal_amount']),
       balance: _parseDouble(json['balance']),
       cashOutPolicy: (json['cash_out_policy'] ?? 'WEEKLY').toString(),
+      dailyLimit: _parseDouble(json['daily_limit']),
+      weeklyLimit: _parseDouble(json['weekly_limit']),
+      monthlyLimit: _parseDouble(json['monthly_limit']),
+      resetType: (json['reset_type'] ?? 'MIDNIGHT').toString(),
+      allowRollover: json['allow_rollover'] == true,
+      dailySpent: _parseDouble(json['daily_spent']),
+      weeklySpent: _parseDouble(json['weekly_spent']),
+      monthlySpent: _parseDouble(json['monthly_spent']),
+      availableToday: _parseDouble(json['available_today']),
+      nextDailyResetAt:
+          DateTime.tryParse((json['next_daily_reset_at'] ?? '').toString()),
       nextCashOutDate:
           DateTime.tryParse((json['next_cash_out_date'] ?? '').toString()),
       cashOutAvailable: json['cash_out_available'] == true,

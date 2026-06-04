@@ -1,4 +1,4 @@
-from rest_framework import serializers
+﻿from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.utils import timezone
@@ -126,6 +126,9 @@ class SavingsPlanSerializer(serializers.ModelSerializer):
     progress_percent = serializers.ReadOnlyField()
     is_mature = serializers.ReadOnlyField()
     days_until_maturity = serializers.ReadOnlyField()
+    lock_status = serializers.ReadOnlyField()
+    goal_lock_remaining_amount = serializers.ReadOnlyField()
+    is_goal_locked = serializers.ReadOnlyField()
 
     class Meta:
         model = SavingsPlan
@@ -245,6 +248,7 @@ class IJCTransactionSerializer(serializers.ModelSerializer):
             'amount',
             'type',
             'description',
+            'client_reference',
             'created_at',
         ]
         read_only_fields = ['group', 'user', 'user_name', 'type', 'created_at']
@@ -272,6 +276,7 @@ class IJCGroupSerializer(serializers.ModelSerializer):
     transactions = IJCTransactionSerializer(many=True, read_only=True)
     audit_logs = IJCAuditLogSerializer(many=True, read_only=True)
     owner_name = serializers.SerializerMethodField()
+    controller_name = serializers.SerializerMethodField()
     member_count = serializers.SerializerMethodField()
     current_user_role = serializers.SerializerMethodField()
     current_user_status = serializers.SerializerMethodField()
@@ -279,6 +284,11 @@ class IJCGroupSerializer(serializers.ModelSerializer):
     cash_out_available = serializers.ReadOnlyField()
     days_until_cash_out = serializers.ReadOnlyField()
     progress_percent = serializers.ReadOnlyField()
+    daily_spent = serializers.ReadOnlyField()
+    weekly_spent = serializers.ReadOnlyField()
+    monthly_spent = serializers.ReadOnlyField()
+    available_today = serializers.ReadOnlyField()
+    next_daily_reset_at = serializers.ReadOnlyField()
 
     class Meta:
         model = IJCGroup
@@ -286,6 +296,8 @@ class IJCGroupSerializer(serializers.ModelSerializer):
             'id',
             'owner',
             'owner_name',
+            'controller',
+            'controller_name',
             'name',
             'ijc_id',
             'join_code',
@@ -293,10 +305,20 @@ class IJCGroupSerializer(serializers.ModelSerializer):
             'balance',
             'cash_out_policy',
             'last_cash_out_at',
+            'daily_limit',
+            'weekly_limit',
+            'monthly_limit',
+            'reset_type',
+            'allow_rollover',
             'next_cash_out_date',
             'cash_out_available',
             'days_until_cash_out',
             'progress_percent',
+            'daily_spent',
+            'weekly_spent',
+            'monthly_spent',
+            'available_today',
+            'next_daily_reset_at',
             'is_active',
             'created_at',
             'member_count',
@@ -308,6 +330,7 @@ class IJCGroupSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = [
             'owner',
+            'controller',
             'ijc_id',
             'join_code',
             'balance',
@@ -318,6 +341,11 @@ class IJCGroupSerializer(serializers.ModelSerializer):
 
     def get_owner_name(self, obj):
         return obj.owner.get_full_name() or obj.owner.username
+
+    def get_controller_name(self, obj):
+        if not obj.controller:
+            return ''
+        return obj.controller.get_full_name() or obj.controller.username
 
     def get_member_count(self, obj):
         return obj.members.filter(status='APPROVED').count()

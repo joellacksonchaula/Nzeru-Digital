@@ -8,7 +8,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/savings_provider.dart';
 import '../../utils/currency_util.dart';
 import '../../widgets/dashboard_kit.dart';
-import '../../widgets/gold_button.dart';
+import '../../widgets/app_button.dart';
 import 'deposit_screen.dart';
 
 class CreatePlanScreen extends StatelessWidget {
@@ -49,6 +49,7 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
   PlanFrequency _frequency = PlanFrequency.weekly;
   final DateTime _startDate = DateTime.now();
   DateTime _deadline = DateTime.now().add(const Duration(days: 180));
+  bool _goalLockEnabled = false;
   bool _isProcessing = false;
 
   @override
@@ -136,7 +137,7 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
     final narrow = width < 760;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark = false;
     final titleColor = isDark ? Colors.white : const Color(0xFF171412);
     final bodyColor = isDark ? const Color(0xFFD8E0EB) : const Color(0xFF6F665C);
     final fieldFill = isDark
@@ -156,7 +157,7 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
             const SizedBox(height: 12),
             Text(
               'Set the target, deadline, and frequency in one place. The contribution amount updates instantly below just like the reference cards.',
-              style: GoogleFonts.montserrat(
+              style: GoogleFonts.poppins(
                 fontSize: 13,
                 height: 1.45,
                 color: bodyColor,
@@ -167,7 +168,7 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
               controller: _titleController,
               textCapitalization: TextCapitalization.words,
               onChanged: (_) => setState(() {}),
-              style: GoogleFonts.montserrat(color: titleColor),
+              style: GoogleFonts.poppins(color: titleColor),
               decoration: _fieldDecoration(
                 'Savings title',
                 icon: Icons.bookmark_border_rounded,
@@ -240,7 +241,7 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
                           ),
                           Text(
                             '$_remainingDays days remaining',
-                            style: GoogleFonts.montserrat(
+                            style: GoogleFonts.poppins(
                               fontSize: 13,
                               color: bodyColor,
                             ),
@@ -288,11 +289,11 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
               ],
             ),
             const SizedBox(height: 16),
-            _sectionLabel('Monetary Policy'),
+            _sectionLabel('Withdrawal Control Options'),
             const SizedBox(height: 10),
             Text(
-              'After you miss your daily, weekly, or monthly target, there is a 3-day grace period before the selected penalty is applied.',
-              style: GoogleFonts.montserrat(
+              'After you miss your daily, weekly, or monthly target, there is a 3-day grace period before the selected penalty is applied. Goal Lock keeps withdrawals blocked until the target is complete.',
+              style: GoogleFonts.poppins(
                 fontSize: 12,
                 height: 1.45,
                 color: bodyColor,
@@ -321,8 +322,24 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
                     () => _penaltyPolicy = PenaltyPolicy.appRestriction,
                   ),
                 ),
+                _PolicyChip(
+                  label: 'Goal Lock',
+                  description: 'Block withdrawal until target is reached',
+                  selected: _goalLockEnabled,
+                  color: const Color(0xFFD96069),
+                  onTap: () => setState(
+                    () => _goalLockEnabled = !_goalLockEnabled,
+                  ),
+                ),
               ],
             ),
+            if (_goalLockEnabled) ...[
+              const SizedBox(height: 12),
+              _GoalLockPreview(
+                progress: _targetAmount <= 0 ? 0 : (_currentAmount / _targetAmount).clamp(0, 1).toDouble(),
+                remaining: _remainingTarget,
+              ),
+            ],
             const SizedBox(height: 18),
             Container(
               width: double.infinity,
@@ -351,7 +368,7 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
                   const SizedBox(height: 8),
                   Text(
                     'Your first deposit is required before setup is complete. The remaining contribution updates after that starting amount.',
-                    style: GoogleFonts.montserrat(
+                    style: GoogleFonts.poppins(
                       fontSize: 13,
                       height: 1.45,
                       color: bodyColor,
@@ -380,7 +397,7 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
                         _InsightCard(
                           label: 'Monthly',
                           value: CurrencyUtil.formatNoDecimal(_perMonth),
-                          color: const Color(0xFFD4AF37),
+                          color: const Color(0xFFC21A03),
                           darkMode: isDark,
                         ),
                         const SizedBox(width: 8),
@@ -415,7 +432,7 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
               ),
             ),
             const SizedBox(height: 18),
-            GoldButton(
+            AppButton(
               label: 'CREATE PLAN & GO TO DEPOSIT',
               icon: Icons.rocket_launch_rounded,
               isLoading: _isProcessing,
@@ -437,7 +454,7 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
   }) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: GoogleFonts.montserrat(color: hintColor),
+      hintStyle: GoogleFonts.poppins(color: hintColor),
       prefixIcon: Icon(icon, color: hintColor),
       filled: true,
       fillColor: fillColor,
@@ -458,11 +475,11 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
     required ValueChanged<String> onChanged,
     required String? Function(String?) validator,
   }) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark = false;
 
     return TextFormField(
       controller: controller,
-      style: GoogleFonts.montserrat(
+      style: GoogleFonts.poppins(
         color: isDark ? Colors.white : const Color(0xFF171412),
       ),
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -535,6 +552,7 @@ class _SavingsPlanComposerState extends State<SavingsPlanComposer> {
         penaltyPolicy: _penaltyPolicy,
         goalAmount: _targetAmount,
         currentAmount: 0,
+        goalLockEnabled: _goalLockEnabled,
       ),
     );
 
@@ -590,7 +608,7 @@ class _FrequencyChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark = false;
 
     return InkWell(
       onTap: onTap,
@@ -615,7 +633,7 @@ class _FrequencyChip extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: GoogleFonts.montserrat(
+          style: GoogleFonts.poppins(
             fontSize: 13,
             fontWeight: FontWeight.w700,
             color: selected
@@ -647,7 +665,7 @@ class _PolicyChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark = false;
 
     return InkWell(
       onTap: onTap,
@@ -689,7 +707,7 @@ class _PolicyChip extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               description,
-              style: GoogleFonts.montserrat(
+              style: GoogleFonts.poppins(
                 fontSize: 11,
                 height: 1.35,
                 color: isDark
@@ -699,6 +717,79 @@ class _PolicyChip extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _GoalLockPreview extends StatelessWidget {
+  final double progress;
+  final double remaining;
+
+  const _GoalLockPreview({
+    required this.progress,
+    required this.remaining,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = false;
+    final locked = progress < 1;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: locked
+            ? const Color(0xFFD96069).withValues(alpha: 0.10)
+            : const Color(0xFF0F9D8A).withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: locked ? const Color(0xFFF0C7CB) : const Color(0xFF9DD7CB),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                locked ? Icons.lock_rounded : Icons.celebration_rounded,
+                size: 18,
+                color: locked ? const Color(0xFFD96069) : const Color(0xFF0F9D8A),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                locked ? 'Withdrawal Locked' : 'Goal Achieved',
+                style: GoogleFonts.poppins(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  color: locked ? const Color(0xFFD96069) : const Color(0xFF0F9D8A),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          LinearProgressIndicator(
+            value: progress,
+            minHeight: 8,
+            backgroundColor: isDark ? const Color(0x335F6E80) : const Color(0xFFE6DAC7),
+            valueColor: AlwaysStoppedAnimation<Color>(
+              locked ? const Color(0xFFD96069) : const Color(0xFF0F9D8A),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            locked
+                ? 'Complete your savings target to unlock withdrawals. Remaining: ${CurrencyUtil.formatNoDecimal(remaining)}'
+                : 'Withdrawals unlock automatically once the goal is complete.',
+            style: GoogleFonts.poppins(
+              fontSize: 12,
+              height: 1.35,
+              color: isDark ? const Color(0xFFD8E0EB) : const Color(0xFF6F665C),
+            ),
+          ),
+        ],
       ),
     );
   }

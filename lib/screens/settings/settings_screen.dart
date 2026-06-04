@@ -6,7 +6,6 @@ import '../../config/app_colors.dart';
 import '../../models/user_settings.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/savings_provider.dart';
-import '../../providers/theme_mode_provider.dart';
 import '../../widgets/dashboard_kit.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -93,7 +92,7 @@ class _SettingsScreenState extends State<SettingsScreen>
                   style: GoogleFonts.poppins(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
-                    color: Theme.of(context).brightness == Brightness.dark
+                    color: false
                         ? AppColors.darkTextMuted
                         : AppColors.textMuted,
                   ),
@@ -188,9 +187,8 @@ class _SettingsScreenState extends State<SettingsScreen>
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
     final savings = context.watch<SavingsProvider>();
-    final themeMode = context.watch<ThemeModeProvider>();
     final settings = auth.settings;
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final isDarkMode = false;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -451,38 +449,13 @@ class _SettingsScreenState extends State<SettingsScreen>
                             ),
                           ),
                           const SizedBox(height: 12),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _ThemeButton(
-                                  icon: Icons.light_mode_outlined,
-                                  label: 'Light',
-                                  isSelected: !themeMode.isDarkMode,
-                                  onTap: () {
-                                    themeMode.setDarkMode(false);
-                                    _saveSettings(
-                                      settings.copyWith(
-                                        preferredTheme: 'light',
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: _ThemeButton(
-                                  icon: Icons.dark_mode_outlined,
-                                  label: 'Dark',
-                                  isSelected: themeMode.isDarkMode,
-                                  onTap: () {
-                                    themeMode.setDarkMode(true);
-                                    _saveSettings(
-                                      settings.copyWith(preferredTheme: 'dark'),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ],
+                          _ThemeButton(
+                            icon: Icons.light_mode_outlined,
+                            label: 'Light',
+                            isSelected: true,
+                            onTap: () => _saveSettings(
+                              settings.copyWith(preferredTheme: 'light'),
+                            ),
                           ),
                         ],
                       ),
@@ -757,7 +730,7 @@ class _SettingsInfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final isDarkMode = false;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -798,7 +771,7 @@ class _SettingsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final isDarkMode = false;
 
     return InkWell(
       onTap: onTap,
@@ -863,7 +836,7 @@ class _SettingsToggleTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final isDarkMode = false;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -923,7 +896,7 @@ class _ThemeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final isDarkMode = false;
 
     return InkWell(
       onTap: onTap,

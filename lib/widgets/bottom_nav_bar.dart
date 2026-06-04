@@ -18,7 +18,7 @@ class BottomNavBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.92),
         border: Border(
-          top: BorderSide(color: AppColors.goldString.withValues(alpha: 0.55)),
+          top: BorderSide(color: AppColors.primaryRed.withValues(alpha: 0.55)),
         ),
         boxShadow: [
           BoxShadow(
@@ -116,7 +116,7 @@ class _NavItem extends StatelessWidget {
           color: isActive ? AppColors.tiffanyMist : Colors.transparent,
           borderRadius: BorderRadius.circular(26),
           border: isActive
-              ? Border.all(color: AppColors.goldString)
+              ? Border.all(color: AppColors.primaryRed)
               : Border.all(color: Colors.transparent),
           boxShadow: isActive
               ? [

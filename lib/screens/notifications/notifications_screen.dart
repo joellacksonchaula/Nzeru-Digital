@@ -177,7 +177,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       case 'SAVINGS_MISSED':
         return AppColors.actionRed;
       case 'INTEREST_REWARD':
-        return AppColors.gold;
+        return AppColors.primaryRed;
       default:
         return AppColors.tiffanyBlue;
     }

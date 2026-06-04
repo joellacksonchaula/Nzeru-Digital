@@ -16,6 +16,8 @@ class SavingsPlan {
   final PenaltyPolicy penaltyPolicy;
   final double goalAmount;
   final double currentAmount;
+  final bool goalLockEnabled;
+  final String lockStatus;
   final bool isActive;
   final bool isSecret;
   final bool isTrial;
@@ -33,6 +35,8 @@ class SavingsPlan {
     required this.penaltyPolicy,
     this.goalAmount = 0,
     this.currentAmount = 0,
+    this.goalLockEnabled = false,
+    this.lockStatus = 'UNLOCKED',
     this.isActive = true,
     this.isSecret = false,
     this.isTrial = false,
@@ -40,9 +44,16 @@ class SavingsPlan {
   });
 
   double get progressPercent =>
-      goalAmount > 0 ? (currentAmount / goalAmount).clamp(0, 1) : 0;
+      goalAmount > 0 ? (currentAmount / goalAmount).clamp(0, 1).toDouble() : 0;
 
-  double get remainingAmount => (goalAmount - currentAmount).clamp(0, goalAmount);
+  double get remainingAmount => (goalAmount - currentAmount).clamp(0, goalAmount).toDouble();
+
+  bool get isGoalLocked => goalLockEnabled && currentAmount < goalAmount;
+
+  bool get isGoalUnlocked => !isGoalLocked;
+
+  double get goalLockRemainingAmount =>
+      goalLockEnabled ? (goalAmount - currentAmount).clamp(0, goalAmount).toDouble() : 0;
 
   int get totalDurationDays {
     final days = endDate.difference(startDate).inDays;
@@ -71,7 +82,7 @@ class SavingsPlan {
 
   double get expectedProgressNow {
     if (totalDurationDays <= 0) return 0;
-    return (elapsedDays / totalDurationDays).clamp(0, 1);
+    return (elapsedDays / totalDurationDays).clamp(0, 1).toDouble();
   }
 
   double get requiredPerDay => remainingAmount <= 0 ? 0 : remainingAmount / remainingDays;
@@ -216,6 +227,8 @@ class SavingsPlan {
       penaltyPolicy: penaltyFromApiString(json['penalty_policy'] as String? ?? 'MONETARY'),
       goalAmount: _parseDouble(json['goal_amount']),
       currentAmount: _parseDouble(json['current_amount']),
+      goalLockEnabled: json['goal_lock_enabled'] as bool? ?? false,
+      lockStatus: (json['lock_status'] ?? 'UNLOCKED').toString(),
       isActive: json['is_active'] as bool? ?? true,
       isSecret: json['is_secret'] as bool? ?? false,
       isTrial: json['is_trial'] as bool? ?? false,
@@ -235,6 +248,7 @@ class SavingsPlan {
         'penalty_policy': penaltyToApiString(penaltyPolicy),
         'goal_amount': _formatMoney(goalAmount),
         'current_amount': _formatMoney(currentAmount),
+        'goal_lock_enabled': goalLockEnabled,
         'is_secret': isSecret,
         'is_trial': isTrial,
       };

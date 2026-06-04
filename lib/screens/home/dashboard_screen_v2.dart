@@ -10,7 +10,6 @@ import '../../models/savings_transaction.dart';
 import '../../providers/dashboard_provider.dart';
 import '../../providers/finance_overview_provider.dart';
 import '../../providers/savings_provider.dart';
-import '../../providers/theme_mode_provider.dart';
 import '../../utils/currency_util.dart';
 import '../../widgets/candlestick_chart.dart';
 import '../../widgets/dashboard_kit.dart';
@@ -36,17 +35,14 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
   Widget build(BuildContext context) {
     final finance = context.watch<FinanceOverviewProvider>();
     final dashboard = context.watch<DashboardProvider>();
-    final themeMode = context.watch<ThemeModeProvider>();
     final plans = finance.prioritizedPlans;
     final transactions = finance.recentTransactions;
     final candles = _buildSavingsCandles(finance);
     final userName = _firstName(finance.user?.name);
-    final darkMode = themeMode.isDarkMode;
+    final darkMode = false;
 
     return Scaffold(
-      backgroundColor: darkMode
-          ? const Color(0xFF091018)
-          : const Color(0xFFF7F4EC),
+      backgroundColor: AppColors.background,
       body: Stack(
         children: [
           DashboardBackdrop(darkMode: darkMode),
@@ -107,7 +103,7 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                           Navigator.pushNamed(context, AppRoutes.savingsPlans),
                       child: Text(
                         'See more',
-                        style: GoogleFonts.montserrat(
+                        style: GoogleFonts.poppins(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
                           color: darkMode
@@ -115,31 +111,6 @@ class _DashboardScreenV2State extends State<DashboardScreenV2> {
                               : const Color(0xFF088F8B),
                         ),
                       ),
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Center(
-                    child: FilledButton.icon(
-                      onPressed: () => themeMode.toggle(),
-                      style: FilledButton.styleFrom(
-                        backgroundColor: darkMode
-                            ? const Color(0xFF161F2A)
-                            : AppColors.faluRed,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 18,
-                          vertical: 12,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      icon: Icon(
-                        darkMode
-                            ? Icons.light_mode_rounded
-                            : Icons.dark_mode_rounded,
-                      ),
-                      label: Text(darkMode ? 'White Mode' : 'Dark Mode'),
                     ),
                   ),
                   if (dashboard.isLoading) ...[
@@ -234,7 +205,7 @@ class _PhoneHeader extends StatelessWidget {
                   children: [
                     Text(
                       'Welcome back',
-                      style: GoogleFonts.montserrat(
+                      style: GoogleFonts.poppins(
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
                         color: darkMode
@@ -346,7 +317,7 @@ class _SectionRow extends StatelessWidget {
             if (trailing != null)
               Text(
                 trailing!,
-                style: GoogleFonts.montserrat(
+                style: GoogleFonts.poppins(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
                   color: darkMode
@@ -465,7 +436,7 @@ class _TopSavingsPlanCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               plan.progressPercent >= 1 ? 'Goal' : 'Target',
-              style: GoogleFonts.montserrat(
+              style: GoogleFonts.poppins(
                 fontSize: 10,
                 color: darkMode
                     ? const Color(0xFFBBC6D3)
@@ -476,7 +447,7 @@ class _TopSavingsPlanCard extends StatelessWidget {
               CurrencyUtil.formatNoDecimal(plan.goalAmount),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.montserrat(
+              style: GoogleFonts.poppins(
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
                 color: darkMode
@@ -490,7 +461,7 @@ class _TopSavingsPlanCard extends StatelessWidget {
               rateLabel,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.montserrat(
+              style: GoogleFonts.poppins(
                 fontSize: 10,
                 color: darkMode
                     ? const Color(0xFFD8E0EB)
@@ -501,7 +472,7 @@ class _TopSavingsPlanCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               'ETA',
-              style: GoogleFonts.montserrat(
+              style: GoogleFonts.poppins(
                 fontSize: 10,
                 color: darkMode
                     ? const Color(0xFFBBC6D3)
@@ -534,7 +505,7 @@ class _TopSavingsPlanCard extends StatelessWidget {
                   ),
                   child: Text(
                     plan.isEstimatedToFinishOnTime ? 'On Fi' : 'Off',
-                    style: GoogleFonts.montserrat(
+                    style: GoogleFonts.poppins(
                       fontSize: 9,
                       fontWeight: FontWeight.w600,
                       color: const Color(0xFF088F8B),
@@ -557,7 +528,7 @@ class _TopSavingsPlanCard extends StatelessWidget {
               DateFormat('d MMM yyyy').format(plan.endDate),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.montserrat(
+              style: GoogleFonts.poppins(
                 fontSize: 10,
                 color: darkMode
                     ? const Color(0xFFD8E0EB)
@@ -593,7 +564,7 @@ class _TopSavingsPlanCard extends StatelessWidget {
       case PlanHealth.onTrack:
         return const Color(0xFF0ABAB5);
       case PlanHealth.watch:
-        return const Color(0xFFD4AF37);
+        return const Color(0xFFC21A03);
       case PlanHealth.behind:
         return const Color(0xFF801818);
     }
@@ -669,7 +640,7 @@ class _PerformanceCard extends StatelessWidget {
                     ),
                     Text(
                       'Savings Analytics',
-                      style: GoogleFonts.montserrat(
+                      style: GoogleFonts.poppins(
                         fontSize: 11,
                         color: const Color(0xFF8B95A5),
                       ),
@@ -692,7 +663,7 @@ class _PerformanceCard extends StatelessWidget {
                   children: [
                     Text(
                       'TOTAL SAVED',
-                      style: GoogleFonts.montserrat(
+                      style: GoogleFonts.poppins(
                         fontSize: 10,
                         color: const Color(0xFF8B95A5),
                       ),
@@ -717,7 +688,7 @@ class _PerformanceCard extends StatelessWidget {
             candles: candles,
             title: '',
             subtitle: '',
-            darkMode: true,
+            darkMode: false,
             height: 130,
             borderRadius: BorderRadius.circular(18),
           ),
@@ -789,7 +760,7 @@ class _QuickActionsRow extends StatelessWidget {
                     const SizedBox(height: 6),
                     Text(
                       items[i].label,
-                      style: GoogleFonts.montserrat(
+                      style: GoogleFonts.poppins(
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
                         color: const Color(0xFF04403E),
@@ -888,7 +859,7 @@ class _TransactionRow extends StatelessWidget {
                 ),
                 Text(
                   DateFormat('dd MMM yyyy, HH:mm').format(txn.date),
-                  style: GoogleFonts.montserrat(
+                  style: GoogleFonts.poppins(
                     fontSize: 10,
                     color: const Color(0xFF55504A),
                   ),
@@ -926,7 +897,7 @@ class _EmptyCard extends StatelessWidget {
       child: Center(
         child: Text(
           message,
-          style: GoogleFonts.montserrat(
+          style: GoogleFonts.poppins(
             fontSize: 14,
             color: const Color(0xFF55504A),
           ),

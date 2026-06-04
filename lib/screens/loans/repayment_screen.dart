@@ -7,7 +7,7 @@ import '../../models/credit_payment.dart';
 import '../../providers/credit_provider.dart';
 import '../../utils/currency_util.dart';
 import '../../widgets/dashboard_kit.dart';
-import '../../widgets/gold_button.dart';
+import '../../widgets/app_button.dart';
 
 class RepaymentScreen extends StatefulWidget {
   const RepaymentScreen({super.key});
@@ -141,7 +141,7 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
                       ),
                     ),
                     const SizedBox(height: 18),
-                    GoldButton(
+                    AppButton(
                       label: 'CONFIRM PAYMENT',
                       icon: Icons.check_circle_outline,
                       isLoading: _isProcessing,

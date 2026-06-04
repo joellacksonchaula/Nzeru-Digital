@@ -29,7 +29,7 @@ class GoalProgressWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final isDarkMode = false;
 
     return GestureDetector(
       onTap: onTap,
@@ -205,7 +205,7 @@ class GoalGridView extends StatelessWidget {
     final colors = [
       AppColors.abyssalTeal,
       AppColors.brightCrimson,
-      AppColors.gold,
+      AppColors.primaryRed,
       AppColors.success,
     ];
 

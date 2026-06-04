@@ -9,7 +9,7 @@ import '../../models/savings_transaction.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/savings_provider.dart';
 import '../../widgets/dashboard_kit.dart';
-import '../../widgets/gold_button.dart';
+import '../../widgets/app_button.dart';
 
 class DepositScreenArgs {
   final String? planId;
@@ -260,7 +260,7 @@ class _DepositScreenState extends State<DepositScreen> {
                       ),
                     ).animate().fadeIn(delay: 200.ms),
                     const SizedBox(height: 40),
-                    GoldButton(
+                    AppButton(
                       label: args?.requireDeposit == true
                           ? 'MAKE FIRST DEPOSIT'
                           : 'CONFIRM DEPOSIT',

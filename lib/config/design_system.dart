@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Nzelu Design System
-/// Comprehensive style guide for consistent spacing, shadows, corners, and component styling
+import 'app_colors.dart';
 
 class DesignSystem {
   DesignSystem._();
@@ -40,13 +39,12 @@ class DesignSystem {
       EdgeInsets.symmetric(vertical: spacingL);
 
   // ═════════════════════ BORDER RADIUS ═════════════════════
-  /// Unified corner radius for consistent rounded appearance
   static const double cornerRadiusXs = 4;
   static const double cornerRadiusS = 8;
   static const double cornerRadiusM = 12;
   static const double cornerRadiusL = 14;
   static const double cornerRadiusXl = 16;
-  static const double cornerRadiusXxl = 20;
+  static const double cornerRadiusXxl = 18;
   static const double cornerRadiusCircle = 24;
 
   static const BorderRadius radiusXs =
@@ -63,33 +61,32 @@ class DesignSystem {
       BorderRadius.all(Radius.circular(cornerRadiusXxl));
 
   // ═════════════════════ SHADOWS ═════════════════════
-  /// Elevation shadows for depth (light mode)
   static final BoxShadow shadowXs = BoxShadow(
-    color: Colors.black.withAlpha(8),
+    color: Colors.black.withAlpha(6),
     blurRadius: 4,
     offset: const Offset(0, 2),
   );
 
   static final BoxShadow shadowS = BoxShadow(
-    color: Colors.black.withAlpha(12),
+    color: Colors.black.withAlpha(8),
     blurRadius: 8,
     offset: const Offset(0, 4),
   );
 
   static final BoxShadow shadowM = BoxShadow(
-    color: Colors.black.withAlpha(16),
+    color: Colors.black.withAlpha(10),
     blurRadius: 12,
     offset: const Offset(0, 6),
   );
 
   static final BoxShadow shadowL = BoxShadow(
-    color: Colors.black.withAlpha(20),
+    color: Colors.black.withAlpha(12),
     blurRadius: 16,
     offset: const Offset(0, 8),
   );
 
   static final BoxShadow shadowXl = BoxShadow(
-    color: Colors.black.withAlpha(24),
+    color: Colors.black.withAlpha(14),
     blurRadius: 24,
     offset: const Offset(0, 12),
   );
@@ -101,80 +98,31 @@ class DesignSystem {
   static final List<BoxShadow> shadowsL = [shadowL];
   static final List<BoxShadow> shadowsXl = [shadowXl];
 
-  /// Elevation shadows for depth (dark mode)
-  static final BoxShadow shadowXsDark = BoxShadow(
-    color: Colors.black.withAlpha(40),
-    blurRadius: 4,
-    offset: const Offset(0, 2),
-  );
-
-  static final BoxShadow shadowSDark = BoxShadow(
-    color: Colors.black.withAlpha(60),
-    blurRadius: 8,
-    offset: const Offset(0, 4),
-  );
-
-  static final BoxShadow shadowMDark = BoxShadow(
-    color: Colors.black.withAlpha(80),
-    blurRadius: 12,
-    offset: const Offset(0, 6),
-  );
-
-  static final BoxShadow shadowLDark = BoxShadow(
-    color: Colors.black.withAlpha(100),
-    blurRadius: 16,
-    offset: const Offset(0, 8),
-  );
-
-  static final List<BoxShadow> shadowsDarkM = [shadowMDark];
-  static final List<BoxShadow> shadowsDarkL = [shadowLDark];
+  static final BoxShadow shadowXsDark = shadowXs;
+  static final BoxShadow shadowSDark = shadowS;
+  static final BoxShadow shadowMDark = shadowM;
+  static final BoxShadow shadowLDark = shadowL;
+  static final List<BoxShadow> shadowsDarkM = shadowsM;
+  static final List<BoxShadow> shadowsDarkL = shadowsL;
 
   // ═════════════════════ CARD STYLING ═════════════════════
-  /// Standard card styles with consistent appearance
   static BoxDecoration cardDecorationLight({
-    bool hasBorder = true,
+    bool hasBorder = false,
   }) {
     return BoxDecoration(
-      borderRadius: radiusL,
+      color: AppColors.cardSurface,
+      borderRadius: radiusXl,
       border: hasBorder
-          ? Border.all(
-              color: const Color(0xFFE8E8E8),
-              width: 1,
-            )
+          ? Border.all(color: AppColors.borderLight)
           : null,
-      gradient: const LinearGradient(
-        colors: [
-          Color(0xFFFFFFFF),
-          Color(0xFFFAFAFA),
-        ],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      ),
-      boxShadow: shadowsM,
+      boxShadow: shadowsS,
     );
   }
 
   static BoxDecoration cardDecorationDark({
-    bool hasBorder = true,
+    bool hasBorder = false,
   }) {
-    return BoxDecoration(
-      borderRadius: radiusL,
-      border: hasBorder
-          ? Border.all(
-              color: const Color(0xFF333333),
-              width: 1,
-            )
-          : null,
-      gradient: const LinearGradient(
-        colors: [
-          Color(0xFF181818),
-          Color(0xFF242424),
-        ],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      ),
-      boxShadow: shadowsDarkM,
-    );
+    return cardDecorationLight(hasBorder: hasBorder);
   }
 
   // ═════════════════════ BUTTON STYLING ═════════════════════
@@ -198,15 +146,12 @@ class DesignSystem {
   static const double iconButtonSizeL = 48;
 
   // ═════════════════════ BORDER STYLING ═════════════════════
-  /// Standard border styles
   static const BorderSide borderLight =
-      BorderSide(color: Color(0xFFE8E8E8), width: 1);
+      BorderSide(color: AppColors.borderLight, width: 1);
   static const BorderSide borderLightThick =
-      BorderSide(color: Color(0xFFE8E8E8), width: 1.5);
-  static const BorderSide borderDark =
-      BorderSide(color: Color(0xFF333333), width: 1);
-  static const BorderSide borderDarkThick =
-      BorderSide(color: Color(0xFF333333), width: 1.5);
+      BorderSide(color: AppColors.border, width: 1);
+  static const BorderSide borderDark = borderLight;
+  static const BorderSide borderDarkThick = borderLightThick;
 
   // ═════════════════════ ICON SIZES ═════════════════════
   static const double iconSizeXs = 16;
@@ -221,34 +166,28 @@ class DesignSystem {
   static const Duration animationSlow = Duration(milliseconds: 500);
 
   // ═════════════════════ HELPER METHODS ═════════════════════
-  /// Get shadow list based on brightness
   static List<BoxShadow> getShadows(
     Brightness brightness, {
     required double elevation,
   }) {
-    final isDark = brightness == Brightness.dark;
-
     if (elevation <= 4) {
-      return isDark ? [shadowXsDark] : shadowsXs;
+      return shadowsXs;
     } else if (elevation <= 8) {
-      return isDark ? [shadowSDark] : shadowsS;
+      return shadowsS;
     } else if (elevation <= 12) {
-      return isDark ? [shadowMDark] : shadowsM;
+      return shadowsM;
     } else if (elevation <= 16) {
-      return isDark ? [shadowLDark] : shadowsL;
+      return shadowsL;
     } else {
-      return isDark ? [shadowLDark] : shadowsXl;
+      return shadowsXl;
     }
   }
 
-  /// Get card decoration based on brightness
   static BoxDecoration getCardDecoration(
     Brightness brightness, {
-    bool hasBorder = true,
+    bool hasBorder = false,
   }) {
-    return brightness == Brightness.dark
-        ? cardDecorationDark(hasBorder: hasBorder)
-        : cardDecorationLight(hasBorder: hasBorder);
+    return cardDecorationLight(hasBorder: hasBorder);
   }
 }
 
@@ -278,7 +217,6 @@ class ResponsiveSpacing {
     return EdgeInsets.all(isMobile ? mobileValue : tabletValue);
   }
 
-  /// Get responsive font size
   double getResponsiveFontSize({
     double baseMobileSize = 14,
     double baseTabletSize = 16,
