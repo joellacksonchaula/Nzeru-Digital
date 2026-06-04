@@ -5,6 +5,7 @@ import 'config/app_routes.dart';
 import 'providers/auth_provider.dart';
 import 'providers/credit_provider.dart';
 import 'providers/finance_overview_provider.dart';
+import 'providers/ijc_provider.dart';
 import 'providers/savings_provider.dart';
 import 'providers/dashboard_provider.dart';
 import 'providers/theme_mode_provider.dart';
@@ -31,6 +32,7 @@ class SavingsUTLApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => DashboardProvider()),
         ChangeNotifierProvider(create: (_) => SavingsProvider()),
+        ChangeNotifierProvider(create: (_) => IjcProvider()),
         ChangeNotifierProvider(create: (_) => CreditProvider()),
         ChangeNotifierProvider(create: (_) => ThemeModeProvider()),
         ChangeNotifierProxyProvider3<AuthProvider, SavingsProvider, CreditProvider,

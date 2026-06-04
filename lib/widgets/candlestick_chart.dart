@@ -61,7 +61,7 @@ class CandlestickChart extends StatelessWidget {
           child: Center(
             child: Text(
               'No chart data yet',
-              style: GoogleFonts.inter(
+              style: GoogleFonts.poppins(
                 fontSize: 13,
                 color: theme.body,
                 fontWeight: FontWeight.w600,
@@ -113,7 +113,7 @@ class CandlestickChart extends StatelessWidget {
                               children: [
                                 Text(
                                   title,
-                                  style: GoogleFonts.oswald(
+                                  style: GoogleFonts.poppins(
                                     fontSize: 24,
                                     color: theme.heading,
                                     fontWeight: FontWeight.w500,
@@ -123,7 +123,7 @@ class CandlestickChart extends StatelessWidget {
                                   const SizedBox(height: 4),
                                   Text(
                                     subtitle!,
-                                    style: GoogleFonts.inter(
+                                    style: GoogleFonts.poppins(
                                       fontSize: 13,
                                       color: theme.body,
                                       fontWeight: FontWeight.w600,
@@ -145,7 +145,7 @@ class CandlestickChart extends StatelessWidget {
                               children: [
                                 Text(
                                   'Latest',
-                                  style: GoogleFonts.inter(
+                                  style: GoogleFonts.poppins(
                                     fontSize: 11,
                                     color: theme.axis,
                                   ),
@@ -153,7 +153,7 @@ class CandlestickChart extends StatelessWidget {
                                 const SizedBox(height: 2),
                                 Text(
                                   CurrencyUtil.formatCompact(stats.latest),
-                                  style: GoogleFonts.oswald(
+                                  style: GoogleFonts.poppins(
                                     fontSize: 18,
                                     color: theme.heading,
                                   ),
@@ -290,7 +290,7 @@ class _AxisLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       value,
-      style: GoogleFonts.inter(
+      style: GoogleFonts.poppins(
         fontSize: 11,
         color: color,
       ),

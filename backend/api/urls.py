@@ -6,7 +6,7 @@ from .views import (
     UserProfileViewSet, SavingsPlanViewSet, TransactionViewSet,
     LoanViewSet, LoanPaymentViewSet, PenaltyViewSet,
     InterestDistributionViewSet, NotificationViewSet,
-    loan_eligibility, financial_report,
+    IJCGroupViewSet, loan_eligibility, financial_report,
 )
 from .serializers import CustomTokenObtainPairSerializer
 
@@ -21,6 +21,7 @@ router.register(r'credit-payments', LoanPaymentViewSet, basename='credit-payment
 router.register(r'penalties', PenaltyViewSet)
 router.register(r'interest', InterestDistributionViewSet)
 router.register(r'notifications', NotificationViewSet)
+router.register(r'ijc-groups', IJCGroupViewSet, basename='ijc-groups')
 
 urlpatterns = [
     # Auth

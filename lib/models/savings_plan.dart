@@ -61,6 +61,14 @@ class SavingsPlan {
     return raw <= 0 ? 1 : raw;
   }
 
+  bool get isMature =>
+      DateTime.now().isAfter(endDate) || DateTime.now().isAtSameMomentAs(endDate);
+
+  int get daysUntilMaturity {
+    final raw = endDate.difference(DateTime.now()).inDays;
+    return raw <= 0 ? 0 : raw;
+  }
+
   double get expectedProgressNow {
     if (totalDurationDays <= 0) return 0;
     return (elapsedDays / totalDurationDays).clamp(0, 1);

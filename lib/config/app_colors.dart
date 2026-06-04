@@ -5,7 +5,7 @@ class AppColors {
 
   // ═══════════════  NZELU PREMIUM COLOR SYSTEM  ═══════════════
   // Abyssal Teal (Primary)
-  static const Color abyssalTeal = Color(0xFF063F47);
+  static const Color abyssalTeal = Color(0xFF0C6170);
   static const Color abyssalTealLight = Color(0xFF1B6B78);
   static const Color abyssalTealMuted = Color(0xFF2E7F89);
   

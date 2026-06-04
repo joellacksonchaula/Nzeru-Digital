@@ -54,7 +54,7 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
                           children: [
                             Text(
                               'NZELU CREDIT',
-                              style: GoogleFonts.oswald(
+                              style: GoogleFonts.poppins(
                                 fontSize: 13,
                                 letterSpacing: 2.1,
                                 color: const Color(0xFF0ABAB5),
@@ -62,7 +62,7 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
                             ),
                             Text(
                               'Repay Credit',
-                              style: GoogleFonts.oswald(
+                              style: GoogleFonts.poppins(
                                 fontSize: 28,
                                 color: const Color(0xFF171412),
                               ),
@@ -77,7 +77,7 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
                     DashboardPanel(
                       child: Text(
                         'No active credit right now.',
-                        style: GoogleFonts.inter(
+                        style: GoogleFonts.poppins(
                           fontSize: 14,
                           color: AppColors.textMuted,
                         ),
@@ -113,7 +113,7 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
                         children: [
                           Text(
                             'Payment amount',
-                            style: GoogleFonts.oswald(
+                            style: GoogleFonts.poppins(
                               fontSize: 20,
                               color: const Color(0xFF171412),
                             ),
@@ -124,14 +124,14 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
                             keyboardType: const TextInputType.numberWithOptions(
                               decimal: true,
                             ),
-                            style: GoogleFonts.oswald(
+                            style: GoogleFonts.poppins(
                               fontSize: 32,
                               color: AppColors.tiffanyBlue,
                             ),
                             decoration: InputDecoration(
                               hintText: '0.00',
                               prefixText: 'MK ',
-                              prefixStyle: GoogleFonts.oswald(
+                              prefixStyle: GoogleFonts.poppins(
                                 fontSize: 32,
                                 color: AppColors.tiffanyBlue,
                               ),
@@ -227,12 +227,12 @@ class _BalanceItem extends StatelessWidget {
         children: [
           Text(
             label,
-            style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMuted),
+            style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textMuted),
           ),
           const SizedBox(height: 4),
           Text(
             value,
-            style: GoogleFonts.oswald(
+            style: GoogleFonts.poppins(
               fontSize: 20,
               color: AppColors.textPrimary,
             ),

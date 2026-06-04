@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from decimal import Decimal
 from django.db.models import Q
+import secrets
 
 
 class UserProfile(models.Model):
@@ -233,6 +234,15 @@ class SavingsPlan(models.Model):
             return deadline + timedelta(days=self.grace_period_days)
         return None
 
+    @property
+    def is_mature(self):
+        return timezone.now() >= self.end_date
+
+    @property
+    def days_until_maturity(self):
+        remaining = self.end_date - timezone.now()
+        return max(0, remaining.days)
+
 
 class Transaction(models.Model):
     TYPE_CHOICES = [
@@ -378,17 +388,28 @@ class Notification(models.Model):
     TYPE_CHOICES = [
         ('SAVINGS_REMINDER', 'Savings Reminder'),
         ('SAVINGS_MISSED', 'Savings Missed'),
+        ('SAVINGS_MILESTONE', 'Savings Milestone'),
+        ('GOAL_ACHIEVED', 'Goal Achieved'),
+        ('DEPOSIT_RECEIVED', 'Deposit Received'),
+        ('WITHDRAWAL_UNLOCK', 'Withdrawal Unlock'),
+        ('DEBT_ALERT', 'Debt Alert'),
+        ('SECURITY_ALERT', 'Security Alert'),
         ('PENALTY_APPLIED', 'Penalty Applied'),
         ('LOAN_ELIGIBLE', 'Loan Eligible'),
         ('LOAN_APPROVED', 'Loan Approved'),
         ('LOAN_REPAYMENT', 'Loan Repayment Reminder'),
         ('INTEREST_REWARD', 'Interest Reward'),
+        ('IJC_MEMBER_JOINED', 'IJC Member Joined'),
+        ('IJC_DEPOSIT_RECEIVED', 'IJC Deposit Received'),
+        ('IJC_GOAL_REACHED', 'IJC Goal Reached'),
+        ('IJC_CASHOUT_AVAILABLE', 'IJC Cash-Out Available'),
+        ('IJC_WITHDRAWAL_COMPLETED', 'IJC Withdrawal Completed'),
         ('GENERAL', 'General'),
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
     title = models.CharField(max_length=200)
     message = models.TextField()
-    type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='GENERAL')
+    type = models.CharField(max_length=30, choices=TYPE_CHOICES, default='GENERAL')
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -397,3 +418,130 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.title}"
+
+
+class IJCGroup(models.Model):
+    CASH_OUT_CHOICES = [
+        ('DAILY', 'Daily Cash-Out'),
+        ('WEEKLY', 'Weekly Cash-Out'),
+        ('MONTHLY', 'Monthly Cash-Out'),
+    ]
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owned_ijc_groups')
+    name = models.CharField(max_length=140)
+    ijc_id = models.CharField(max_length=20, unique=True, editable=False)
+    join_code = models.CharField(max_length=12, unique=True, editable=False)
+    goal_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    balance = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    cash_out_policy = models.CharField(max_length=10, choices=CASH_OUT_CHOICES, default='WEEKLY')
+    last_cash_out_at = models.DateTimeField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.ijc_id} - {self.name}"
+
+    def save(self, *args, **kwargs):
+        if not self.ijc_id:
+            self.ijc_id = self._generate_ijc_id()
+        if not self.join_code:
+            self.join_code = self._generate_join_code()
+        super().save(*args, **kwargs)
+
+    @staticmethod
+    def _generate_ijc_id():
+        while True:
+            candidate = f"IJC-NZL-{secrets.randbelow(900000) + 100000}"
+            if not IJCGroup.objects.filter(ijc_id=candidate).exists():
+                return candidate
+
+    @staticmethod
+    def _generate_join_code():
+        alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+        while True:
+            candidate = ''.join(secrets.choice(alphabet) for _ in range(8))
+            if not IJCGroup.objects.filter(join_code=candidate).exists():
+                return candidate
+
+    @property
+    def next_cash_out_date(self):
+        from datetime import timedelta
+        base = self.last_cash_out_at or self.created_at or timezone.now()
+        if self.cash_out_policy == 'DAILY':
+            return base + timedelta(days=1)
+        if self.cash_out_policy == 'MONTHLY':
+            return base + timedelta(days=30)
+        return base + timedelta(days=7)
+
+    @property
+    def cash_out_available(self):
+        return timezone.now() >= self.next_cash_out_date
+
+    @property
+    def days_until_cash_out(self):
+        remaining = self.next_cash_out_date - timezone.now()
+        return max(0, remaining.days)
+
+    @property
+    def progress_percent(self):
+        if self.goal_amount > 0:
+            return min(100, float(self.balance / self.goal_amount * 100))
+        return 0
+
+
+class IJCMember(models.Model):
+    ROLE_CHOICES = [
+        ('OWNER', 'Owner'),
+        ('MEMBER', 'Member'),
+    ]
+    STATUS_CHOICES = [
+        ('PENDING', 'Pending Approval'),
+        ('APPROVED', 'Approved'),
+        ('REJECTED', 'Rejected'),
+    ]
+    group = models.ForeignKey(IJCGroup, on_delete=models.CASCADE, related_name='members')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='ijc_memberships')
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='MEMBER')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='PENDING')
+    total_contributed = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    joined_at = models.DateTimeField(auto_now_add=True)
+    approved_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ('group', 'user')
+        ordering = ['-total_contributed', 'joined_at']
+
+    def __str__(self):
+        return f"{self.user.username} - {self.group.ijc_id} ({self.role})"
+
+
+class IJCTransaction(models.Model):
+    TYPE_CHOICES = [
+        ('DEPOSIT', 'Deposit'),
+        ('WITHDRAWAL', 'Withdrawal'),
+    ]
+    group = models.ForeignKey(IJCGroup, on_delete=models.CASCADE, related_name='transactions')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='ijc_transactions')
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    type = models.CharField(max_length=10, choices=TYPE_CHOICES)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.group.ijc_id} - {self.type} - {self.amount}"
+
+
+class IJCAuditLog(models.Model):
+    group = models.ForeignKey(IJCGroup, on_delete=models.CASCADE, related_name='audit_logs')
+    actor = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    action = models.CharField(max_length=120)
+    metadata = models.JSONField(default=dict, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']

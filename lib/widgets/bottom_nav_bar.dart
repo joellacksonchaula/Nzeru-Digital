@@ -17,7 +17,9 @@ class BottomNavBar extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.92),
-        border: Border(top: BorderSide(color: AppColors.goldString.withValues(alpha: 0.55))),
+        border: Border(
+          top: BorderSide(color: AppColors.goldString.withValues(alpha: 0.55)),
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.10),
@@ -32,35 +34,53 @@ class BottomNavBar extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _NavItem(
-                icon: Icons.dashboard_rounded,
-                label: 'Home',
-                isActive: currentIndex == 0,
-                onTap: () => onTap(0),
+              Expanded(
+                child: _NavItem(
+                  icon: Icons.dashboard_rounded,
+                  label: 'Home',
+                  isActive: currentIndex == 0,
+                  onTap: () => onTap(0),
+                ),
               ),
-              _NavItem(
-                icon: Icons.savings_rounded,
-                label: 'Savings',
-                isActive: currentIndex == 1,
-                onTap: () => onTap(1),
+              Expanded(
+                child: _NavItem(
+                  icon: Icons.savings_rounded,
+                  label: 'Savings',
+                  isActive: currentIndex == 1,
+                  onTap: () => onTap(1),
+                ),
               ),
-              _NavItem(
-                icon: Icons.account_balance_rounded,
-                label: 'Credit',
-                isActive: currentIndex == 2,
-                onTap: () => onTap(2),
+              Expanded(
+                child: _NavItem(
+                  icon: Icons.account_balance_rounded,
+                  label: 'Credit',
+                  isActive: currentIndex == 2,
+                  onTap: () => onTap(2),
+                ),
               ),
-              _NavItem(
-                icon: Icons.analytics_rounded,
-                label: 'Reports',
-                isActive: currentIndex == 3,
-                onTap: () => onTap(3),
+              Expanded(
+                child: _NavItem(
+                  icon: Icons.groups_2_rounded,
+                  label: 'Joint',
+                  isActive: currentIndex == 3,
+                  onTap: () => onTap(3),
+                ),
               ),
-              _NavItem(
-                icon: Icons.person_rounded,
-                label: 'Profile',
-                isActive: currentIndex == 4,
-                onTap: () => onTap(4),
+              Expanded(
+                child: _NavItem(
+                  icon: Icons.analytics_rounded,
+                  label: 'Reports',
+                  isActive: currentIndex == 4,
+                  onTap: () => onTap(4),
+                ),
+              ),
+              Expanded(
+                child: _NavItem(
+                  icon: Icons.person_rounded,
+                  label: 'Profile',
+                  isActive: currentIndex == 5,
+                  onTap: () => onTap(5),
+                ),
               ),
             ],
           ),
@@ -90,7 +110,8 @@ class _NavItem extends StatelessWidget {
       borderRadius: BorderRadius.circular(26),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
         decoration: BoxDecoration(
           color: isActive ? AppColors.tiffanyMist : Colors.transparent,
           borderRadius: BorderRadius.circular(26),
@@ -113,13 +134,13 @@ class _NavItem extends StatelessWidget {
             Icon(
               icon,
               color: isActive ? AppColors.faluRed : const Color(0xFF8E8374),
-              size: 24,
+              size: 22,
             ),
             const SizedBox(height: 4),
             Text(
               label,
-              style: GoogleFonts.inter(
-                fontSize: 10,
+              style: GoogleFonts.poppins(
+                fontSize: 9,
                 fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
                 color: isActive ? AppColors.faluRed : const Color(0xFF6F665C),
               ),

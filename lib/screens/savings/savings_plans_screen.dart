@@ -34,7 +34,7 @@ class SavingsPlansScreen extends StatelessWidget {
         icon: const Icon(Icons.add_rounded, size: 18),
         label: Text(
           'New',
-          style: GoogleFonts.manrope(fontWeight: FontWeight.w800),
+          style: GoogleFonts.poppins(fontWeight: FontWeight.w800),
         ),
       ),
       children: [
@@ -45,7 +45,7 @@ class SavingsPlansScreen extends StatelessWidget {
             children: [
               Text(
                 'Your live savings',
-                style: GoogleFonts.sora(
+                style: GoogleFonts.poppins(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
                   color: const Color(0xFF171412),
@@ -54,7 +54,7 @@ class SavingsPlansScreen extends StatelessWidget {
               const SizedBox(height: 6),
               Text(
                 'All savings plans are stacked below so you can scan them quickly.',
-                style: GoogleFonts.manrope(
+                style: GoogleFonts.poppins(
                   fontSize: 13,
                   color: const Color(0xFF6F665C),
                 ),
@@ -99,7 +99,7 @@ class SavingsPlansScreen extends StatelessWidget {
                   icon: const Icon(Icons.south_west_rounded, size: 18),
                   label: Text(
                     'Deposit to savings',
-                    style: GoogleFonts.manrope(fontWeight: FontWeight.w800),
+                    style: GoogleFonts.poppins(fontWeight: FontWeight.w800),
                   ),
                 ),
               ),
@@ -123,7 +123,7 @@ class SavingsPlansScreen extends StatelessWidget {
                     const SizedBox(height: 12),
                     Text(
                       'No savings plans yet.',
-                      style: GoogleFonts.manrope(
+                      style: GoogleFonts.poppins(
                         fontSize: 14,
                         color: const Color(0xFF6F665C),
                       ),
@@ -138,7 +138,7 @@ class SavingsPlansScreen extends StatelessWidget {
                       ),
                       child: Text(
                         'Create first plan',
-                        style: GoogleFonts.manrope(fontWeight: FontWeight.w800),
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.w800),
                       ),
                     ),
                   ],
@@ -166,7 +166,7 @@ class SavingsPlansScreen extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             savings.error!,
-            style: GoogleFonts.manrope(
+            style: GoogleFonts.poppins(
               fontSize: 12,
               color: const Color(0xFFC2545E),
             ),
@@ -201,7 +201,7 @@ class _SummaryStat extends StatelessWidget {
         children: [
           Text(
             label,
-            style: GoogleFonts.manrope(
+            style: GoogleFonts.poppins(
               fontSize: 12,
               fontWeight: FontWeight.w700,
               color: const Color(0xFF6F665C),
@@ -210,7 +210,7 @@ class _SummaryStat extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             value,
-            style: GoogleFonts.sora(
+            style: GoogleFonts.poppins(
               fontSize: 16,
               fontWeight: FontWeight.w700,
               color: const Color(0xFF171412),

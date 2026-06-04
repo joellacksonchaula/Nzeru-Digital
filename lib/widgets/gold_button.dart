@@ -112,7 +112,7 @@ class _GoldButtonState extends State<GoldButton>
                 ],
                 Text(
                   widget.label,
-                  style: GoogleFonts.playfairDisplay(
+                  style: GoogleFonts.poppins(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
                     color: widget.isOutlined

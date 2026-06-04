@@ -65,7 +65,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     Navigator.pushReplacementNamed(context, AppRoutes.login),
                 child: Text(
                   'Skip',
-                  style: GoogleFonts.inter(
+                  style: GoogleFonts.poppins(
                     color: AppColors.textMuted,
                     fontSize: 14,
                   ),
@@ -118,7 +118,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         const SizedBox(height: 50),
                         Text(
                           page.title,
-                          style: GoogleFonts.playfairDisplay(
+                          style: GoogleFonts.poppins(
                             fontSize: 36,
                             fontWeight: FontWeight.w700,
                             color: AppColors.tiffanyBlue,
@@ -128,7 +128,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         const SizedBox(height: 12),
                         Text(
                           page.subtitle,
-                          style: GoogleFonts.playfairDisplay(
+                          style: GoogleFonts.poppins(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                             color: AppColors.textPrimary,
@@ -139,7 +139,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         Text(
                           page.description,
                           textAlign: TextAlign.center,
-                          style: GoogleFonts.inter(
+                          style: GoogleFonts.poppins(
                             fontSize: 15,
                             color: AppColors.textMuted,
                             height: 1.6,

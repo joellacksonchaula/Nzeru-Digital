@@ -50,7 +50,7 @@ class _CryptoChartState extends State<CryptoChart> {
                 children: [
                   Text(
                     widget.title.toUpperCase(),
-                    style: GoogleFonts.playfairDisplay(
+                    style: GoogleFonts.poppins(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
@@ -60,7 +60,7 @@ class _CryptoChartState extends State<CryptoChart> {
                   const SizedBox(height: 4),
                   Text(
                     widget.symbol,
-                    style: GoogleFonts.inter(
+                    style: GoogleFonts.poppins(
                       fontSize: 12,
                       color: AppColors.textMuted,
                     ),
@@ -80,7 +80,7 @@ class _CryptoChartState extends State<CryptoChart> {
                 ),
                 child: Text(
                   '${widget.isPositive ? '+' : ''} ${widget.changePercent.toStringAsFixed(2)}%',
-                  style: GoogleFonts.inter(
+                  style: GoogleFonts.poppins(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,

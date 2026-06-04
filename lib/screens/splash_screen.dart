@@ -80,7 +80,7 @@ class _SplashScreenState extends State<SplashScreen> {
             const SizedBox(height: 30),
             Text(
               'NZELU',
-              style: GoogleFonts.playfairDisplay(
+              style: GoogleFonts.poppins(
                 fontSize: 28,
                 fontWeight: FontWeight.w700,
                 color: AppColors.tiffanyBlue,
@@ -93,7 +93,7 @@ class _SplashScreenState extends State<SplashScreen> {
             const SizedBox(height: 10),
             Text(
               'DIGITAL FINANCIAL VAULT',
-              style: GoogleFonts.inter(
+              style: GoogleFonts.poppins(
                 fontSize: 12,
                 color: AppColors.textMuted,
                 letterSpacing: 4,

@@ -65,7 +65,7 @@ class NotificationCard extends StatelessWidget {
                       children: [
                         Text(
                           title,
-                          style: GoogleFonts.inter(
+                          style: GoogleFonts.poppins(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                             color: AppColors.textPrimary,
@@ -74,7 +74,7 @@ class NotificationCard extends StatelessWidget {
                         const SizedBox(height: 3),
                         Text(
                           message,
-                          style: GoogleFonts.inter(
+                          style: GoogleFonts.poppins(
                             fontSize: 12,
                             color: AppColors.textMuted,
                           ),
@@ -87,7 +87,7 @@ class NotificationCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   Text(
                     time,
-                    style: GoogleFonts.inter(
+                    style: GoogleFonts.poppins(
                       fontSize: 10,
                       color: AppColors.textMuted,
                     ),

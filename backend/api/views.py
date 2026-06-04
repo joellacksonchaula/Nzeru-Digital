@@ -3,20 +3,22 @@ from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth.models import User
-from django.db.models import Sum
+from django.db.models import Q, Sum
 from django.db.models.functions import TruncMonth
 from django.utils import timezone
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 
 from .models import (
     UserProfile, SavingsPlan, Transaction, Loan,
-    LoanPayment, Penalty, InterestDistribution, Notification
+    LoanPayment, Penalty, InterestDistribution, Notification,
+    IJCGroup, IJCMember, IJCTransaction, IJCAuditLog
 )
 from .serializers import (
     RegisterSerializer, UserSerializer, UserProfileSerializer,
     SavingsPlanSerializer, TransactionSerializer, LoanSerializer,
     LoanPaymentSerializer, PenaltySerializer, InterestDistributionSerializer,
-    NotificationSerializer
+    NotificationSerializer, IJCGroupSerializer, IJCMemberSerializer,
+    IJCTransactionSerializer
 )
 
 
@@ -248,12 +250,41 @@ class TransactionViewSet(viewsets.ModelViewSet):
                 status__in=['PENDING', 'APPROVED', 'ACTIVE']
             ).exists()
             if has_credit:
+                Notification.objects.create(
+                    user=request.user,
+                    title='Withdrawal unavailable',
+                    message='Withdrawal unavailable while outstanding debt exists.',
+                    type='DEBT_ALERT',
+                )
                 return Response(
                     {
-                        'detail': 'Savings withdrawals are locked while there is outstanding credit.'
+                        'detail': 'Withdrawal unavailable while outstanding debt exists.'
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
+            plan_id = request.data.get('plan')
+            if plan_id:
+                plan = SavingsPlan.objects.filter(user=request.user, id=plan_id).first()
+                if not plan:
+                    return Response(
+                        {'detail': 'Savings plan not found.'},
+                        status=status.HTTP_404_NOT_FOUND,
+                    )
+                if not plan.is_mature:
+                    Notification.objects.create(
+                        user=request.user,
+                        title='Savings still locked',
+                        message='Withdrawals are locked until your savings maturity date is reached.',
+                        type='SAVINGS_REMINDER',
+                    )
+                    return Response(
+                        {
+                            'detail': 'Withdrawals are locked until your savings maturity date is reached.',
+                            'maturity_date': plan.end_date,
+                            'days_remaining': plan.days_until_maturity,
+                        },
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
         return super().create(request, *args, **kwargs)
 
     def perform_create(self, serializer):
@@ -262,6 +293,19 @@ class TransactionViewSet(viewsets.ModelViewSet):
             plan = txn.plan
             plan.current_amount += txn.amount
             plan.save(update_fields=['current_amount'])
+            Notification.objects.create(
+                user=self.request.user,
+                title='Deposit received',
+                message=f'MK {txn.amount} was added to {plan.title}.',
+                type='DEPOSIT_RECEIVED',
+            )
+            if plan.goal_amount > 0 and plan.current_amount >= plan.goal_amount:
+                Notification.objects.create(
+                    user=self.request.user,
+                    title='Savings goal achieved',
+                    message=f'{plan.title} has reached its savings goal.',
+                    type='GOAL_ACHIEVED',
+                )
         elif txn.plan and txn.type in ['WITHDRAWAL', 'PENALTY']:
             plan = txn.plan
             plan.current_amount = max(Decimal('0'), plan.current_amount - txn.amount)
@@ -452,6 +496,224 @@ class NotificationViewSet(viewsets.ModelViewSet):
     def mark_all_read(self, request):
         self.get_queryset().filter(is_read=False).update(is_read=True)
         return Response({'status': 'all marked as read'})
+
+
+class IJCGroupViewSet(viewsets.ModelViewSet):
+    queryset = IJCGroup.objects.all()
+    serializer_class = IJCGroupSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return self.queryset.filter(
+            Q(owner=self.request.user) |
+            Q(members__user=self.request.user, members__status__in=['PENDING', 'APPROVED']),
+            is_active=True,
+        ).distinct().order_by('-created_at')
+
+    def perform_create(self, serializer):
+        group = serializer.save(owner=self.request.user)
+        IJCMember.objects.create(
+            group=group,
+            user=self.request.user,
+            role='OWNER',
+            status='APPROVED',
+            approved_at=timezone.now(),
+        )
+        IJCAuditLog.objects.create(
+            group=group,
+            actor=self.request.user,
+            action='IJC_CREATED',
+            metadata={'cash_out_policy': group.cash_out_policy},
+        )
+
+    def perform_update(self, serializer):
+        group = self.get_object()
+        self._require_owner(group)
+        updated = serializer.save()
+        IJCAuditLog.objects.create(
+            group=updated,
+            actor=self.request.user,
+            action='IJC_SETTINGS_UPDATED',
+            metadata={},
+        )
+
+    def destroy(self, request, *args, **kwargs):
+        group = self.get_object()
+        self._require_owner(group)
+        group.is_active = False
+        group.save(update_fields=['is_active'])
+        IJCAuditLog.objects.create(
+            group=group,
+            actor=request.user,
+            action='IJC_DEACTIVATED',
+            metadata={},
+        )
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def _membership(self, group):
+        return group.members.filter(user=self.request.user).first()
+
+    def _require_owner(self, group):
+        membership = self._membership(group)
+        if not membership or membership.role != 'OWNER' or membership.status != 'APPROVED':
+            raise serializers.ValidationError({
+                'detail': 'Only the IJC owner can perform this action.'
+            })
+        return membership
+
+    @staticmethod
+    def _parse_amount(value, field_name='amount'):
+        try:
+            return Decimal(str(value))
+        except (InvalidOperation, TypeError, ValueError):
+            raise serializers.ValidationError({
+                field_name: 'Enter a valid amount.'
+            })
+
+    @action(detail=False, methods=['post'])
+    def join(self, request):
+        code = str(request.data.get('code', '')).strip().upper()
+        if not code:
+            raise serializers.ValidationError({'code': 'IJC ID or join code is required.'})
+        group = IJCGroup.objects.filter(ijc_id=code).first() or IJCGroup.objects.filter(join_code=code).first()
+        if not group:
+            return Response({'detail': 'IJC not found.'}, status=status.HTTP_404_NOT_FOUND)
+        membership, created = IJCMember.objects.get_or_create(
+            group=group,
+            user=request.user,
+            defaults={'role': 'MEMBER', 'status': 'PENDING'},
+        )
+        notify_owner = created
+        if not created and membership.status == 'REJECTED':
+            membership.status = 'PENDING'
+            membership.save(update_fields=['status'])
+            notify_owner = True
+        if notify_owner and request.user != group.owner:
+            Notification.objects.create(
+                user=group.owner,
+                title='IJC member request',
+                message=f'{request.user.get_full_name() or request.user.username} requested to join {group.name}.',
+                type='IJC_MEMBER_JOINED',
+            )
+            IJCAuditLog.objects.create(
+                group=group,
+                actor=request.user,
+                action='IJC_JOIN_REQUESTED',
+                metadata={'status': membership.status},
+            )
+        return Response(IJCGroupSerializer(group, context={'request': request}).data)
+
+    @action(detail=True, methods=['post'])
+    def approve_member(self, request, pk=None):
+        group = self.get_object()
+        self._require_owner(group)
+        member_id = request.data.get('member_id')
+        member = group.members.filter(id=member_id, role='MEMBER').first()
+        if not member:
+            return Response({'detail': 'Member request not found.'}, status=status.HTTP_404_NOT_FOUND)
+        member.status = 'APPROVED'
+        member.approved_at = timezone.now()
+        member.save(update_fields=['status', 'approved_at'])
+        Notification.objects.create(
+            user=member.user,
+            title='IJC membership approved',
+            message=f'You can now contribute to {group.name}.',
+            type='IJC_MEMBER_JOINED',
+        )
+        IJCAuditLog.objects.create(
+            group=group,
+            actor=request.user,
+            action='IJC_MEMBER_APPROVED',
+            metadata={'member_id': member.id},
+        )
+        return Response(IJCMemberSerializer(member).data)
+
+    @action(detail=True, methods=['post'])
+    def deposit(self, request, pk=None):
+        group = self.get_object()
+        membership = self._membership(group)
+        if not membership or membership.status != 'APPROVED':
+            raise serializers.ValidationError({
+                'detail': 'Only approved members can deposit into this IJC.'
+            })
+        amount = self._parse_amount(request.data.get('amount', '0'))
+        if amount <= 0:
+            raise serializers.ValidationError({'amount': 'Deposit amount must be greater than zero.'})
+        txn = IJCTransaction.objects.create(
+            group=group,
+            user=request.user,
+            amount=amount,
+            type='DEPOSIT',
+            description=request.data.get('description', ''),
+        )
+        group.balance += amount
+        group.save(update_fields=['balance'])
+        membership.total_contributed += amount
+        membership.save(update_fields=['total_contributed'])
+        Notification.objects.create(
+            user=group.owner,
+            title='IJC deposit received',
+            message=f'MK {amount} was deposited into {group.name}.',
+            type='IJC_DEPOSIT_RECEIVED',
+        )
+        if group.goal_amount > 0 and group.balance >= group.goal_amount:
+            for member in group.members.filter(status='APPROVED'):
+                Notification.objects.create(
+                    user=member.user,
+                    title='IJC goal reached',
+                    message=f'{group.name} reached its group savings goal.',
+                    type='IJC_GOAL_REACHED',
+                )
+        IJCAuditLog.objects.create(
+            group=group,
+            actor=request.user,
+            action='IJC_DEPOSIT_CREATED',
+            metadata={'amount': str(amount)},
+        )
+        return Response(IJCTransactionSerializer(txn).data, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['post'])
+    def withdraw(self, request, pk=None):
+        group = self.get_object()
+        self._require_owner(group)
+        if not group.cash_out_available:
+            return Response(
+                {
+                    'detail': 'IJC cash-out is locked until the selected schedule is reached.',
+                    'next_cash_out_date': group.next_cash_out_date,
+                    'days_remaining': group.days_until_cash_out,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        amount = self._parse_amount(request.data.get('amount', '0'))
+        if amount <= 0:
+            raise serializers.ValidationError({'amount': 'Withdrawal amount must be greater than zero.'})
+        if amount > group.balance:
+            raise serializers.ValidationError({'amount': 'Withdrawal exceeds group balance.'})
+        txn = IJCTransaction.objects.create(
+            group=group,
+            user=request.user,
+            amount=amount,
+            type='WITHDRAWAL',
+            description=request.data.get('description', ''),
+        )
+        group.balance -= amount
+        group.last_cash_out_at = timezone.now()
+        group.save(update_fields=['balance', 'last_cash_out_at'])
+        for member in group.members.filter(status='APPROVED'):
+            Notification.objects.create(
+                user=member.user,
+                title='IJC withdrawal completed',
+                message=f'MK {amount} was withdrawn from {group.name}.',
+                type='IJC_WITHDRAWAL_COMPLETED',
+            )
+        IJCAuditLog.objects.create(
+            group=group,
+            actor=request.user,
+            action='IJC_WITHDRAWAL_CREATED',
+            metadata={'amount': str(amount)},
+        )
+        return Response(IJCTransactionSerializer(txn).data, status=status.HTTP_201_CREATED)
 
 
 # ─── Reports ───────────────────────────────────────

@@ -7,7 +7,8 @@ from rest_framework_simplejwt.exceptions import AuthenticationFailed
 from datetime import timedelta
 from .models import (
     UserProfile, SavingsPlan, Transaction, Loan,
-    LoanPayment, Penalty, InterestDistribution, Notification
+    LoanPayment, Penalty, InterestDistribution, Notification,
+    IJCGroup, IJCMember, IJCTransaction, IJCAuditLog
 )
 
 
@@ -123,6 +124,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 class SavingsPlanSerializer(serializers.ModelSerializer):
     progress_percent = serializers.ReadOnlyField()
+    is_mature = serializers.ReadOnlyField()
+    days_until_maturity = serializers.ReadOnlyField()
 
     class Meta:
         model = SavingsPlan
@@ -191,3 +194,144 @@ class NotificationSerializer(serializers.ModelSerializer):
         model = Notification
         fields = '__all__'
         read_only_fields = ['user']
+
+
+class IJCMemberSerializer(serializers.ModelSerializer):
+    user_name = serializers.SerializerMethodField()
+    user_email = serializers.SerializerMethodField()
+
+    class Meta:
+        model = IJCMember
+        fields = [
+            'id',
+            'group',
+            'user',
+            'user_name',
+            'user_email',
+            'role',
+            'status',
+            'total_contributed',
+            'joined_at',
+            'approved_at',
+        ]
+        read_only_fields = [
+            'group',
+            'user',
+            'user_name',
+            'user_email',
+            'role',
+            'total_contributed',
+            'joined_at',
+            'approved_at',
+        ]
+
+    def get_user_name(self, obj):
+        return obj.user.get_full_name() or obj.user.username
+
+    def get_user_email(self, obj):
+        return obj.user.email
+
+
+class IJCTransactionSerializer(serializers.ModelSerializer):
+    user_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = IJCTransaction
+        fields = [
+            'id',
+            'group',
+            'user',
+            'user_name',
+            'amount',
+            'type',
+            'description',
+            'created_at',
+        ]
+        read_only_fields = ['group', 'user', 'user_name', 'type', 'created_at']
+
+    def get_user_name(self, obj):
+        return obj.user.get_full_name() or obj.user.username
+
+
+class IJCAuditLogSerializer(serializers.ModelSerializer):
+    actor_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = IJCAuditLog
+        fields = ['id', 'group', 'actor', 'actor_name', 'action', 'metadata', 'created_at']
+        read_only_fields = fields
+
+    def get_actor_name(self, obj):
+        if not obj.actor:
+            return ''
+        return obj.actor.get_full_name() or obj.actor.username
+
+
+class IJCGroupSerializer(serializers.ModelSerializer):
+    members = IJCMemberSerializer(many=True, read_only=True)
+    transactions = IJCTransactionSerializer(many=True, read_only=True)
+    audit_logs = IJCAuditLogSerializer(many=True, read_only=True)
+    owner_name = serializers.SerializerMethodField()
+    member_count = serializers.SerializerMethodField()
+    current_user_role = serializers.SerializerMethodField()
+    current_user_status = serializers.SerializerMethodField()
+    next_cash_out_date = serializers.ReadOnlyField()
+    cash_out_available = serializers.ReadOnlyField()
+    days_until_cash_out = serializers.ReadOnlyField()
+    progress_percent = serializers.ReadOnlyField()
+
+    class Meta:
+        model = IJCGroup
+        fields = [
+            'id',
+            'owner',
+            'owner_name',
+            'name',
+            'ijc_id',
+            'join_code',
+            'goal_amount',
+            'balance',
+            'cash_out_policy',
+            'last_cash_out_at',
+            'next_cash_out_date',
+            'cash_out_available',
+            'days_until_cash_out',
+            'progress_percent',
+            'is_active',
+            'created_at',
+            'member_count',
+            'current_user_role',
+            'current_user_status',
+            'members',
+            'transactions',
+            'audit_logs',
+        ]
+        read_only_fields = [
+            'owner',
+            'ijc_id',
+            'join_code',
+            'balance',
+            'last_cash_out_at',
+            'is_active',
+            'created_at',
+        ]
+
+    def get_owner_name(self, obj):
+        return obj.owner.get_full_name() or obj.owner.username
+
+    def get_member_count(self, obj):
+        return obj.members.filter(status='APPROVED').count()
+
+    def _current_membership(self, obj):
+        request = self.context.get('request')
+        if not request or not request.user.is_authenticated:
+            return None
+        return obj.members.filter(user=request.user).first()
+
+    def get_current_user_role(self, obj):
+        membership = self._current_membership(obj)
+        return membership.role if membership else None
+
+    def get_current_user_status(self, obj):
+        membership = self._current_membership(obj)
+        return membership.status if membership else None

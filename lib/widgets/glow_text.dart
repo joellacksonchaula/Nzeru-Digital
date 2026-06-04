@@ -25,7 +25,7 @@ class GlowText extends StatelessWidget {
         // Glow layer
         Text(
           text,
-          style: GoogleFonts.playfairDisplay(
+          style: GoogleFonts.poppins(
             fontSize: fontSize,
             fontWeight: fontWeight,
             color: color.withAlpha(80),
@@ -44,7 +44,7 @@ class GlowText extends StatelessWidget {
         // Main text
         Text(
           text,
-          style: GoogleFonts.playfairDisplay(
+          style: GoogleFonts.poppins(
             fontSize: fontSize,
             fontWeight: fontWeight,
             color: color,

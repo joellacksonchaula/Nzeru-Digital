@@ -430,6 +430,64 @@ class ApiService {
     await _post('/notifications/mark_all_read/');
   }
 
+  Future<List<dynamic>> getIjcGroups() async {
+    final response = await _get('/ijc-groups/');
+    return _handleListResponse(response);
+  }
+
+  Future<Map<String, dynamic>> createIjcGroup(
+    Map<String, dynamic> data,
+  ) async {
+    final response = await _post('/ijc-groups/', body: data);
+    return _handleResponse(response);
+  }
+
+  Future<Map<String, dynamic>> joinIjcGroup(String code) async {
+    final response = await _post('/ijc-groups/join/', body: {'code': code});
+    return _handleResponse(response);
+  }
+
+  Future<Map<String, dynamic>> approveIjcMember({
+    required int groupId,
+    required int memberId,
+  }) async {
+    final response = await _post(
+      '/ijc-groups/$groupId/approve_member/',
+      body: {'member_id': memberId},
+    );
+    return _handleResponse(response);
+  }
+
+  Future<Map<String, dynamic>> depositIjc({
+    required int groupId,
+    required double amount,
+    String description = '',
+  }) async {
+    final response = await _post(
+      '/ijc-groups/$groupId/deposit/',
+      body: {
+        'amount': amount.toStringAsFixed(2),
+        'description': description,
+      },
+    );
+    return _handleResponse(response);
+  }
+
+  Future<Map<String, dynamic>> withdrawIjc({
+    required int groupId,
+    required double amount,
+    String description = '',
+  }) async {
+    final response = await _post(
+      '/ijc-groups/$groupId/withdraw/',
+      body: {
+        'amount': amount.toStringAsFixed(2),
+        'description': description,
+      },
+    );
+    return _handleResponse(response);
+  }
+
   // ─── Reports ───────────────────────────────────────────
 
   Future<Map<String, dynamic>> getFinancialReport() async {

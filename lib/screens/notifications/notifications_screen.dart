@@ -54,7 +54,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                           children: [
                             Text(
                               'NZELU UPDATES',
-                              style: GoogleFonts.oswald(
+                              style: GoogleFonts.poppins(
                                 fontSize: 13,
                                 letterSpacing: 2.1,
                                 color: const Color(0xFF0ABAB5),
@@ -62,7 +62,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                             ),
                             Text(
                               'Notifications',
-                              style: GoogleFonts.oswald(
+                              style: GoogleFonts.poppins(
                                 fontSize: 28,
                                 color: const Color(0xFF171412),
                               ),
@@ -95,7 +95,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         return Center(
                           child: Text(
                             'No notifications yet.',
-                            style: GoogleFonts.inter(
+                            style: GoogleFonts.poppins(
                               fontSize: 14,
                               color: AppColors.textMuted,
                             ),

@@ -12,6 +12,7 @@ import '../../providers/savings_provider.dart';
 import '../../utils/currency_util.dart';
 import '../../widgets/dashboard_kit.dart';
 import '../../widgets/progress_ring.dart';
+import '../../widgets/withdrawal_lock_card.dart';
 import 'deposit_screen.dart';
 
 class PlanDetailScreen extends StatelessWidget {
@@ -30,6 +31,8 @@ class PlanDetailScreen extends StatelessWidget {
     final planTransactions =
         savings.transactions.where((t) => t.planId == plan?.id).toList()
           ..sort((a, b) => b.date.compareTo(a.date));
+    final hasActiveDebt =
+        (context.watch<AuthProvider>().user?.creditBalance ?? 0) > 0;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -38,7 +41,7 @@ class PlanDetailScreen extends StatelessWidget {
         elevation: 0,
         title: Text(
           'SAVINGS PLAN',
-          style: GoogleFonts.sora(
+          style: GoogleFonts.poppins(
             fontSize: 15,
             fontWeight: FontWeight.w700,
             letterSpacing: 1.4,
@@ -60,7 +63,7 @@ class PlanDetailScreen extends StatelessWidget {
             Center(
               child: Text(
                 'No plan found',
-                style: GoogleFonts.manrope(
+                style: GoogleFonts.poppins(
                   fontSize: 14,
                   color: const Color(0xFF6F665C),
                 ),
@@ -84,13 +87,20 @@ class PlanDetailScreen extends StatelessWidget {
                   Center(
                     child: Text(
                       '${CurrencyUtil.format(plan.currentAmount)} of ${CurrencyUtil.format(plan.goalAmount)}',
-                      style: GoogleFonts.sora(
+                      style: GoogleFonts.poppins(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                         color: const Color(0xFF171412),
                       ),
                     ),
                   ).animate().fadeIn(delay: 180.ms),
+                  const SizedBox(height: 18),
+                  WithdrawalLockCard(
+                    maturityDate: plan.endDate,
+                    createdDate: plan.createdAt ?? plan.startDate,
+                    isLocked: !plan.isMature || hasActiveDebt,
+                    hasActiveDebt: hasActiveDebt,
+                  ).animate().fadeIn(delay: 220.ms),
                   const SizedBox(height: 18),
                   Row(
                     children: [
@@ -115,7 +125,7 @@ class PlanDetailScreen extends StatelessWidget {
                           icon: const Icon(Icons.south_west_rounded, size: 18),
                           label: Text(
                             'Deposit',
-                            style: GoogleFonts.manrope(
+                            style: GoogleFonts.poppins(
                               fontWeight: FontWeight.w800,
                             ),
                           ),
@@ -124,7 +134,9 @@ class PlanDetailScreen extends StatelessWidget {
                       const SizedBox(width: 10),
                       Expanded(
                         child: OutlinedButton.icon(
-                          onPressed: () => _showWithdrawalDialog(context, plan),
+                          onPressed: plan.isMature && !hasActiveDebt
+                              ? () => _showWithdrawalDialog(context, plan)
+                              : null,
                           style: OutlinedButton.styleFrom(
                             foregroundColor: const Color(0xFFD96069),
                             side: const BorderSide(color: Color(0xFFF0C7CB)),
@@ -136,7 +148,7 @@ class PlanDetailScreen extends StatelessWidget {
                           icon: const Icon(Icons.north_east_rounded, size: 18),
                           label: Text(
                             'Withdraw',
-                            style: GoogleFonts.manrope(
+                            style: GoogleFonts.poppins(
                               fontWeight: FontWeight.w800,
                             ),
                           ),
@@ -144,6 +156,14 @@ class PlanDetailScreen extends StatelessWidget {
                       ),
                     ],
                   ),
+                  if (!plan.isMature || hasActiveDebt) ...[
+                    const SizedBox(height: 10),
+                    _LockMessage(
+                      message: hasActiveDebt
+                          ? 'Withdrawal unavailable while outstanding debt exists.'
+                          : 'Withdrawals are locked until your savings maturity date is reached.',
+                    ),
+                  ],
                   const SizedBox(height: 18),
                   DashboardPanel(
                     child: Column(
@@ -151,7 +171,7 @@ class PlanDetailScreen extends StatelessWidget {
                       children: [
                         Text(
                           'Plan details',
-                          style: GoogleFonts.sora(
+                          style: GoogleFonts.poppins(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
                             color: const Color(0xFF171412),
@@ -196,7 +216,7 @@ class PlanDetailScreen extends StatelessWidget {
                   const SizedBox(height: 18),
                   Text(
                     'Transaction history',
-                    style: GoogleFonts.sora(
+                    style: GoogleFonts.poppins(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                       color: const Color(0xFF171412),
@@ -207,7 +227,7 @@ class PlanDetailScreen extends StatelessWidget {
                     DashboardPanel(
                       child: Text(
                         'No transactions recorded for this plan yet.',
-                        style: GoogleFonts.manrope(
+                        style: GoogleFonts.poppins(
                           fontSize: 13,
                           color: const Color(0xFF6F665C),
                         ),
@@ -261,7 +281,7 @@ class PlanDetailScreen extends StatelessWidget {
                                       children: [
                                         Text(
                                           txn.typeLabel,
-                                          style: GoogleFonts.sora(
+                                          style: GoogleFonts.poppins(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w700,
                                             color: const Color(0xFF171412),
@@ -272,7 +292,7 @@ class PlanDetailScreen extends StatelessWidget {
                                           DateFormat(
                                             'dd MMM yyyy',
                                           ).format(txn.date),
-                                          style: GoogleFonts.manrope(
+                                          style: GoogleFonts.poppins(
                                             fontSize: 12,
                                             color: const Color(0xFF6F665C),
                                           ),
@@ -282,7 +302,7 @@ class PlanDetailScreen extends StatelessWidget {
                                   ),
                                   Text(
                                     '${txn.isCredit ? '+' : '-'} ${CurrencyUtil.format(txn.amount)}',
-                                    style: GoogleFonts.sora(
+                                    style: GoogleFonts.poppins(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w700,
                                       color: txn.isCredit
@@ -317,7 +337,7 @@ class PlanDetailScreen extends StatelessWidget {
       builder: (dialogContext) => AlertDialog(
         title: Text(
           'Withdraw savings',
-          style: GoogleFonts.sora(fontWeight: FontWeight.w700),
+          style: GoogleFonts.poppins(fontWeight: FontWeight.w700),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -420,7 +440,7 @@ class _InfoRow extends StatelessWidget {
         Expanded(
           child: Text(
             label,
-            style: GoogleFonts.manrope(
+            style: GoogleFonts.poppins(
               fontSize: 13,
               color: const Color(0xFF6F665C),
             ),
@@ -429,13 +449,52 @@ class _InfoRow extends StatelessWidget {
         const SizedBox(width: 10),
         Text(
           value,
-          style: GoogleFonts.sora(
+          style: GoogleFonts.poppins(
             fontSize: 13,
             fontWeight: FontWeight.w700,
             color: valueColor ?? const Color(0xFF171412),
           ),
         ),
       ],
+    );
+  }
+}
+
+class _LockMessage extends StatelessWidget {
+  final String message;
+
+  const _LockMessage({required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFD96069).withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFFF0C7CB)),
+      ),
+      child: Row(
+        children: [
+          const Icon(
+            Icons.lock_rounded,
+            color: Color(0xFFD96069),
+            size: 18,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              message,
+              style: GoogleFonts.poppins(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFFD96069),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

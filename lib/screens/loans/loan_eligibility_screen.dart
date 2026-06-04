@@ -60,7 +60,7 @@ class _LoanEligibilityScreenState extends State<LoanEligibilityScreen> {
                 children: [
                   Text(
                     'Nzelu Credit',
-                    style: GoogleFonts.oswald(
+                    style: GoogleFonts.poppins(
                       fontSize: 14,
                       letterSpacing: 2.2,
                       color: const Color(0xFF0ABAB5),
@@ -69,7 +69,7 @@ class _LoanEligibilityScreenState extends State<LoanEligibilityScreen> {
                   const SizedBox(height: 4),
                   Text(
                     'Borrow with clarity',
-                    style: GoogleFonts.oswald(
+                    style: GoogleFonts.poppins(
                       fontSize: 30,
                       height: 0.96,
                       color: const Color(0xFF171412),
@@ -94,7 +94,7 @@ class _LoanEligibilityScreenState extends State<LoanEligibilityScreen> {
                             eligible
                                 ? 'Eligible for credit'
                                 : 'Credit locked right now',
-                            style: GoogleFonts.inter(
+                            style: GoogleFonts.poppins(
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
                               color: eligible
@@ -139,7 +139,7 @@ class _LoanEligibilityScreenState extends State<LoanEligibilityScreen> {
                       children: [
                         Text(
                           'Eligibility Overview',
-                          style: GoogleFonts.oswald(
+                          style: GoogleFonts.poppins(
                             fontSize: 22,
                             color: const Color(0xFF171412),
                           ),
@@ -189,7 +189,7 @@ class _LoanEligibilityScreenState extends State<LoanEligibilityScreen> {
                       children: [
                         Text(
                           'Active Credit',
-                          style: GoogleFonts.oswald(
+                          style: GoogleFonts.poppins(
                             fontSize: 22,
                             color: const Color(0xFF171412),
                           ),
@@ -198,7 +198,7 @@ class _LoanEligibilityScreenState extends State<LoanEligibilityScreen> {
                         if (activeCredit == null)
                           Text(
                             'No active credit at the moment. Your approved credit details will appear here once requested.',
-                            style: GoogleFonts.inter(
+                            style: GoogleFonts.poppins(
                               fontSize: 13,
                               height: 1.4,
                               color: const Color(0xFF6F665C),
@@ -252,7 +252,7 @@ class _LoanEligibilityScreenState extends State<LoanEligibilityScreen> {
                           const SizedBox(height: 8),
                           Text(
                             'Repayment progress ${(activeCredit.repaymentProgress * 100).round()}%',
-                            style: GoogleFonts.inter(
+                            style: GoogleFonts.poppins(
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
                               color: const Color(0xFF4B9957),
@@ -314,7 +314,7 @@ class _MetricCard extends StatelessWidget {
           const Spacer(),
           Text(
             label.toUpperCase(),
-            style: GoogleFonts.oswald(
+            style: GoogleFonts.poppins(
               fontSize: 11,
               letterSpacing: 1.2,
               color: const Color(0xFF7E756A),
@@ -325,7 +325,7 @@ class _MetricCard extends StatelessWidget {
             value,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.oswald(
+            style: GoogleFonts.poppins(
               fontSize: 19,
               height: 1,
               color: const Color(0xFF171412),

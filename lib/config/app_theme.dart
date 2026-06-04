@@ -348,13 +348,13 @@ class AppTheme {
         fontSize: 32,
         fontWeight: FontWeight.w700,
         color: AppColors.textPrimary,
-        letterSpacing: -0.5,
+        letterSpacing: 0,
       ),
       displayMedium: GoogleFonts.poppins(
         fontSize: 28,
         fontWeight: FontWeight.w700,
         color: AppColors.textPrimary,
-        letterSpacing: -0.3,
+        letterSpacing: 0,
       ),
       displaySmall: GoogleFonts.poppins(
         fontSize: 24,
@@ -447,13 +447,13 @@ class AppTheme {
         fontSize: 32,
         fontWeight: FontWeight.w700,
         color: AppColors.darkTextPrimary,
-        letterSpacing: -0.5,
+        letterSpacing: 0,
       ),
       displayMedium: GoogleFonts.poppins(
         fontSize: 28,
         fontWeight: FontWeight.w700,
         color: AppColors.darkTextPrimary,
-        letterSpacing: -0.3,
+        letterSpacing: 0,
       ),
       displaySmall: GoogleFonts.poppins(
         fontSize: 24,
@@ -544,7 +544,7 @@ class AppTheme {
     return GoogleFonts.poppins(
       fontSize: 28,
       fontWeight: FontWeight.w800,
-      letterSpacing: -0.5,
+      letterSpacing: 0,
     );
   }
 

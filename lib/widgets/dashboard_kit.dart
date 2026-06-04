@@ -87,7 +87,7 @@ class DashboardHeader extends StatelessWidget {
             children: [
               Text(
                 eyebrow.toUpperCase(),
-                style: GoogleFonts.oswald(
+                style: GoogleFonts.poppins(
                   fontSize: 14,
                   letterSpacing: 2.8,
                   color: const Color(0xFF0ABAB5),
@@ -96,7 +96,7 @@ class DashboardHeader extends StatelessWidget {
               const SizedBox(height: 6),
               Text(
                 title,
-                style: GoogleFonts.oswald(
+                style: GoogleFonts.poppins(
                   fontSize: 34,
                   height: 0.96,
                   fontWeight: FontWeight.w600,
@@ -109,7 +109,7 @@ class DashboardHeader extends StatelessWidget {
                   constraints: const BoxConstraints(maxWidth: 760),
                   child: Text(
                     subtitle,
-                    style: GoogleFonts.inter(
+                    style: GoogleFonts.poppins(
                       fontSize: 14,
                       height: 1.45,
                       color: isDark
@@ -236,7 +236,7 @@ class DashboardSectionTitle extends StatelessWidget {
       children: [
         Text(
           title.toUpperCase(),
-          style: GoogleFonts.oswald(
+          style: GoogleFonts.poppins(
             fontSize: 16,
             letterSpacing: 2,
             color: isDark ? Colors.white : const Color(0xFF171412),
@@ -248,7 +248,7 @@ class DashboardSectionTitle extends StatelessWidget {
             onPressed: onAction,
             child: Text(
               actionLabel!,
-              style: GoogleFonts.oswald(
+              style: GoogleFonts.poppins(
                 fontSize: 14,
                 color: const Color(0xFF0ABAB5),
               ),
@@ -323,7 +323,7 @@ class DashboardStatCard extends StatelessWidget {
                 const Spacer(),
                 Text(
                   item.label.toUpperCase(),
-                  style: GoogleFonts.oswald(
+                  style: GoogleFonts.poppins(
                     fontSize: 12,
                     letterSpacing: 1.4,
                     color: isDark
@@ -336,7 +336,7 @@ class DashboardStatCard extends StatelessWidget {
             const Spacer(),
             Text(
               item.value,
-              style: GoogleFonts.oswald(
+              style: GoogleFonts.poppins(
                 fontSize: 30,
                 height: 0.95,
                 color: isDark ? Colors.white : const Color(0xFF171412),
@@ -346,7 +346,7 @@ class DashboardStatCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               item.detail,
-              style: GoogleFonts.inter(
+              style: GoogleFonts.poppins(
                 fontSize: 13,
                 height: 1.35,
                 color: isDark
@@ -456,7 +456,7 @@ class DashboardSavingsPlanCard extends StatelessWidget {
                       children: [
                         Text(
                           plan.title,
-                          style: GoogleFonts.oswald(
+                          style: GoogleFonts.poppins(
                             fontSize: 24,
                             height: 0.94,
                             color: const Color(0xFF171412),
@@ -466,7 +466,7 @@ class DashboardSavingsPlanCard extends StatelessWidget {
                         const SizedBox(height: 5),
                         Text(
                           primaryRate,
-                          style: GoogleFonts.inter(
+                          style: GoogleFonts.poppins(
                             fontSize: 13,
                             color: healthColor,
                             fontWeight: FontWeight.w700,
@@ -489,7 +489,7 @@ class DashboardSavingsPlanCard extends StatelessWidget {
                     ),
                     child: Text(
                       statusLabel,
-                      style: GoogleFonts.oswald(
+                      style: GoogleFonts.poppins(
                         fontSize: 12,
                         color: healthColor,
                       ),
@@ -519,7 +519,7 @@ class DashboardSavingsPlanCard extends StatelessWidget {
                         Center(
                           child: Text(
                             '${(plan.progressPercent * 100).round()}%',
-                            style: GoogleFonts.oswald(
+                            style: GoogleFonts.poppins(
                               fontSize: 18,
                               color: const Color(0xFF171412),
                             ),
@@ -596,7 +596,7 @@ class DashboardSavingsPlanCard extends StatelessWidget {
               const Spacer(),
               Text(
                 'Deadline ${DateFormat('dd MMM yyyy').format(plan.endDate)}',
-                style: GoogleFonts.inter(
+                style: GoogleFonts.poppins(
                   fontSize: 13,
                   color: const Color(0xFF6F665C),
                 ),
@@ -657,7 +657,7 @@ class _AmountLine extends StatelessWidget {
           width: 62,
           child: Text(
             label,
-            style: GoogleFonts.inter(
+            style: GoogleFonts.poppins(
               fontSize: 12,
               color: const Color(0xFF7E756A),
             ),
@@ -666,7 +666,7 @@ class _AmountLine extends StatelessWidget {
         Expanded(
           child: Text(
             value,
-            style: GoogleFonts.oswald(
+            style: GoogleFonts.poppins(
               fontSize: 16,
               color: const Color(0xFF171412),
             ),
@@ -694,7 +694,7 @@ class _RateChip extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: GoogleFonts.inter(
+        style: GoogleFonts.poppins(
           fontSize: 12,
           fontWeight: FontWeight.w600,
           color: color,
@@ -727,7 +727,7 @@ class DashboardInfoRow extends StatelessWidget {
           Expanded(
             child: Text(
               label,
-              style: GoogleFonts.inter(
+              style: GoogleFonts.poppins(
                 fontSize: 13,
                 color: isDark
                     ? const Color(0xFFD0D5DC)
@@ -737,7 +737,7 @@ class DashboardInfoRow extends StatelessWidget {
           ),
           Text(
             value,
-            style: GoogleFonts.oswald(
+            style: GoogleFonts.poppins(
               fontSize: 15,
               color:
                   valueColor ??

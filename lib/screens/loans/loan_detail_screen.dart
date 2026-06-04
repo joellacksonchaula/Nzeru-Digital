@@ -34,7 +34,7 @@ class LoanDetailScreen extends StatelessWidget {
         elevation: 0,
         title: Text(
           'CREDIT DETAILS',
-          style: GoogleFonts.playfairDisplay(
+          style: GoogleFonts.poppins(
             fontSize: 16,
             letterSpacing: 2,
             color: AppColors.textPrimary,
@@ -130,7 +130,7 @@ class LoanDetailScreen extends StatelessWidget {
                         alignment: Alignment.centerLeft,
                         child: Text(
                           'INTEREST DISTRIBUTION',
-                          style: GoogleFonts.playfairDisplay(
+                          style: GoogleFonts.poppins(
                             fontSize: 12,
                             color: AppColors.textMuted,
                             letterSpacing: 2,
@@ -170,7 +170,7 @@ class LoanDetailScreen extends StatelessWidget {
                       alignment: Alignment.centerLeft,
                       child: Text(
                         'PAYMENT HISTORY',
-                        style: GoogleFonts.playfairDisplay(
+                        style: GoogleFonts.poppins(
                           fontSize: 12,
                           color: AppColors.textMuted,
                           letterSpacing: 2,
@@ -211,7 +211,7 @@ class LoanDetailScreen extends StatelessWidget {
                               children: [
                                 Text(
                                   'Payment',
-                                  style: GoogleFonts.inter(
+                                  style: GoogleFonts.poppins(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
                                     color: AppColors.textPrimary,
@@ -221,7 +221,7 @@ class LoanDetailScreen extends StatelessWidget {
                                   DateFormat(
                                     'dd MMM yyyy',
                                   ).format(payment.paymentDate),
-                                  style: GoogleFonts.inter(
+                                  style: GoogleFonts.poppins(
                                     fontSize: 11,
                                     color: AppColors.textMuted,
                                   ),
@@ -231,7 +231,7 @@ class LoanDetailScreen extends StatelessWidget {
                           ),
                           Text(
                             CurrencyUtil.format(payment.amountPaid),
-                            style: GoogleFonts.playfairDisplay(
+                            style: GoogleFonts.poppins(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
                               color: AppColors.success,
@@ -255,11 +255,11 @@ class LoanDetailScreen extends StatelessWidget {
       children: [
         Text(
           label,
-          style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted),
+          style: GoogleFonts.poppins(fontSize: 13, color: AppColors.textMuted),
         ),
         Text(
           value,
-          style: GoogleFonts.playfairDisplay(
+          style: GoogleFonts.poppins(
             fontSize: 13,
             fontWeight: FontWeight.w600,
             color: valueColor ?? AppColors.textPrimary,

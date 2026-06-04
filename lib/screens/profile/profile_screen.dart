@@ -88,7 +88,7 @@ class _SectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       label.toUpperCase(),
-      style: GoogleFonts.oswald(
+      style: GoogleFonts.poppins(
         fontSize: 14,
         letterSpacing: 1.8,
         color: const Color(0xFF0ABAB5),
@@ -136,7 +136,7 @@ class _ProfileRow extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: GoogleFonts.inter(
+                  style: GoogleFonts.poppins(
                     fontSize: 12,
                     color: const Color(0xFF6F665C),
                   ),
@@ -144,7 +144,7 @@ class _ProfileRow extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   value,
-                  style: GoogleFonts.oswald(
+                  style: GoogleFonts.poppins(
                     fontSize: 18,
                     color: const Color(0xFF171412),
                   ),
@@ -203,7 +203,7 @@ class _ProfileAction extends StatelessWidget {
                 children: [
                   Text(
                     label,
-                    style: GoogleFonts.oswald(
+                    style: GoogleFonts.poppins(
                       fontSize: 18,
                       color: const Color(0xFF171412),
                     ),
@@ -211,7 +211,7 @@ class _ProfileAction extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     detail,
-                    style: GoogleFonts.inter(
+                    style: GoogleFonts.poppins(
                       fontSize: 12,
                       color: const Color(0xFF6F665C),
                     ),

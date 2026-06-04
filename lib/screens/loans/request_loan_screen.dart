@@ -180,7 +180,7 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
                                     value: plan.id,
                                     child: Text(
                                       plan.title,
-                                      style: GoogleFonts.manrope(
+                                      style: GoogleFonts.poppins(
                                         fontWeight: FontWeight.w700,
                                         color: const Color(0xFF17303B),
                                       ),
@@ -226,7 +226,7 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
                             duration: const Duration(milliseconds: 350),
                             builder: (context, value, _) => Text(
                               CurrencyUtil.format(value),
-                              style: GoogleFonts.sora(
+                              style: GoogleFonts.poppins(
                                 fontSize: 31,
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: -1,
@@ -279,14 +279,14 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
                           children: [
                             Text(
                               'MK 100',
-                              style: GoogleFonts.manrope(
+                              style: GoogleFonts.poppins(
                                 fontSize: 12,
                                 color: const Color(0xFF6A7C86),
                               ),
                             ),
                             Text(
                               CurrencyUtil.formatNoDecimal(maxCredit),
-                              style: GoogleFonts.manrope(
+                              style: GoogleFonts.poppins(
                                 fontSize: 12,
                                 color: const Color(0xFF6A7C86),
                               ),
@@ -417,7 +417,7 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
                             )
                           : Text(
                               'Submit credit request',
-                              style: GoogleFonts.sora(
+                              style: GoogleFonts.poppins(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -433,7 +433,7 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
                         activeCredit: credits.activeCredit,
                         warning: cashoutWarning,
                       ),
-                      style: GoogleFonts.manrope(
+                      style: GoogleFonts.poppins(
                         fontSize: 12,
                         color: const Color(0xFF6A7C86),
                       ),
@@ -818,7 +818,7 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
                 children: [
                   Text(
                     'All at once',
-                    style: GoogleFonts.sora(
+                    style: GoogleFonts.poppins(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                       color: const Color(0xFF17303B),
@@ -827,7 +827,7 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
                   const SizedBox(height: 4),
                   Text(
                     'You will receive ${CurrencyUtil.format(totalAmount)} immediately.',
-                    style: GoogleFonts.manrope(
+                    style: GoogleFonts.poppins(
                       fontSize: 14,
                       height: 1.4,
                       color: const Color(0xFF48616C),
@@ -867,7 +867,7 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
         children: [
           Text(
             payoutLabel,
-            style: GoogleFonts.sora(
+            style: GoogleFonts.poppins(
               fontSize: 15,
               fontWeight: FontWeight.w700,
               color: const Color(0xFF17303B),
@@ -877,7 +877,7 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
           TextFormField(
             controller: _cashoutController,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            style: GoogleFonts.sora(
+            style: GoogleFonts.poppins(
               fontSize: 18,
               fontWeight: FontWeight.w700,
               color: const Color(0xFF17303B),
@@ -900,7 +900,7 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
             payoutValue == null || payoutValue <= 0
                 ? 'Enter a valid amount to see your payout schedule.'
                 : 'You will receive ${CurrencyUtil.formatNoDecimal(payoutValue)} per $unit',
-            style: GoogleFonts.manrope(
+            style: GoogleFonts.poppins(
               fontSize: 14,
               fontWeight: FontWeight.w700,
               color: const Color(0xFF17303B),
@@ -911,7 +911,7 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
             distributionCount == null || estimatedMonths == null
                 ? 'Estimated duration will appear here.'
                 : 'Estimated duration: $distributionCount $estimatedUnit (~${_formatMonths(estimatedMonths)} months)',
-            style: GoogleFonts.manrope(
+            style: GoogleFonts.poppins(
               fontSize: 13,
               height: 1.4,
               color: const Color(0xFF48616C),
@@ -936,7 +936,7 @@ class _RequestLoanScreenState extends State<RequestLoanScreen> {
                   Expanded(
                     child: Text(
                       warning,
-                      style: GoogleFonts.manrope(
+                      style: GoogleFonts.poppins(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
                         color: const Color(0xFFB2404C),
@@ -988,7 +988,7 @@ class _Header extends StatelessWidget {
             children: [
               Text(
                 'Nzelu Credit',
-                style: GoogleFonts.sora(
+                style: GoogleFonts.poppins(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0.6,
@@ -998,7 +998,7 @@ class _Header extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 'Request Credit',
-                style: GoogleFonts.sora(
+                style: GoogleFonts.poppins(
                   fontSize: 28,
                   fontWeight: FontWeight.w800,
                   letterSpacing: -1,
@@ -1030,7 +1030,7 @@ class _StatusBanner extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: GoogleFonts.manrope(
+        style: GoogleFonts.poppins(
           fontSize: 14,
           fontWeight: FontWeight.w800,
           color: accent,
@@ -1080,7 +1080,7 @@ class _SectionTitle extends StatelessWidget {
       children: [
         Text(
           title,
-          style: GoogleFonts.sora(
+          style: GoogleFonts.poppins(
             fontSize: 18,
             fontWeight: FontWeight.w700,
             color: const Color(0xFF17303B),
@@ -1089,7 +1089,7 @@ class _SectionTitle extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           subtitle,
-          style: GoogleFonts.manrope(
+          style: GoogleFonts.poppins(
             fontSize: 13,
             height: 1.4,
             color: const Color(0xFF6A7C86),
@@ -1141,7 +1141,7 @@ class _OverviewTile extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: GoogleFonts.manrope(
+                  style: GoogleFonts.poppins(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
                     color: const Color(0xFF6A7C86),
@@ -1152,7 +1152,7 @@ class _OverviewTile extends StatelessWidget {
                   value,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.sora(
+                  style: GoogleFonts.poppins(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                     color: const Color(0xFF17303B),
@@ -1241,7 +1241,7 @@ class _ModeChip extends StatelessWidget {
             child: Text(
               label,
               textAlign: TextAlign.center,
-              style: GoogleFonts.manrope(
+              style: GoogleFonts.poppins(
                 fontSize: 13,
                 fontWeight: FontWeight.w800,
                 color: selected ? Colors.white : const Color(0xFF54738A),
@@ -1278,7 +1278,7 @@ class _BreakdownTile extends StatelessWidget {
         children: [
           Text(
             label,
-            style: GoogleFonts.manrope(
+            style: GoogleFonts.poppins(
               fontSize: 12,
               fontWeight: FontWeight.w700,
               color: const Color(0xFF6A7C86),
@@ -1289,7 +1289,7 @@ class _BreakdownTile extends StatelessWidget {
             value,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.sora(
+            style: GoogleFonts.poppins(
               fontSize: 16,
               fontWeight: FontWeight.w700,
               color: const Color(0xFF17303B),
@@ -1326,7 +1326,7 @@ class _EmptyStateCard extends StatelessWidget {
         children: [
           Text(
             message,
-            style: GoogleFonts.manrope(
+            style: GoogleFonts.poppins(
               fontSize: 13,
               height: 1.4,
               color: const Color(0xFF48616C),
@@ -1345,7 +1345,7 @@ class _EmptyStateCard extends StatelessWidget {
             ),
             child: Text(
               actionLabel,
-              style: GoogleFonts.manrope(fontWeight: FontWeight.w800),
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w800),
             ),
           ),
         ],
@@ -1357,7 +1357,7 @@ class _EmptyStateCard extends StatelessWidget {
 InputDecoration _fieldDecoration(String label) {
   return InputDecoration(
     labelText: label,
-    labelStyle: GoogleFonts.manrope(
+    labelStyle: GoogleFonts.poppins(
       fontWeight: FontWeight.w700,
       color: const Color(0xFF6A7C86),
     ),

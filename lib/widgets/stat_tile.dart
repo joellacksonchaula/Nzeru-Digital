@@ -46,7 +46,7 @@ class StatTile extends StatelessWidget {
             const SizedBox(height: 14),
             Text(
               label,
-              style: GoogleFonts.inter(
+              style: GoogleFonts.poppins(
                 fontSize: 12,
                 color: AppColors.textMuted,
                 letterSpacing: 0.8,
@@ -55,7 +55,7 @@ class StatTile extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               value,
-              style: GoogleFonts.playfairDisplay(
+              style: GoogleFonts.poppins(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
                 color: valueColor ?? AppColors.textPrimary,

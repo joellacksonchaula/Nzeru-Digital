@@ -46,7 +46,7 @@ class CryptoMarketCard extends StatelessWidget {
                   children: [
                     Text(
                       name,
-                      style: GoogleFonts.playfairDisplay(
+                      style: GoogleFonts.poppins(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textPrimary,
@@ -54,7 +54,7 @@ class CryptoMarketCard extends StatelessWidget {
                     ),
                     Text(
                       symbol,
-                      style: GoogleFonts.inter(
+                      style: GoogleFonts.poppins(
                         fontSize: 12,
                         color: AppColors.textMuted,
                         letterSpacing: 0.5,
@@ -73,7 +73,7 @@ class CryptoMarketCard extends StatelessWidget {
                   ),
                   child: Text(
                     '${isPositive ? '+' : ''}${changePercent24h.toStringAsFixed(1)}%',
-                    style: GoogleFonts.inter(
+                    style: GoogleFonts.poppins(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -85,7 +85,7 @@ class CryptoMarketCard extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               'MK ${NumberFormat("#,##0.00").format(price)}',
-              style: GoogleFonts.playfairDisplay(
+              style: GoogleFonts.poppins(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
@@ -127,7 +127,7 @@ class _InfoPill extends StatelessWidget {
       children: [
         Text(
           label,
-          style: GoogleFonts.inter(
+          style: GoogleFonts.poppins(
             fontSize: 9,
             color: AppColors.textMuted,
             fontWeight: FontWeight.w500,
@@ -135,7 +135,7 @@ class _InfoPill extends StatelessWidget {
         ),
         Text(
           value,
-          style: GoogleFonts.inter(
+          style: GoogleFonts.poppins(
             fontSize: 9,
             fontWeight: FontWeight.w600,
             color: AppColors.textPrimary,

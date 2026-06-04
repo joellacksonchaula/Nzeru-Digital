@@ -2,7 +2,8 @@ from django.contrib import admin
 from django.utils import timezone
 from .models import (
     UserProfile, SavingsPlan, Transaction, Loan,
-    LoanPayment, Penalty, InterestDistribution, Notification
+    LoanPayment, Penalty, InterestDistribution, Notification,
+    IJCGroup, IJCMember, IJCTransaction, IJCAuditLog
 )
 
 
@@ -90,3 +91,32 @@ class NotificationAdmin(admin.ModelAdmin):
     list_display = ('user', 'title', 'type', 'is_read', 'created_at')
     list_filter = ('type', 'is_read', 'created_at')
     search_fields = ('user__username', 'title', 'message')
+
+
+@admin.register(IJCGroup)
+class IJCGroupAdmin(admin.ModelAdmin):
+    list_display = ('ijc_id', 'name', 'owner', 'cash_out_policy', 'balance', 'goal_amount', 'is_active')
+    list_filter = ('cash_out_policy', 'is_active', 'created_at')
+    search_fields = ('ijc_id', 'join_code', 'name', 'owner__username')
+    readonly_fields = ('ijc_id', 'join_code', 'balance', 'created_at')
+
+
+@admin.register(IJCMember)
+class IJCMemberAdmin(admin.ModelAdmin):
+    list_display = ('group', 'user', 'role', 'status', 'total_contributed', 'joined_at')
+    list_filter = ('role', 'status', 'joined_at')
+    search_fields = ('group__ijc_id', 'user__username', 'user__email')
+
+
+@admin.register(IJCTransaction)
+class IJCTransactionAdmin(admin.ModelAdmin):
+    list_display = ('group', 'user', 'type', 'amount', 'created_at')
+    list_filter = ('type', 'created_at')
+    search_fields = ('group__ijc_id', 'user__username', 'description')
+
+
+@admin.register(IJCAuditLog)
+class IJCAuditLogAdmin(admin.ModelAdmin):
+    list_display = ('group', 'actor', 'action', 'created_at')
+    list_filter = ('action', 'created_at')
+    search_fields = ('group__ijc_id', 'actor__username', 'action')

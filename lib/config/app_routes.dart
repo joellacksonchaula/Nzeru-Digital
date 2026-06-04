@@ -13,6 +13,7 @@ import '../screens/loans/request_loan_screen.dart';
 import '../screens/loans/loan_detail_screen.dart';
 import '../screens/loans/repayment_screen.dart';
 import '../screens/reports/reports_screen.dart';
+import '../screens/ijc/ijc_screen.dart';
 import '../screens/notifications/notifications_screen.dart';
 import '../screens/profile/profile_screen.dart';
 import '../screens/settings/settings_screen.dart';
@@ -36,6 +37,7 @@ class AppRoutes {
   static const String loanDetail = '/loans/detail';
   static const String repayment = '/loans/repayment';
   static const String reports = '/reports';
+  static const String ijc = '/ijc';
   static const String notifications = '/notifications';
   static const String profile = '/profile';
   static const String settings = '/settings';
@@ -56,6 +58,7 @@ class AppRoutes {
         loanDetail: (_) => const LoanDetailScreen(),
         repayment: (_) => const RepaymentScreen(),
         reports: (_) => const ReportsScreen(),
+        ijc: (_) => const IjcScreen(),
         notifications: (_) => const NotificationsScreen(),
         profile: (_) => const ProfileScreen(),
         settings: (_) => const SettingsScreen(),

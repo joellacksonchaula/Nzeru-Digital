@@ -80,7 +80,8 @@ class _WithdrawalLockCardState extends State<WithdrawalLockCard>
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final remaining = _calculateRemainingTime();
-    final isTimeUp = remaining.isNegative;
+    final isTimeUp = remaining.compareTo(Duration.zero) <= 0;
+    final isUnlocked = !widget.isLocked && isTimeUp && !widget.hasActiveDebt;
     final progressPercent = _calculateProgressPercentage();
 
     return Container(
@@ -88,9 +89,11 @@ class _WithdrawalLockCardState extends State<WithdrawalLockCard>
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isTimeUp
+          color: isUnlocked
               ? AppColors.success
-              : (widget.hasActiveDebt ? AppColors.brightCrimson : AppColors.abyssalTeal),
+              : (widget.hasActiveDebt
+                  ? AppColors.brightCrimson
+                  : AppColors.abyssalTeal),
           width: 1.5,
         ),
         gradient: LinearGradient(
@@ -103,7 +106,7 @@ class _WithdrawalLockCardState extends State<WithdrawalLockCard>
         ),
         boxShadow: [
           BoxShadow(
-            color: (isTimeUp ? AppColors.success : AppColors.abyssalTeal)
+            color: (isUnlocked ? AppColors.success : AppColors.abyssalTeal)
                 .withAlpha(20),
             blurRadius: 12,
             offset: const Offset(0, 4),
@@ -129,12 +132,12 @@ class _WithdrawalLockCardState extends State<WithdrawalLockCard>
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(
-                    isTimeUp
+                    isUnlocked
                         ? Icons.lock_open_rounded
                         : (widget.hasActiveDebt
                             ? Icons.warning_rounded
                             : Icons.lock_rounded),
-                    color: isTimeUp
+                    color: isUnlocked
                         ? AppColors.success
                         : (widget.hasActiveDebt
                             ? AppColors.brightCrimson
@@ -148,7 +151,7 @@ class _WithdrawalLockCardState extends State<WithdrawalLockCard>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        isTimeUp
+                        isUnlocked
                             ? 'Withdrawal Available'
                             : (widget.hasActiveDebt
                                 ? 'Withdrawals Restricted'
@@ -165,7 +168,7 @@ class _WithdrawalLockCardState extends State<WithdrawalLockCard>
                       Text(
                         widget.hasActiveDebt
                             ? 'Debt must be cleared first'
-                            : (isTimeUp
+                            : (isUnlocked
                                 ? 'Funds unlocked'
                                 : 'Until ${DateFormat('MMM dd, yyyy').format(widget.maturityDate)}'),
                         style: GoogleFonts.poppins(
@@ -183,7 +186,7 @@ class _WithdrawalLockCardState extends State<WithdrawalLockCard>
             ),
             const SizedBox(height: 16),
             // Countdown Timer
-            if (!isTimeUp)
+            if (!isTimeUp && !widget.hasActiveDebt)
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -248,7 +251,7 @@ class _WithdrawalLockCardState extends State<WithdrawalLockCard>
                         ? AppColors.darkBorder
                         : AppColors.border,
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      isTimeUp ? AppColors.success : AppColors.abyssalTeal,
+                      isUnlocked ? AppColors.success : AppColors.abyssalTeal,
                     ),
                   ),
                 ),

@@ -29,7 +29,7 @@ class ReportsScreen extends StatelessWidget {
                 children: [
                   Text(
                     'Nzelu Financial Reports',
-                    style: GoogleFonts.sora(
+                    style: GoogleFonts.poppins(
                       fontSize: 28,
                       fontWeight: FontWeight.w800,
                       letterSpacing: -1,
@@ -85,7 +85,7 @@ class ReportsScreen extends StatelessWidget {
                       children: [
                         Text(
                           'Savings summary',
-                          style: GoogleFonts.sora(
+                          style: GoogleFonts.poppins(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
                             color: const Color(0xFF171412),
@@ -134,7 +134,7 @@ class ReportsScreen extends StatelessWidget {
                       children: [
                         Text(
                           'Recent activity',
-                          style: GoogleFonts.sora(
+                          style: GoogleFonts.poppins(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
                             color: const Color(0xFF171412),
@@ -144,7 +144,7 @@ class ReportsScreen extends StatelessWidget {
                         if (recentTransactions.isEmpty)
                           Text(
                             'No transactions available yet.',
-                            style: GoogleFonts.manrope(
+                            style: GoogleFonts.poppins(
                               fontSize: 13,
                               color: const Color(0xFF6F665C),
                             ),
@@ -200,7 +200,7 @@ class ReportsScreen extends StatelessWidget {
                                             children: [
                                               Text(
                                                 txn.typeLabel,
-                                                style: GoogleFonts.sora(
+                                                style: GoogleFonts.poppins(
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.w700,
                                                   color: const Color(
@@ -213,7 +213,7 @@ class ReportsScreen extends StatelessWidget {
                                                 DateFormat(
                                                   'dd MMM yyyy',
                                                 ).format(txn.date),
-                                                style: GoogleFonts.manrope(
+                                                style: GoogleFonts.poppins(
                                                   fontSize: 12,
                                                   color: const Color(
                                                     0xFF6F665C,
@@ -227,7 +227,7 @@ class ReportsScreen extends StatelessWidget {
                                           CurrencyUtil.formatNoDecimal(
                                             txn.amount,
                                           ),
-                                          style: GoogleFonts.sora(
+                                          style: GoogleFonts.poppins(
                                             fontSize: 13,
                                             fontWeight: FontWeight.w700,
                                             color: txn.isCredit
@@ -281,7 +281,7 @@ class _MiniReportCard extends StatelessWidget {
               const Spacer(),
               Text(
                 label,
-                style: GoogleFonts.manrope(
+                style: GoogleFonts.poppins(
                   fontSize: 11,
                   fontWeight: FontWeight.w800,
                   color: const Color(0xFF6F665C),
@@ -294,7 +294,7 @@ class _MiniReportCard extends StatelessWidget {
             value,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.sora(
+            style: GoogleFonts.poppins(
               fontSize: 16,
               fontWeight: FontWeight.w700,
               color: const Color(0xFF171412),
@@ -322,7 +322,7 @@ class _ReportRow extends StatelessWidget {
           Expanded(
             child: Text(
               label,
-              style: GoogleFonts.manrope(
+              style: GoogleFonts.poppins(
                 fontSize: 13,
                 color: const Color(0xFF6F665C),
               ),
@@ -330,7 +330,7 @@ class _ReportRow extends StatelessWidget {
           ),
           Text(
             value,
-            style: GoogleFonts.sora(
+            style: GoogleFonts.poppins(
               fontSize: 13,
               fontWeight: FontWeight.w700,
               color: valueColor ?? const Color(0xFF171412),

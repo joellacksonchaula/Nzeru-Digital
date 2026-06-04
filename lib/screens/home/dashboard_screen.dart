@@ -76,7 +76,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       children: [
                         Text(
                           'Welcome back,',
-                          style: GoogleFonts.inter(
+                          style: GoogleFonts.poppins(
                             fontSize: 14,
                             color: AppColors.textMuted,
                           ),
@@ -84,7 +84,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         const SizedBox(height: 4),
                         Text(
                           user?.name ?? 'User',
-                          style: GoogleFonts.playfairDisplay(
+                          style: GoogleFonts.poppins(
                             fontSize: 20,
                             fontWeight: FontWeight.w600,
                             color: AppColors.textPrimary,
@@ -123,7 +123,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           backgroundColor: AppColors.gold.withAlpha(30),
                           child: Text(
                             (user?.name ?? 'U')[0].toUpperCase(),
-                            style: GoogleFonts.playfairDisplay(
+                            style: GoogleFonts.poppins(
                               color: AppColors.gold,
                               fontWeight: FontWeight.w700,
                             ),
@@ -147,7 +147,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         children: [
                           Text(
                             'TOTAL SAVINGS',
-                            style: GoogleFonts.playfairDisplay(
+                            style: GoogleFonts.poppins(
                               fontSize: 11,
                               fontWeight: FontWeight.w500,
                               color: AppColors.textMuted,
@@ -169,7 +169,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 const SizedBox(width: 4),
                                 Text(
                                   '+12.5%',
-                                  style: GoogleFonts.inter(
+                                  style: GoogleFonts.poppins(
                                     fontSize: 11,
                                     color: AppColors.success,
                                     fontWeight: FontWeight.w600,
@@ -256,7 +256,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
                   'QUICK ACTIONS',
-                  style: GoogleFonts.playfairDisplay(
+                  style: GoogleFonts.poppins(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textMuted,
@@ -313,7 +313,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   children: [
                     Text(
                       'RECENT TRANSACTIONS',
-                      style: GoogleFonts.playfairDisplay(
+                      style: GoogleFonts.poppins(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: AppColors.textMuted,
@@ -324,7 +324,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       onPressed: () {},
                       child: Text(
                         'View All',
-                        style: GoogleFonts.inter(
+                        style: GoogleFonts.poppins(
                           color: AppColors.gold,
                           fontSize: 12,
                         ),
@@ -371,7 +371,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           children: [
                             Text(
                               txn.typeLabel,
-                              style: GoogleFonts.inter(
+                              style: GoogleFonts.poppins(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.textPrimary,
@@ -379,7 +379,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             ),
                             Text(
                               DateFormat('dd MMM yyyy').format(txn.date),
-                              style: GoogleFonts.inter(
+                              style: GoogleFonts.poppins(
                                 fontSize: 11,
                                 color: AppColors.textMuted,
                               ),
@@ -389,7 +389,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                       Text(
                         '${txn.isCredit ? '+' : '-'} ${CurrencyFormatter.formatMK(txn.amount)}',
-                        style: GoogleFonts.playfairDisplay(
+                        style: GoogleFonts.poppins(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: txn.isCredit
@@ -449,7 +449,7 @@ class _QuickAction extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               label,
-              style: GoogleFonts.inter(
+              style: GoogleFonts.poppins(
                 fontSize: 11,
                 color: AppColors.textSecondary,
                 fontWeight: FontWeight.w500,
