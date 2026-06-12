@@ -13,6 +13,7 @@ import '../../providers/savings_provider.dart';
 import '../../utils/currency_util.dart';
 import '../../widgets/candlestick_chart.dart';
 import '../../widgets/dashboard_kit.dart';
+import '../../widgets/app_logo.dart';
 
 class DashboardScreenV2 extends StatefulWidget {
   const DashboardScreenV2({super.key});
@@ -169,6 +170,8 @@ class _PhoneHeader extends StatelessWidget {
         children: [
           Row(
             children: [
+              const AppLogo(size: 48, iconSize: 24),
+              const SizedBox(width: 12),
               Container(
                 width: 62,
                 height: 62,

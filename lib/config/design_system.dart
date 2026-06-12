@@ -62,33 +62,45 @@ class DesignSystem {
 
   // ═════════════════════ SHADOWS ═════════════════════
   static final BoxShadow shadowXs = BoxShadow(
-    color: Colors.black.withAlpha(6),
-    blurRadius: 4,
+    color: Colors.black.withAlpha(10),
+    blurRadius: 6,
     offset: const Offset(0, 2),
   );
 
   static final BoxShadow shadowS = BoxShadow(
-    color: Colors.black.withAlpha(8),
-    blurRadius: 8,
+    color: Colors.black.withAlpha(12),
+    blurRadius: 10,
     offset: const Offset(0, 4),
   );
 
   static final BoxShadow shadowM = BoxShadow(
-    color: Colors.black.withAlpha(10),
-    blurRadius: 12,
+    color: Colors.black.withAlpha(14),
+    blurRadius: 16,
     offset: const Offset(0, 6),
   );
 
   static final BoxShadow shadowL = BoxShadow(
-    color: Colors.black.withAlpha(12),
-    blurRadius: 16,
+    color: Colors.black.withAlpha(18),
+    blurRadius: 22,
     offset: const Offset(0, 8),
   );
 
   static final BoxShadow shadowXl = BoxShadow(
-    color: Colors.black.withAlpha(14),
-    blurRadius: 24,
-    offset: const Offset(0, 12),
+    color: Colors.black.withAlpha(20),
+    blurRadius: 28,
+    offset: const Offset(0, 10),
+  );
+
+  static const BoxShadow creditCardShadow = BoxShadow(
+    color: Color.fromRGBO(0, 0, 0, 0.12),
+    blurRadius: 18,
+    offset: Offset(0, 8),
+  );
+
+  static const BoxShadow actionCardShadow = BoxShadow(
+    color: Color.fromRGBO(0, 0, 0, 0.14),
+    blurRadius: 22,
+    offset: Offset(0, 10),
   );
 
   // Shadow combinations
@@ -97,6 +109,8 @@ class DesignSystem {
   static final List<BoxShadow> shadowsM = [shadowM];
   static final List<BoxShadow> shadowsL = [shadowL];
   static final List<BoxShadow> shadowsXl = [shadowXl];
+  static final List<BoxShadow> creditCardShadows = [creditCardShadow];
+  static final List<BoxShadow> actionCardShadows = [actionCardShadow];
 
   static final BoxShadow shadowXsDark = shadowXs;
   static final BoxShadow shadowSDark = shadowS;
@@ -111,7 +125,7 @@ class DesignSystem {
   }) {
     return BoxDecoration(
       color: AppColors.cardSurface,
-      borderRadius: radiusXl,
+      borderRadius: radiusXxl,
       border: hasBorder
           ? Border.all(color: AppColors.borderLight)
           : null,

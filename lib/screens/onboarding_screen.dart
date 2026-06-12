@@ -5,6 +5,7 @@ import '../config/app_colors.dart';
 import '../config/app_routes.dart';
 import '../widgets/dashboard_kit.dart';
 import '../widgets/app_button.dart';
+import '../widgets/app_logo.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -57,20 +58,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           SafeArea(
             child: Column(
               children: [
-            // Skip button
-            Align(
-              alignment: Alignment.topRight,
-              child: TextButton(
-                onPressed: () =>
-                    Navigator.pushReplacementNamed(context, AppRoutes.login),
-                child: Text(
-                  'Skip',
-                  style: GoogleFonts.poppins(
-                    color: AppColors.textMuted,
-                    fontSize: 14,
+            // Logo and Skip button
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 24),
+                  child: const AppLogo(size: 44, iconSize: 22, showText: true),
+                ),
+                TextButton(
+                  onPressed: () =>
+                      Navigator.pushReplacementNamed(context, AppRoutes.login),
+                  child: Text(
+                    'Skip',
+                    style: GoogleFonts.poppins(
+                      color: AppColors.textMuted,
+                      fontSize: 14,
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
             // Pages
             Expanded(

@@ -3,117 +3,108 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
-  static const Color primaryRed = Color(0xFFC21A03);
-  static const Color secondaryBlue = Color(0xFF0C6170);
-  static const Color background = Color(0xFFFFFFFF);
+  static const Color primaryTiffany = Color(0xFF0ABAB5);
+  static const Color primaryTiffanyDark = Color(0xFF078F8C);
+  static const Color primaryTiffanyLight = Color(0xFFCFF7F5);
+
+  static const Color background = Color(0xFFF7F8FA);
   static const Color surface = Color(0xFFFFFFFF);
-  static const Color surfaceSoft = Color(0xFFF7FAFA);
+  static const Color surfaceSoft = Color(0xFFF7F8FA);
   static const Color cardSurface = Color(0xFFFFFFFF);
 
-  static const Color textPrimary = Color(0xFF151515);
-  static const Color textSecondary = Color(0xFF4B5563);
-  static const Color textTertiary = Color(0xFF6B7280);
-  static const Color textMuted = Color(0xFF9CA3AF);
+  static const Color darkBackground = Color(0xFF0B1220);
+  static const Color darkSurface = Color(0xFF111827);
+  static const Color darkCardBg = Color(0xFF131F2F);
+
+  static const Color textPrimary = Color(0xFF111827);
+  static const Color textSecondary = Color(0xFF475569);
+  static const Color textTertiary = Color(0xFF64748B);
+  static const Color textMuted = Color(0xFF94A3B8);
 
   static const Color border = Color(0xFFE5E7EB);
-  static const Color borderLight = Color(0xFFF1F5F9);
+  static const Color borderLight = Color(0xFFF3F4F6);
 
-  static const Color success = Color(0xFF16A34A);
+  static const Color success = Color(0xFF22C55E);
   static const Color warning = Color(0xFFF59E0B);
-  static const Color info = secondaryBlue;
-  static const Color error = primaryRed;
+  static const Color info = primaryTiffany;
+  static const Color error = Color(0xFFEF4444);
 
-  static const Color chartPrimary = primaryRed;
-  static const Color chartSecondary = secondaryBlue;
+  static const Color chartPrimary = primaryTiffany;
+  static const Color chartSecondary = primaryTiffanyDark;
   static const Color chartPositive = success;
-  static const Color chartNegative = primaryRed;
+  static const Color chartNegative = error;
   static const Color gridLine = Color(0xFFE5E7EB);
 
-  static const Color lockedState = primaryRed;
+  static const Color lockedState = error;
   static const Color unlockedState = success;
 
-  static const Color redMist = Color(0xFFFFF1EF);
-  static const Color blueMist = Color(0xFFEAF6F7);
-
-  static const LinearGradient flatRedGradient = LinearGradient(
-    colors: [primaryRed, primaryRed],
+  static const LinearGradient flatTiffanyGradient = LinearGradient(
+    colors: [primaryTiffany, primaryTiffanyDark],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
   );
-  static const LinearGradient flatBlueGradient = LinearGradient(
-    colors: [secondaryBlue, secondaryBlue],
+  static const LinearGradient flatTiffanyLightGradient = LinearGradient(
+    colors: [primaryTiffanyLight, primaryTiffany],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
   );
   static const LinearGradient flatSurfaceGradient = LinearGradient(
     colors: [surface, surface],
   );
 
-  // Compatibility aliases for older widgets. They all resolve to the new
-  // red, Tiffany blue, and white fintech system.
-  static const Color abyssalTeal = secondaryBlue;
-  static const Color abyssalTealLight = secondaryBlue;
-  static const Color abyssalTealMuted = secondaryBlue;
-  static const Color crimsonBurgundy = primaryRed;
-  static const Color crimsonBurgundyLight = primaryRed;
-  static const Color crimsonBurgundyMuted = primaryRed;
-  static const Color brightCrimson = primaryRed;
-  static const Color brightCrimsonLight = primaryRed;
-  static const Color brightCrimsonMuted = primaryRed;
+  static const Color primaryRed = primaryTiffany;
+  static const Color secondaryBlue = primaryTiffanyDark;
+  static const Color tiffanyBlue = primaryTiffany;
+  static const Color tiffanyBlueLight = primaryTiffanyLight;
+  static const Color tiffanyBlueDark = primaryTiffanyDark;
+  static const Color tiffanyBlueGlow = Color(0x8CCFF7F5);
+  static const Color tiffanyBlueMuted = Color(0xFFD3F2F0);
+  static const Color tiffanyMist = primaryTiffanyLight;
+
+  static const Color abyssalTeal = tiffanyBlue;
+  static const Color abyssalTealLight = tiffanyBlueLight;
+  static const Color abyssalTealMuted = tiffanyBlueMuted;
+  static const Color crimsonBurgundy = error;
+  static const Color crimsonBurgundyLight = error;
+  static const Color crimsonBurgundyMuted = error;
+  static const Color brightCrimson = error;
+  static const Color brightCrimsonLight = error;
+  static const Color brightCrimsonMuted = error;
   static const Color backgroundLight = background;
   static const Color shellOverlay = surfaceSoft;
-  static const Color surfaceMist = blueMist;
-  static const Color darkBackground = background;
-  static const Color darkSurface = surface;
-  static const Color darkSurfaceAlt = surfaceSoft;
-  static const Color darkCardBg = cardSurface;
+  static const Color surfaceMist = primaryTiffanyLight;
   static const Color black = textPrimary;
   static const Color blackPrimary = textPrimary;
   static const Color blackSecondary = textPrimary;
   static const Color blackTertiary = textSecondary;
   static const Color blackGlass = Color(0x14000000);
-  static const Color darkTextPrimary = textPrimary;
-  static const Color darkTextSecondary = textSecondary;
-  static const Color darkTextTertiary = textTertiary;
-  static const Color darkTextMuted = textMuted;
+  static const Color darkTextPrimary = Color(0xFFFFFFFF);
+  static const Color darkTextSecondary = Color(0xFFCBD5E1);
+  static const Color darkTextTertiary = Color(0xFF94A3B8);
+  static const Color darkTextMuted = Color(0xFF94A3B8);
   static const Color cardBg = cardSurface;
   static const Color surfaceLight = surface;
   static const Color darkBorder = border;
   static const Color darkBorderLight = borderLight;
   static const Color darkCardBorder = borderLight;
-  static const Color tiffanyBlue = secondaryBlue;
-  static const Color tiffanyBlueLight = secondaryBlue;
-  static const Color tiffanyBlueDark = secondaryBlue;
-  static const Color tiffanyBlueGlow = secondaryBlue;
-  static const Color tiffanyBlueMuted = secondaryBlue;
-  static const Color tiffanyMist = blueMist;
-  static const Color faluRed = primaryRed;
-  static const Color faluRedLight = primaryRed;
-  static const Color faluRedDark = primaryRed;
-  static const Color faluRedGlow = primaryRed;
-  static const Color faluRedMuted = primaryRed;
-  static const Color faluMist = redMist;
-  static const Color actionRed = primaryRed;
-  static const Color actionRedLight = primaryRed;
-  static const Color redAccent = primaryRed;
-  static const Color redBright = primaryRed;
-  static const Color loadingRed = primaryRed;
-  static const Color loadingGreen = secondaryBlue;
-  static const Color gridLineDark = gridLine;
 
-  static const LinearGradient tealgradient = flatBlueGradient;
-  static const LinearGradient crimsonGradient = flatRedGradient;
-  static const LinearGradient brightCrimsonGradient = flatRedGradient;
-  static const LinearGradient premiumGradient = flatRedGradient;
+  static const LinearGradient tealgradient = flatTiffanyGradient;
+  static const LinearGradient crimsonGradient = flatTiffanyGradient;
+  static const LinearGradient brightCrimsonGradient = flatTiffanyGradient;
+  static const LinearGradient premiumGradient = flatTiffanyGradient;
   static const LinearGradient lightCardGradient = flatSurfaceGradient;
   static const LinearGradient darkCardGradient = flatSurfaceGradient;
   static const LinearGradient glassGradient = flatSurfaceGradient;
   static const LinearGradient darkGlassGradient = flatSurfaceGradient;
-  static const LinearGradient tiffanyGradient = flatBlueGradient;
-  static const LinearGradient faluTopBarGradient = flatRedGradient;
-  static const LinearGradient faluRedGradient = flatRedGradient;
-  static const LinearGradient nzeluGradient = flatRedGradient;
+  static const LinearGradient tiffanyGradient = flatTiffanyGradient;
+  static const LinearGradient faluTopBarGradient = flatTiffanyGradient;
+  static const LinearGradient faluRedGradient = flatTiffanyGradient;
+  static const LinearGradient nzeluGradient = flatTiffanyGradient;
   static const LinearGradient lightGradient = flatSurfaceGradient;
   static const LinearGradient cardGradient = flatSurfaceGradient;
-  static const LinearGradient redGradient = flatRedGradient;
+  static const LinearGradient redGradient = flatTiffanyGradient;
   static const LinearGradient cryptoGradient = flatSurfaceGradient;
   static const LinearGradient cryptoCardGradient = flatSurfaceGradient;
   static const LinearGradient tiffanyGlassGradient = flatSurfaceGradient;
-  static const LinearGradient redCryptoGradient = flatRedGradient;
+  static const LinearGradient redCryptoGradient = flatTiffanyGradient;
 }

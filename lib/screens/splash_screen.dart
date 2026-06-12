@@ -6,6 +6,7 @@ import '../config/app_colors.dart';
 import '../config/app_routes.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/dashboard_kit.dart';
+import '../widgets/app_logo.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -48,27 +49,8 @@ class _SplashScreenState extends State<SplashScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-            // Logo icon — Tiffany Blue gradient
-            Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: AppColors.tiffanyGradient,
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.tiffanyBlue.withAlpha(60),
-                    blurRadius: 40,
-                    spreadRadius: 5,
-                  ),
-                ],
-              ),
-              child: const Icon(
-                Icons.account_balance_rounded,
-                color: AppColors.background,
-                size: 48,
-              ),
-            )
+            // Logo with JPEG image
+            const AppLogo(size: 100, iconSize: 48)
                 .animate()
                 .scale(
                   begin: const Offset(0.5, 0.5),

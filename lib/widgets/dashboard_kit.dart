@@ -142,12 +142,12 @@ class DashboardPanel extends StatelessWidget {
           padding: padding,
           decoration: BoxDecoration(
             color: AppColors.cardSurface,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.06),
-                blurRadius: 14,
-                offset: const Offset(0, 8),
+                color: Colors.black.withAlpha(18),
+                blurRadius: 24,
+                offset: const Offset(0, 10),
               ),
             ],
           ),
