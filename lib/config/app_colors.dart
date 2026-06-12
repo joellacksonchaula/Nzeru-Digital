@@ -28,6 +28,12 @@ class AppColors {
   static const Color warning = Color(0xFFF59E0B);
   static const Color info = primaryTiffany;
   static const Color error = Color(0xFFEF4444);
+  static const Color loadingRed = Color(0xFFEF4444);
+  static const Color loadingGreen = Color(0xFF22C55E);
+  static const Color faluRed = Color(0xFFEF4444);
+  static const Color faluMist = Color(0xFFFEE2E2);
+  static const Color actionRed = Color(0xFFDC2626);
+  static const Color darkSurfaceAlt = Color(0xFF172133);
 
   static const Color chartPrimary = primaryTiffany;
   static const Color chartSecondary = primaryTiffanyDark;

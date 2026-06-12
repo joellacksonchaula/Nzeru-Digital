@@ -48,12 +48,12 @@ class AppTheme {
           letterSpacing: 0,
         ),
       ),
-      cardTheme: CardTheme(
+      cardTheme: const CardThemeData(
         color: AppColors.cardSurface,
         surfaceTintColor: Colors.transparent,
         elevation: 4,
-        shadowColor: Colors.black.withAlpha(20),
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        shadowColor: Color(0x33000000),
+        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -238,12 +238,12 @@ class AppTheme {
           letterSpacing: 0,
         ),
       ),
-      cardTheme: CardTheme(
+      cardTheme: const CardThemeData(
         color: AppColors.darkCardBg,
         surfaceTintColor: Colors.transparent,
         elevation: 4,
-        shadowColor: Colors.black.withAlpha(30),
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        shadowColor: Color(0x4D000000),
+        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
