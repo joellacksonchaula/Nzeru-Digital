@@ -83,7 +83,8 @@ class _IjcScreenState extends State<IjcScreen> {
 
   Future<void> _showCreateDialog(BuildContext context) async {
     final nameController = TextEditingController();
-    final goalController = TextEditingController();
+    final totalController = TextEditingController();
+    final releaseController = TextEditingController();
     var policy = 'DAILY';
     try {
       await showDialog<void>(
@@ -103,11 +104,21 @@ class _IjcScreenState extends State<IjcScreen> {
                 ),
                 const SizedBox(height: 12),
                 TextField(
-                  controller: goalController,
+                  controller: totalController,
                   keyboardType:
                       const TextInputType.numberWithOptions(decimal: true),
                   decoration: const InputDecoration(
                     labelText: 'Total credit amount',
+                    prefixText: 'MK ',
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: releaseController,
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(
+                    labelText: 'Release amount per cycle',
                     prefixText: 'MK ',
                   ),
                 ),
@@ -138,14 +149,20 @@ class _IjcScreenState extends State<IjcScreen> {
               FilledButton(
                 onPressed: () async {
                   final name = nameController.text.trim();
-                  final goal = double.tryParse(goalController.text.trim()) ?? 0;
-                  if (name.isEmpty || goal <= 0) {
+                  final total = double.tryParse(totalController.text.trim()) ?? 0;
+                  final release = double.tryParse(releaseController.text.trim()) ?? 0;
+                  if (name.isEmpty || total <= 0 || release <= 0) {
                     _snack(context, 'Enter a credit name and valid amount.');
+                    return;
+                  }
+                  if (release > total) {
+                    _snack(context, 'Release amount must be less than total credit.');
                     return;
                   }
                   final ok = await context.read<IjcProvider>().createGroup(
                         name: name,
-                        goalAmount: goal,
+                        totalAmount: total,
+                        releaseAmount: release,
                         cashOutPolicy: policy,
                       );
                   if (!context.mounted) return;
@@ -165,7 +182,8 @@ class _IjcScreenState extends State<IjcScreen> {
       );
     } finally {
       nameController.dispose();
-      goalController.dispose();
+      totalController.dispose();
+      releaseController.dispose();
     }
   }
 
@@ -290,11 +308,19 @@ class _IjcCreditCard extends StatelessWidget {
             ),
           ),
           Text(
-            CurrencyUtil.format(group.goalAmount),
+            CurrencyUtil.format(group.effectiveTotalAmount),
             style: GoogleFonts.poppins(
               fontSize: 28,
               fontWeight: FontWeight.w800,
               color: AppColors.primaryTiffanyDark,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Release amount: ${CurrencyUtil.format(group.releaseAmount)}',
+            style: GoogleFonts.poppins(
+              fontSize: 12,
+              color: AppColors.textSecondary,
             ),
           ),
           const SizedBox(height: 12),
@@ -302,14 +328,20 @@ class _IjcCreditCard extends StatelessWidget {
             children: [
               _CreditStat(
                 label: 'Available today',
-                value: CurrencyUtil.format(group.availableToday),
+                value: CurrencyUtil.format(group.availableBalance),
                 accentColor: AppColors.success,
               ),
               const SizedBox(width: 10),
               _CreditStat(
+                label: 'Locked balance',
+                value: CurrencyUtil.format(group.lockedBalance),
+                accentColor: AppColors.warning,
+              ),
+              const SizedBox(width: 10),
+              _CreditStat(
                 label: 'Next release',
-                value: group.nextCashOutDate != null
-                    ? DateFormat('dd MMM').format(group.nextCashOutDate!)
+                value: group.nextReleaseDate != null
+                    ? DateFormat('dd MMM').format(group.nextReleaseDate!)
                     : 'Soon',
                 accentColor: AppColors.primaryTiffany,
               ),
@@ -384,7 +416,7 @@ class _IjcCreditCard extends StatelessWidget {
                   child: const Text('Add funds'),
                 ),
               ),
-              if (group.isOwner) ...[
+              if (group.canWithdraw) ...[
                 const SizedBox(width: 10),
                 Expanded(
                   child: OutlinedButton(

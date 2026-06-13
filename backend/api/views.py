@@ -709,17 +709,36 @@ class IJCGroupViewSet(viewsets.ModelViewSet):
             return Response(IJCGroupSerializer(group, context={'request': request}).data)
         if group.controller and group.controller_id != request.user.id:
             return Response({'detail': 'This IJC already has a controller.'}, status=status.HTTP_400_BAD_REQUEST)
-        membership, created = IJCMember.objects.get_or_create(
-            group=group,
-            user=request.user,
-            defaults={'role': 'CONTROLLER', 'status': 'APPROVED', 'approved_at': timezone.now()},
-        )
-        membership.role = 'CONTROLLER'
-        membership.status = 'APPROVED'
-        membership.approved_at = timezone.now()
-        membership.save(update_fields=['role', 'status', 'approved_at'])
-        group.controller = request.user
-        group.save(update_fields=['controller'])
+
+        total_amount_input = request.data.get('total_amount')
+        release_amount_input = request.data.get('release_amount')
+        cash_out_policy = request.data.get('cash_out_policy')
+        custom_interval_days = request.data.get('custom_interval_days')
+
+        with db_transaction.atomic():
+            membership, created = IJCMember.objects.get_or_create(
+                group=group,
+                user=request.user,
+                defaults={'role': 'CONTROLLER', 'status': 'APPROVED', 'approved_at': timezone.now()},
+            )
+            membership.role = 'CONTROLLER'
+            membership.status = 'APPROVED'
+            membership.approved_at = timezone.now()
+            membership.save(update_fields=['role', 'status', 'approved_at'])
+            group.controller = request.user
+            if total_amount_input is not None:
+                group.total_amount = self._parse_amount(total_amount_input, 'total_amount')
+            if release_amount_input is not None:
+                group.release_amount = self._parse_amount(release_amount_input, 'release_amount')
+            if cash_out_policy in ['DAILY', 'WEEKLY', 'MONTHLY', 'CUSTOM']:
+                group.cash_out_policy = cash_out_policy
+            if custom_interval_days is not None:
+                try:
+                    group.custom_interval_days = int(custom_interval_days)
+                except (TypeError, ValueError):
+                    raise serializers.ValidationError({'custom_interval_days': 'Enter a valid number.'})
+            group.save(update_fields=['controller', 'total_amount', 'release_amount', 'cash_out_policy', 'custom_interval_days'])
+
         Notification.objects.create(
             user=group.owner,
             title='Controller linked',
@@ -769,6 +788,15 @@ class IJCGroupViewSet(viewsets.ModelViewSet):
         reference = request.data.get('client_reference') or None
         with db_transaction.atomic():
             group = IJCGroup.objects.select_for_update().get(pk=group.pk)
+            # Support parent-provided configuration on initial deposit
+            total_amount_input = request.data.get('total_amount')
+            release_amount_input = request.data.get('release_amount')
+            if total_amount_input:
+                total_amt = self._parse_amount(total_amount_input, 'total_amount')
+                group.total_amount = total_amt
+            if release_amount_input:
+                rel_amt = self._parse_amount(release_amount_input, 'release_amount')
+                group.release_amount = rel_amt
             if reference:
                 existing = group.transactions.filter(client_reference=reference).first()
                 if existing:
@@ -782,7 +810,13 @@ class IJCGroupViewSet(viewsets.ModelViewSet):
                 client_reference=reference,
             )
             group.balance += amount
-            group.save(update_fields=['balance'])
+            # Keep legacy goal_amount in sync for backwards compatibility
+            group.goal_amount += amount
+            if group.total_amount <= 0:
+                group.total_amount = amount
+            elif group.balance > amount:
+                group.total_amount += amount
+            group.save(update_fields=['balance', 'goal_amount', 'total_amount', 'release_amount'])
             membership.total_contributed += amount
             membership.save(update_fields=['total_contributed'])
         Notification.objects.create(
@@ -803,9 +837,13 @@ class IJCGroupViewSet(viewsets.ModelViewSet):
     def withdraw(self, request, pk=None):
         group = self.get_object()
         self._require_wallet_user(group)
+        if group.is_paused:
+            raise serializers.ValidationError({'detail': 'This credit is paused.'})
         amount = self._parse_amount(request.data.get('amount', '0'))
         if amount <= 0:
             raise serializers.ValidationError({'amount': 'Withdrawal amount must be greater than zero.'})
+        if amount > group.available_balance:
+            raise serializers.ValidationError({'amount': 'Withdrawal exceeds available balance.'})
         reference = request.data.get('client_reference') or None
         with db_transaction.atomic():
             group = IJCGroup.objects.select_for_update().get(pk=group.pk)
@@ -813,9 +851,6 @@ class IJCGroupViewSet(viewsets.ModelViewSet):
                 existing = group.transactions.filter(client_reference=reference).first()
                 if existing:
                     return Response(IJCTransactionSerializer(existing).data, status=status.HTTP_200_OK)
-            if amount > group.balance:
-                raise serializers.ValidationError({'amount': 'Withdrawal exceeds IJC balance.'})
-            self._validate_withdrawal_limits(group, amount)
             txn = IJCTransaction.objects.create(
                 group=group,
                 user=request.user,
@@ -844,6 +879,25 @@ class IJCGroupViewSet(viewsets.ModelViewSet):
             metadata={'amount': str(amount)},
         )
         return Response(IJCTransactionSerializer(txn).data, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['post'])
+    def pause(self, request, pk=None):
+        group = self.get_object()
+        self._require_controller(group)
+        group.is_paused = True
+        group.paused_at = timezone.now()
+        group.save(update_fields=['is_paused', 'paused_at'])
+        return Response(IJCGroupSerializer(group, context={'request': request}).data)
+
+    @action(detail=True, methods=['post'])
+    def resume(self, request, pk=None):
+        group = self.get_object()
+        self._require_controller(group)
+        group.is_paused = False
+        group.pause_duration_seconds = 0
+        group.paused_at = None
+        group.save(update_fields=['is_paused', 'pause_duration_seconds', 'paused_at'])
+        return Response(IJCGroupSerializer(group, context={'request': request}).data)
 
 
 # ─── Reports ───────────────────────────────────────

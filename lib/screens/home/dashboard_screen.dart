@@ -117,18 +117,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             ],
                           ),
                         ),
-                        const SizedBox(width: 4),
-                        CircleAvatar(
-                          radius: 20,
-                          backgroundColor: AppColors.primaryRed.withAlpha(30),
-                          child: Text(
-                            (user?.name ?? 'U')[0].toUpperCase(),
-                            style: GoogleFonts.poppins(
-                              color: AppColors.primaryRed,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
                       ],
                     ),
                   ],

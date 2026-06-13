@@ -18,31 +18,25 @@ class AppLogo extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: AppColors.tiffanyGradient,
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primaryTiffany.withAlpha(45),
-                blurRadius: 18,
-                spreadRadius: 2,
+        ClipOval(
+          child: Container(
+            width: size,
+            height: size,
+            color: Colors.white,
+            child: Center(
+              child: Image.asset(
+                'assets/images/nzelu_logo.jpeg',
+                width: size * 0.8,
+                height: size * 0.8,
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) {
+                  return Icon(
+                    Icons.account_balance_rounded,
+                    color: AppColors.primaryTiffanyDark,
+                    size: iconSize,
+                  );
+                },
               ),
-            ],
-          ),
-          child: Center(
-            child: Image.asset(
-              'assets/images/nzelu_logo.jpeg',
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Icon(
-                  Icons.account_balance_rounded,
-                  color: Colors.white,
-                  size: iconSize,
-                );
-              },
             ),
           ),
         ),

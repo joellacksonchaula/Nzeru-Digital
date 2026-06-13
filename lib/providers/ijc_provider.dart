@@ -23,7 +23,7 @@ class IjcProvider with ChangeNotifier {
           .map((json) => IjcGroup.fromJson(Map<String, dynamic>.from(json)))
           .toList();
     } catch (e) {
-      _error = 'Failed to load joint savings: $e';
+      _error = 'Failed to load credit accounts: $e';
       _groups = [];
     }
     _isLoading = false;
@@ -32,13 +32,15 @@ class IjcProvider with ChangeNotifier {
 
   Future<bool> createGroup({
     required String name,
-    required double goalAmount,
+    required double totalAmount,
+    required double releaseAmount,
     required String cashOutPolicy,
   }) async {
     try {
       await _api.createIjcGroup({
         'name': name,
-        'goal_amount': goalAmount.toStringAsFixed(2),
+        'total_amount': totalAmount.toStringAsFixed(2),
+        'release_amount': releaseAmount.toStringAsFixed(2),
         'cash_out_policy': cashOutPolicy,
       });
       await loadGroups();

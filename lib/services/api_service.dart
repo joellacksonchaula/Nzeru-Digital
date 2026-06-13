@@ -442,6 +442,16 @@ class ApiService {
     return _handleResponse(response);
   }
 
+  Future<Map<String, dynamic>> pauseIjcGroup(int groupId) async {
+    final response = await _post('/ijc-groups/$groupId/pause/');
+    return _handleResponse(response);
+  }
+
+  Future<Map<String, dynamic>> resumeIjcGroup(int groupId) async {
+    final response = await _post('/ijc-groups/$groupId/resume/');
+    return _handleResponse(response);
+  }
+
   Future<Map<String, dynamic>> joinIjcGroup(String code) async {
     final response = await _post('/ijc-groups/join/', body: {'code': code});
     return _handleResponse(response);
@@ -462,13 +472,22 @@ class ApiService {
     required int groupId,
     required double amount,
     String description = '',
+    double? totalAmount,
+    double? releaseAmount,
   }) async {
+    final body = {
+      'amount': amount.toStringAsFixed(2),
+      'description': description,
+    };
+    if (totalAmount != null) {
+      body['total_amount'] = totalAmount.toStringAsFixed(2);
+    }
+    if (releaseAmount != null) {
+      body['release_amount'] = releaseAmount.toStringAsFixed(2);
+    }
     final response = await _post(
       '/ijc-groups/$groupId/deposit/',
-      body: {
-        'amount': amount.toStringAsFixed(2),
-        'description': description,
-      },
+      body: body,
     );
     return _handleResponse(response);
   }

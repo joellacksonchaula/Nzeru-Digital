@@ -172,36 +172,6 @@ class _PhoneHeader extends StatelessWidget {
             children: [
               const AppLogo(size: 48, iconSize: 24),
               const SizedBox(width: 12),
-              Container(
-                width: 62,
-                height: 62,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    colors: [Color(0xFFD6F5F4), Color(0xFF8DE8E5)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color(0x1A0ABAB5),
-                      blurRadius: 24,
-                      offset: Offset(0, 10),
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: Text(
-                    initial,
-                    style: GoogleFonts.poppins(
-                      fontSize: 28,
-                      color: const Color(0xFF088F8B),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,4 +1,6 @@
-﻿from django.db import models
+﻿from datetime import timedelta
+
+from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from decimal import Decimal
@@ -441,9 +443,10 @@ class Notification(models.Model):
 
 class IJCGroup(models.Model):
     CASH_OUT_CHOICES = [
-        ('DAILY', 'Daily Cash-Out'),
-        ('WEEKLY', 'Weekly Cash-Out'),
-        ('MONTHLY', 'Monthly Cash-Out'),
+        ('DAILY', 'Daily Release'),
+        ('WEEKLY', 'Weekly Release'),
+        ('MONTHLY', 'Monthly Release'),
+        ('CUSTOM', 'Custom Release'),
     ]
     RESET_TYPE_CHOICES = [
         ('MIDNIGHT', 'Calendar Midnight'),
@@ -461,12 +464,19 @@ class IJCGroup(models.Model):
     ijc_id = models.CharField(max_length=20, unique=True, editable=False)
     join_code = models.CharField(max_length=12, unique=True, editable=False)
     goal_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    # New fields for Parent-controlled Credit semantics
+    total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    release_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     balance = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    is_paused = models.BooleanField(default=False)
+    paused_at = models.DateTimeField(null=True, blank=True)
+    pause_duration_seconds = models.BigIntegerField(default=0)
     cash_out_policy = models.CharField(max_length=10, choices=CASH_OUT_CHOICES, default='WEEKLY')
     last_cash_out_at = models.DateTimeField(null=True, blank=True)
     daily_limit = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     weekly_limit = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     monthly_limit = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    custom_interval_days = models.PositiveIntegerField(default=0)
     reset_type = models.CharField(max_length=12, choices=RESET_TYPE_CHOICES, default='MIDNIGHT')
     allow_rollover = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
@@ -512,19 +522,75 @@ class IJCGroup(models.Model):
 
     @property
     def cash_out_available(self):
-        return timezone.now() >= self.next_cash_out_date
+        return not self.is_paused and timezone.now() >= self.next_release_date
+
+    def _release_interval(self):
+        from datetime import timedelta
+        if self.cash_out_policy == 'DAILY':
+            return timedelta(days=1)
+        if self.cash_out_policy == 'WEEKLY':
+            return timedelta(days=7)
+        if self.cash_out_policy == 'MONTHLY':
+            return timedelta(days=30)
+        return timedelta(days=max(1, int(self.custom_interval_days or 1)))
+
+    def _effective_elapsed(self):
+        now = timezone.now()
+        elapsed = now - self.created_at
+        if self.paused_at:
+            elapsed -= now - self.paused_at
+        elapsed -= timedelta(seconds=self.pause_duration_seconds)
+        return max(timedelta(0), elapsed)
+
+    def _release_cycles_elapsed(self):
+        interval = self._release_interval()
+        effective = self._effective_elapsed()
+        return int(effective // interval)
+
+    @property
+    def unlocked_total(self):
+        if self.release_amount <= 0 or self.total_amount <= 0:
+            return Decimal('0')
+        cycles = self._release_cycles_elapsed() + 1
+        return min(self.total_amount, self.release_amount * cycles)
+
+    @property
+    def withdrawn_amount(self):
+        return max(Decimal('0'), self.total_amount - self.balance)
+
+    @property
+    def available_balance(self):
+        if self.total_amount <= 0 or self.release_amount <= 0:
+            return Decimal('0')
+        available = self.unlocked_total - self.withdrawn_amount
+        return max(Decimal('0'), min(self.balance, available))
+
+    @property
+    def locked_balance(self):
+        return max(Decimal('0'), self.balance - self.available_balance)
+
+    @property
+    def next_release_date(self):
+        from datetime import timedelta
+        if self.release_amount <= 0 or self.total_amount <= 0:
+            return self.created_at
+        interval = self._release_interval()
+        cycles = self._release_cycles_elapsed()
+        candidate = self.created_at + interval * (cycles + 1)
+        if candidate > self.created_at + interval * int(self.total_amount / self.release_amount):
+            return candidate
+        return candidate
 
     @property
     def days_until_cash_out(self):
-        remaining = self.next_cash_out_date - timezone.now()
+        remaining = self.next_release_date - timezone.now()
         return max(0, remaining.days)
 
     @property
     def progress_percent(self):
-        if self.daily_limit > 0:
-            available = max(Decimal('0'), self.daily_limit - self.daily_spent)
-            return min(100, float(available / self.daily_limit * 100))
-        return 0
+        if self.release_amount <= 0:
+            return 0
+        return min(100, float((self.available_balance / self.release_amount) * 100))
 
     def period_start(self, period, now=None):
         from datetime import timedelta
@@ -557,9 +623,7 @@ class IJCGroup(models.Model):
 
     @property
     def available_today(self):
-        if self.daily_limit <= 0:
-            return self.balance
-        return max(Decimal('0'), min(self.balance, self.daily_limit - self.daily_spent))
+        return self.available_balance
 
     @property
     def next_daily_reset_at(self):

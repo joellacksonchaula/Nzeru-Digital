@@ -280,6 +280,13 @@ class IJCGroupSerializer(serializers.ModelSerializer):
     member_count = serializers.SerializerMethodField()
     current_user_role = serializers.SerializerMethodField()
     current_user_status = serializers.SerializerMethodField()
+    total_credit_amount = serializers.SerializerMethodField()
+    release_amount = serializers.ReadOnlyField(source='release_amount')
+    release_frequency = serializers.ReadOnlyField(source='cash_out_policy')
+    available_balance = serializers.ReadOnlyField(source='available_balance')
+    released_balance = serializers.ReadOnlyField(source='available_balance')
+    locked_balance = serializers.ReadOnlyField()
+    next_release_date = serializers.ReadOnlyField()
     next_cash_out_date = serializers.ReadOnlyField()
     cash_out_available = serializers.ReadOnlyField()
     days_until_cash_out = serializers.ReadOnlyField()
@@ -302,14 +309,21 @@ class IJCGroupSerializer(serializers.ModelSerializer):
             'ijc_id',
             'join_code',
             'goal_amount',
+            'total_amount',
+            'total_credit_amount',
             'balance',
-            'cash_out_policy',
+            'released_balance',
+            'release_amount',
+            'is_paused',
+            'release_frequency',
+            'locked_balance',
             'last_cash_out_at',
             'daily_limit',
             'weekly_limit',
             'monthly_limit',
             'reset_type',
             'allow_rollover',
+            'next_release_date',
             'next_cash_out_date',
             'cash_out_available',
             'days_until_cash_out',
@@ -317,6 +331,7 @@ class IJCGroupSerializer(serializers.ModelSerializer):
             'daily_spent',
             'weekly_spent',
             'monthly_spent',
+            'available_balance',
             'available_today',
             'next_daily_reset_at',
             'is_active',
@@ -337,6 +352,11 @@ class IJCGroupSerializer(serializers.ModelSerializer):
             'last_cash_out_at',
             'is_active',
             'created_at',
+            'release_amount',
+            'release_frequency',
+            'available_balance',
+            'locked_balance',
+            'next_release_date',
         ]
 
     def get_owner_name(self, obj):
@@ -363,3 +383,10 @@ class IJCGroupSerializer(serializers.ModelSerializer):
     def get_current_user_status(self, obj):
         membership = self._current_membership(obj)
         return membership.status if membership else None
+
+    def get_total_credit_amount(self, obj):
+        # Prefer explicit total_amount field, fall back to legacy goal_amount
+        try:
+            return float(obj.total_amount)
+        except Exception:
+            return float(obj.goal_amount)

@@ -64,7 +64,13 @@ class IjcGroup {
   final String ownerName;
   final String controllerName;
   final double goalAmount;
+  final double totalAmount;
+  final double releaseAmount;
+  final bool isPaused;
   final double balance;
+  final double availableBalance;
+  final double lockedBalance;
+  final double releasedBalance;
   final String cashOutPolicy;
   final double dailyLimit;
   final double weeklyLimit;
@@ -77,6 +83,7 @@ class IjcGroup {
   final double availableToday;
   final DateTime? nextDailyResetAt;
   final DateTime? nextCashOutDate;
+  final DateTime? nextReleaseDate;
   final bool cashOutAvailable;
   final int daysUntilCashOut;
   final double progressPercent;
@@ -94,7 +101,13 @@ class IjcGroup {
     required this.ownerName,
     required this.controllerName,
     required this.goalAmount,
+    required this.totalAmount,
+    required this.releaseAmount,
+    required this.isPaused,
     required this.balance,
+    required this.availableBalance,
+    required this.lockedBalance,
+    required this.releasedBalance,
     required this.cashOutPolicy,
     required this.dailyLimit,
     required this.weeklyLimit,
@@ -107,6 +120,7 @@ class IjcGroup {
     required this.availableToday,
     required this.nextDailyResetAt,
     required this.nextCashOutDate,
+    required this.nextReleaseDate,
     required this.cashOutAvailable,
     required this.daysUntilCashOut,
     required this.progressPercent,
@@ -119,10 +133,11 @@ class IjcGroup {
 
   bool get isController => currentUserRole == 'CONTROLLER';
   bool get isUser => currentUserRole == 'USER' || currentUserRole == 'OWNER';
-  bool get isOwner => isController;
+  bool get canWithdraw => isUser && isApproved && availableBalance > 0 && !isPaused;
   bool get isApproved => currentUserStatus == 'APPROVED';
+  double get effectiveTotalAmount => totalAmount > 0 ? totalAmount : goalAmount;
   double get dailyRemaining =>
-      dailyLimit <= 0 ? balance : (dailyLimit - dailySpent).clamp(0, balance).toDouble();
+      dailyLimit <= 0 ? availableBalance : (dailyLimit - dailySpent).clamp(0, availableBalance).toDouble();
 
   factory IjcGroup.fromJson(Map<String, dynamic> json) {
     return IjcGroup(
@@ -133,7 +148,13 @@ class IjcGroup {
       ownerName: (json['owner_name'] ?? '').toString(),
       controllerName: (json['controller_name'] ?? '').toString(),
       goalAmount: _parseDouble(json['goal_amount']),
+      totalAmount: _parseDouble(json['total_amount']),
+      releaseAmount: _parseDouble(json['release_amount']),
+      isPaused: json['is_paused'] == true,
       balance: _parseDouble(json['balance']),
+      availableBalance: _parseDouble(json['available_balance']),
+      lockedBalance: _parseDouble(json['locked_balance']),
+      releasedBalance: _parseDouble(json['released_balance']),
       cashOutPolicy: (json['cash_out_policy'] ?? 'WEEKLY').toString(),
       dailyLimit: _parseDouble(json['daily_limit']),
       weeklyLimit: _parseDouble(json['weekly_limit']),
@@ -148,6 +169,8 @@ class IjcGroup {
           DateTime.tryParse((json['next_daily_reset_at'] ?? '').toString()),
       nextCashOutDate:
           DateTime.tryParse((json['next_cash_out_date'] ?? '').toString()),
+      nextReleaseDate:
+          DateTime.tryParse((json['next_release_date'] ?? '').toString()),
       cashOutAvailable: json['cash_out_available'] == true,
       daysUntilCashOut: _parseInt(json['days_until_cash_out']),
       progressPercent: _parseDouble(json['progress_percent']) / 100,
