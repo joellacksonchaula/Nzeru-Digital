@@ -277,6 +277,7 @@ class IJCGroupSerializer(serializers.ModelSerializer):
     audit_logs = IJCAuditLogSerializer(many=True, read_only=True)
     owner_name = serializers.SerializerMethodField()
     controller_name = serializers.SerializerMethodField()
+    pocket_id = serializers.ReadOnlyField(source='ijc_id')
     member_count = serializers.SerializerMethodField()
     current_user_role = serializers.SerializerMethodField()
     current_user_status = serializers.SerializerMethodField()
@@ -307,7 +308,9 @@ class IJCGroupSerializer(serializers.ModelSerializer):
             'controller_name',
             'name',
             'ijc_id',
+            'pocket_id',
             'join_code',
+            'pocket_type',
             'goal_amount',
             'total_amount',
             'total_credit_amount',
@@ -347,6 +350,7 @@ class IJCGroupSerializer(serializers.ModelSerializer):
             'owner',
             'controller',
             'ijc_id',
+            'pocket_id',
             'join_code',
             'balance',
             'last_cash_out_at',
@@ -390,3 +394,13 @@ class IJCGroupSerializer(serializers.ModelSerializer):
             return float(obj.total_amount)
         except Exception:
             return float(obj.goal_amount)
+
+    def validate(self, attrs):
+        pocket_type = attrs.get('pocket_type', getattr(self.instance, 'pocket_type', 'SPONSORED'))
+        total_amount = attrs.get('total_amount', getattr(self.instance, 'total_amount', 0))
+        release_amount = attrs.get('release_amount', getattr(self.instance, 'release_amount', 0))
+        if pocket_type == 'SELF' and (total_amount <= 0 or release_amount <= 0):
+            raise serializers.ValidationError({
+                'detail': 'Self pockets require total_amount and release_amount.',
+            })
+        return attrs

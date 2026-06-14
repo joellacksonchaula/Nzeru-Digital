@@ -39,7 +39,7 @@ class _IjcScreenState extends State<IjcScreen> {
             const AppLogo(size: 34, iconSize: 18),
             const SizedBox(width: 12),
             Text(
-              'Nzeru Credit',
+              'Nzeru Pocket',
               style: GoogleFonts.poppins(fontWeight: FontWeight.w700),
             ),
           ],
@@ -48,12 +48,12 @@ class _IjcScreenState extends State<IjcScreen> {
           IconButton(
             onPressed: () => _showJoinDialog(context),
             icon: const Icon(Icons.qr_code_rounded),
-            tooltip: 'Join Credit',
+            tooltip: 'Join Pocket',
           ),
           IconButton(
             onPressed: () => _showCreateDialog(context),
             icon: const Icon(Icons.add_circle_outline_rounded),
-            tooltip: 'Create Credit',
+            tooltip: 'Create Pocket',
           ),
         ],
       ),
@@ -85,22 +85,169 @@ class _IjcScreenState extends State<IjcScreen> {
     final nameController = TextEditingController();
     final totalController = TextEditingController();
     final releaseController = TextEditingController();
+    var pocketType = 'SPONSORED';
     var policy = 'DAILY';
     try {
       await showDialog<void>(
         context: context,
         builder: (dialogContext) => StatefulBuilder(
           builder: (context, setDialogState) => AlertDialog(
-            title: const Text('Create Nzeru Credit'),
+            title: const Text('Create Nzeru Pocket'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: RadioListTile<String>(
+                        title: const Text('Sponsored Pocket'),
+                        value: 'SPONSORED',
+                        groupValue: pocketType,
+                        contentPadding: EdgeInsets.zero,
+                        onChanged: (value) {
+                          if (value != null) setDialogState(() => pocketType = value);
+                        },
+                      ),
+                    ),
+                    Expanded(
+                      child: RadioListTile<String>(
+                        title: const Text('Self Pocket'),
+                        value: 'SELF',
+                        groupValue: pocketType,
+                        contentPadding: EdgeInsets.zero,
+                        onChanged: (value) {
+                          if (value != null) setDialogState(() => pocketType = value);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Pocket name',
+                    prefixIcon: Icon(Icons.credit_score_rounded),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                if (pocketType == 'SELF') ...[
+                  TextField(
+                    controller: totalController,
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
+                    decoration: const InputDecoration(
+                      labelText: 'Total pocket amount',
+                      prefixText: 'MK ',
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: releaseController,
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
+                    decoration: const InputDecoration(
+                      labelText: 'Release amount per cycle',
+                      prefixText: 'MK ',
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<String>(
+                    value: policy,
+                    decoration: const InputDecoration(
+                      labelText: 'Release frequency',
+                      prefixIcon: Icon(Icons.event_repeat_rounded),
+                    ),
+                    items: const [
+                      DropdownMenuItem(value: 'DAILY', child: Text('Daily')),
+                      DropdownMenuItem(value: 'WEEKLY', child: Text('Weekly')),
+                      DropdownMenuItem(value: 'MONTHLY', child: Text('Monthly')),
+                      DropdownMenuItem(value: 'CUSTOM', child: Text('Custom')),
+                    ],
+                    onChanged: (value) {
+                      if (value != null) setDialogState(() => policy = value);
+                    },
+                  ),
+                ],
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                onPressed: () async {
+                  final name = nameController.text.trim();
+                  final total = double.tryParse(totalController.text.trim()) ?? 0;
+                  final release = double.tryParse(releaseController.text.trim()) ?? 0;
+                  if (name.isEmpty) {
+                    _snack(context, 'Enter a pocket name.');
+                    return;
+                  }
+                  if (pocketType == 'SELF' && (total <= 0 || release <= 0)) {
+                    _snack(context, 'Enter valid amounts for your self pocket.');
+                    return;
+                  }
+                  if (pocketType == 'SELF' && release > total) {
+                    _snack(context, 'Release amount must be less than total pocket amount.');
+                    return;
+                  }
+                  final ok = await context.read<IjcProvider>().createGroup(
+                        name: name,
+                        pocketType: pocketType,
+                        totalAmount: pocketType == 'SELF' ? total : null,
+                        releaseAmount: pocketType == 'SELF' ? release : null,
+                        cashOutPolicy: pocketType == 'SELF' ? policy : null,
+                      );
+                  if (!context.mounted) return;
+                  Navigator.pop(dialogContext);
+                  _snack(
+                    context,
+                    ok
+                        ? 'Pocket created.'
+                        : context.read<IjcProvider>().error ?? 'Failed.',
+                  );
+                },
+                child: const Text('Create Pocket'),
+              ),
+            ],
+          ),
+        ),
+      );
+    } finally {
+      nameController.dispose();
+      totalController.dispose();
+      releaseController.dispose();
+    }
+  }
+
+  Future<void> _showJoinDialog(BuildContext context) async {
+    final controller = TextEditingController();
+    final totalController = TextEditingController();
+    final releaseController = TextEditingController();
+    var policy = 'WEEKLY';
+    try {
+      await showDialog<void>(
+        context: context,
+        builder: (dialogContext) => StatefulBuilder(
+          builder: (context, setDialogState) => AlertDialog(
+            title: const Text('Join Nzeru Pocket'),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
-                  controller: nameController,
+                  controller: controller,
+                  textCapitalization: TextCapitalization.characters,
                   decoration: const InputDecoration(
-                    labelText: 'Credit name',
-                    prefixIcon: Icon(Icons.credit_score_rounded),
+                    labelText: 'Pocket ID or join code',
+                    prefixIcon: Icon(Icons.key_rounded),
                   ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'If you are joining as a sponsor, optionally add funding details below.',
+                  style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textSecondary),
                 ),
                 const SizedBox(height: 12),
                 TextField(
@@ -108,7 +255,7 @@ class _IjcScreenState extends State<IjcScreen> {
                   keyboardType:
                       const TextInputType.numberWithOptions(decimal: true),
                   decoration: const InputDecoration(
-                    labelText: 'Total credit amount',
+                    labelText: 'Total pocket amount',
                     prefixText: 'MK ',
                   ),
                 ),
@@ -148,92 +295,46 @@ class _IjcScreenState extends State<IjcScreen> {
               ),
               FilledButton(
                 onPressed: () async {
-                  final name = nameController.text.trim();
+                  final code = controller.text.trim();
                   final total = double.tryParse(totalController.text.trim()) ?? 0;
                   final release = double.tryParse(releaseController.text.trim()) ?? 0;
-                  if (name.isEmpty || total <= 0 || release <= 0) {
-                    _snack(context, 'Enter a credit name and valid amount.');
+                  if (code.isEmpty) {
+                    _snack(context, 'Enter a pocket ID or join code.');
                     return;
                   }
-                  if (release > total) {
-                    _snack(context, 'Release amount must be less than total credit.');
+                  if ((total > 0 || release > 0) && release > total) {
+                    _snack(context, 'Release amount must be less than total pocket amount.');
                     return;
                   }
-                  final ok = await context.read<IjcProvider>().createGroup(
-                        name: name,
-                        totalAmount: total,
-                        releaseAmount: release,
-                        cashOutPolicy: policy,
+                  final ok = await context.read<IjcProvider>().joinGroup(
+                        code,
+                        totalAmount: total > 0 ? total : null,
+                        releaseAmount: release > 0 ? release : null,
+                        cashOutPolicy: total > 0 || release > 0 ? policy : null,
                       );
                   if (!context.mounted) return;
                   Navigator.pop(dialogContext);
                   _snack(
                     context,
                     ok
-                        ? 'Credit created.'
+                        ? 'Pocket joined.'
                         : context.read<IjcProvider>().error ?? 'Failed.',
                   );
                 },
-                child: const Text('Create'),
+                child: const Text('Join Pocket'),
               ),
             ],
           ),
         ),
       );
     } finally {
-      nameController.dispose();
+      controller.dispose();
       totalController.dispose();
       releaseController.dispose();
     }
   }
-
-  Future<void> _showJoinDialog(BuildContext context) async {
-    final controller = TextEditingController();
-    try {
-      await showDialog<void>(
-        context: context,
-        builder: (dialogContext) => AlertDialog(
-          title: const Text('Join Nzeru Credit'),
-          content: TextField(
-            controller: controller,
-            textCapitalization: TextCapitalization.characters,
-            decoration: const InputDecoration(
-              labelText: 'Credit ID or join code',
-              prefixIcon: Icon(Icons.key_rounded),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel'),
-            ),
-            FilledButton(
-              onPressed: () async {
-                final code = controller.text.trim();
-                if (code.isEmpty) {
-                  _snack(context, 'Enter a credit ID or join code.');
-                  return;
-                }
-                final ok = await context.read<IjcProvider>().joinGroup(code);
-                if (!context.mounted) return;
-                Navigator.pop(dialogContext);
-                _snack(
-                  context,
-                  ok
-                      ? 'Join request sent.'
-                      : context.read<IjcProvider>().error ?? 'Failed.',
-                );
-              },
-              child: const Text('Join'),
-            ),
-          ],
-        ),
-      );
-    } finally {
-      controller.dispose();
-    }
-  }
 }
+
 
 class _IjcCreditCard extends StatelessWidget {
   final IjcGroup group;
@@ -272,7 +373,7 @@ class _IjcCreditCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      'Credit ID ${group.ijcId}',
+                      'Pocket ID ${group.ijcId}',
                       style: GoogleFonts.poppins(
                         fontSize: 12,
                         color: AppColors.textSecondary,
@@ -300,7 +401,7 @@ class _IjcCreditCard extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           Text(
-            'Total credit',
+            'Total pocket',
             style: GoogleFonts.poppins(
               fontSize: 13,
               fontWeight: FontWeight.w600,
@@ -397,7 +498,7 @@ class _IjcCreditCard extends StatelessWidget {
                 child: FilledButton(
                   onPressed: () => _amountDialog(
                     context,
-                    title: 'Deposit to credit',
+                    title: 'Add funds to pocket',
                     actionLabel: 'Deposit',
                     onSubmit: (amount, note) => context.read<IjcProvider>().deposit(
                           groupId: group.id,
@@ -423,7 +524,7 @@ class _IjcCreditCard extends StatelessWidget {
                     onPressed: group.cashOutAvailable
                         ? () => _amountDialog(
                               context,
-                              title: 'Withdraw released funds',
+                              title: 'Withdraw released pocket funds',
                               actionLabel: 'Withdraw',
                               onSubmit: (amount, note) =>
                                   context.read<IjcProvider>().withdraw(
@@ -660,7 +761,7 @@ class _IntroPanel extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Instant Joint Credit',
+            'Nzeru Pocket',
             style: GoogleFonts.poppins(
               color: Colors.white,
               fontSize: 20,
@@ -669,7 +770,7 @@ class _IntroPanel extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            'Save together with owner approval, member contribution tracking, and scheduled cash-outs.',
+            'Create a sponsored or self pocket, then fund and release balance on your schedule.',
             style: GoogleFonts.poppins(color: Colors.white.withAlpha(220)),
           ),
           const SizedBox(height: 14),
@@ -831,12 +932,12 @@ class _EmptyState extends StatelessWidget {
           const Icon(Icons.credit_card_rounded, size: 48, color: AppColors.primaryTiffany),
           const SizedBox(height: 12),
           Text(
-            'No credit groups yet',
+            'No pockets yet',
             style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 4),
           Text(
-            'Create a Nzeru credit or join one using a code.',
+            'Create a Nzeru pocket or join one using a code.',
             style: GoogleFonts.poppins(color: AppColors.textSecondary),
           ),
         ],

@@ -32,33 +32,65 @@ class IjcProvider with ChangeNotifier {
 
   Future<bool> createGroup({
     required String name,
-    required double totalAmount,
-    required double releaseAmount,
-    required String cashOutPolicy,
+    required String pocketType,
+    double? totalAmount,
+    double? releaseAmount,
+    String? cashOutPolicy,
+    int? customIntervalDays,
   }) async {
     try {
-      await _api.createIjcGroup({
+      final body = <String, dynamic>{
         'name': name,
-        'total_amount': totalAmount.toStringAsFixed(2),
-        'release_amount': releaseAmount.toStringAsFixed(2),
-        'cash_out_policy': cashOutPolicy,
-      });
+        'pocket_type': pocketType,
+      };
+      if (totalAmount != null) {
+        body['total_amount'] = totalAmount.toStringAsFixed(2);
+      }
+      if (releaseAmount != null) {
+        body['release_amount'] = releaseAmount.toStringAsFixed(2);
+      }
+      if (cashOutPolicy != null) {
+        body['cash_out_policy'] = cashOutPolicy;
+      }
+      if (customIntervalDays != null) {
+        body['custom_interval_days'] = customIntervalDays;
+      }
+      await _api.createIjcGroup(body);
       await loadGroups();
       return true;
     } catch (e) {
-      _error = 'Failed to create IJC: $e';
+      _error = 'Failed to create pocket: $e';
       notifyListeners();
       return false;
     }
   }
 
-  Future<bool> joinGroup(String code) async {
+  Future<bool> joinGroup(
+    String code, {
+    double? totalAmount,
+    double? releaseAmount,
+    String? cashOutPolicy,
+    int? customIntervalDays,
+  }) async {
     try {
-      await _api.joinIjcGroup(code);
+      final body = <String, dynamic>{'code': code};
+      if (totalAmount != null) {
+        body['total_amount'] = totalAmount.toStringAsFixed(2);
+      }
+      if (releaseAmount != null) {
+        body['release_amount'] = releaseAmount.toStringAsFixed(2);
+      }
+      if (cashOutPolicy != null) {
+        body['cash_out_policy'] = cashOutPolicy;
+      }
+      if (customIntervalDays != null) {
+        body['custom_interval_days'] = customIntervalDays;
+      }
+      await _api.joinIjcGroup(body);
       await loadGroups();
       return true;
     } catch (e) {
-      _error = 'Failed to join IJC: $e';
+      _error = 'Failed to join pocket: $e';
       notifyListeners();
       return false;
     }

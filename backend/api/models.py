@@ -448,6 +448,10 @@ class IJCGroup(models.Model):
         ('MONTHLY', 'Monthly Release'),
         ('CUSTOM', 'Custom Release'),
     ]
+    POCKET_TYPE_CHOICES = [
+        ('SPONSORED', 'Sponsored Pocket'),
+        ('SELF', 'Self Pocket'),
+    ]
     RESET_TYPE_CHOICES = [
         ('MIDNIGHT', 'Calendar Midnight'),
         ('ROLLING_24H', 'Rolling 24 Hours'),
@@ -463,6 +467,7 @@ class IJCGroup(models.Model):
     name = models.CharField(max_length=140)
     ijc_id = models.CharField(max_length=20, unique=True, editable=False)
     join_code = models.CharField(max_length=12, unique=True, editable=False)
+    pocket_type = models.CharField(max_length=10, choices=POCKET_TYPE_CHOICES, default='SPONSORED')
     goal_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     # New fields for Parent-controlled Credit semantics
     total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
@@ -498,7 +503,7 @@ class IJCGroup(models.Model):
     @staticmethod
     def _generate_ijc_id():
         while True:
-            candidate = f"IJC-NZL-{secrets.randbelow(900000) + 100000}"
+            candidate = f"NZP-NZR-{secrets.randbelow(900000) + 100000}"
             if not IJCGroup.objects.filter(ijc_id=candidate).exists():
                 return candidate
 

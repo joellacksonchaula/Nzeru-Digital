@@ -22,6 +22,7 @@ router.register(r'penalties', PenaltyViewSet)
 router.register(r'interest', InterestDistributionViewSet)
 router.register(r'notifications', NotificationViewSet)
 router.register(r'ijc-groups', IJCGroupViewSet, basename='ijc-groups')
+router.register(r'pockets', IJCGroupViewSet, basename='pockets')
 
 urlpatterns = [
     # Auth

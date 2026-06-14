@@ -61,6 +61,7 @@ class IjcGroup {
   final String name;
   final String ijcId;
   final String joinCode;
+  final String pocketType;
   final String ownerName;
   final String controllerName;
   final double goalAmount;
@@ -98,6 +99,7 @@ class IjcGroup {
     required this.name,
     required this.ijcId,
     required this.joinCode,
+    required this.pocketType,
     required this.ownerName,
     required this.controllerName,
     required this.goalAmount,
@@ -134,6 +136,7 @@ class IjcGroup {
   bool get isController => currentUserRole == 'CONTROLLER';
   bool get isUser => currentUserRole == 'USER' || currentUserRole == 'OWNER';
   bool get canWithdraw => isUser && isApproved && availableBalance > 0 && !isPaused;
+  bool get isOwner => isController;
   bool get isApproved => currentUserStatus == 'APPROVED';
   double get effectiveTotalAmount => totalAmount > 0 ? totalAmount : goalAmount;
   double get dailyRemaining =>
@@ -145,6 +148,7 @@ class IjcGroup {
       name: (json['name'] ?? 'Joint Savings').toString(),
       ijcId: (json['ijc_id'] ?? '').toString(),
       joinCode: (json['join_code'] ?? '').toString(),
+      pocketType: (json['pocket_type'] ?? 'SPONSORED').toString(),
       ownerName: (json['owner_name'] ?? '').toString(),
       controllerName: (json['controller_name'] ?? '').toString(),
       goalAmount: _parseDouble(json['goal_amount']),

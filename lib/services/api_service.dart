@@ -452,8 +452,10 @@ class ApiService {
     return _handleResponse(response);
   }
 
-  Future<Map<String, dynamic>> joinIjcGroup(String code) async {
-    final response = await _post('/ijc-groups/join/', body: {'code': code});
+  Future<Map<String, dynamic>> joinIjcGroup(
+    Map<String, dynamic> data,
+  ) async {
+    final response = await _post('/ijc-groups/join/', body: data);
     return _handleResponse(response);
   }
 

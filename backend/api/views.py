@@ -701,14 +701,16 @@ class IJCGroupViewSet(viewsets.ModelViewSet):
     def join(self, request):
         code = str(request.data.get('code', '')).strip().upper()
         if not code:
-            raise serializers.ValidationError({'code': 'IJC ID or join code is required.'})
+            raise serializers.ValidationError({'code': 'Pocket ID or join code is required.'})
         group = IJCGroup.objects.filter(ijc_id=code).first() or IJCGroup.objects.filter(join_code=code).first()
         if not group:
-            return Response({'detail': 'IJC not found.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'detail': 'Pocket not found.'}, status=status.HTTP_404_NOT_FOUND)
         if request.user == group.owner:
             return Response(IJCGroupSerializer(group, context={'request': request}).data)
+        if group.pocket_type == 'SELF':
+            return Response({'detail': 'Self pockets cannot be joined.'}, status=status.HTTP_400_BAD_REQUEST)
         if group.controller and group.controller_id != request.user.id:
-            return Response({'detail': 'This IJC already has a controller.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'This pocket already has a controller.'}, status=status.HTTP_400_BAD_REQUEST)
 
         total_amount_input = request.data.get('total_amount')
         release_amount_input = request.data.get('release_amount')
@@ -748,7 +750,7 @@ class IJCGroupViewSet(viewsets.ModelViewSet):
         IJCAuditLog.objects.create(
             group=group,
             actor=request.user,
-            action='IJC_CONTROLLER_LINKED',
+            action='POCKET_CONTROLLER_LINKED',
             metadata={'created': created},
         )
         return Response(IJCGroupSerializer(group, context={'request': request}).data)
