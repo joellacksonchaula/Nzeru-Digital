@@ -483,48 +483,7 @@ class _PocketTypeOption extends StatelessWidget {
   }
 }
 
-class _LockStatus extends StatelessWidget {
-  final bool locked;
-  final String status;
-
-  const _LockStatus({
-    required this.locked,
-    required this.status,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-      decoration: BoxDecoration(
-        color: locked ? AppColors.error.withAlpha(24) : AppColors.success.withAlpha(24),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: locked ? AppColors.error.withAlpha(60) : AppColors.success.withAlpha(60),
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            locked ? Icons.lock_rounded : Icons.lock_open_rounded,
-            size: 16,
-            color: locked ? AppColors.error : AppColors.success,
-          ),
-          const SizedBox(width: 6),
-          Text(
-            status,
-            style: GoogleFonts.poppins(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: locked ? AppColors.error : AppColors.success,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+// _LockStatus removed (unused) — visual lock/status now rendered inline in cards
 
 class _Notice extends StatelessWidget {
   final String message;

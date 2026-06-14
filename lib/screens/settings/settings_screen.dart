@@ -1,3 +1,4 @@
+// ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -6,7 +7,6 @@ import '../../config/app_colors.dart';
 import '../../config/app_routes.dart';
 import '../../models/user_settings.dart';
 import '../../providers/auth_provider.dart';
-import '../../providers/savings_provider.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -92,9 +92,7 @@ class _SettingsScreenState extends State<SettingsScreen>
                   style: GoogleFonts.poppins(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
-                    color: false
-                        ? AppColors.darkTextMuted
-                        : AppColors.textMuted,
+                    color: AppColors.textMuted,
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -186,9 +184,8 @@ class _SettingsScreenState extends State<SettingsScreen>
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
-    final savings = context.watch<SavingsProvider>();
     final settings = auth.settings;
-    final isDarkMode = false;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -294,7 +291,6 @@ class _SettingsScreenState extends State<SettingsScreen>
                             ],
                           ),
                         );
-                        // ignore: use_build_context_synchronously
                         if (confirm == true && mounted) {
                           final auth = context.read<AuthProvider>();
                           await auth.logout();
@@ -687,13 +683,10 @@ class _SettingsScreenState extends State<SettingsScreen>
                           ],
                         ),
                       );
-                        // ignore: use_build_context_synchronously
                         if (confirm == true && mounted) {
-                          // ignore: use_build_context_synchronously
                           final authProvider = context.read<AuthProvider>();
                           await authProvider.logout();
                           if (mounted) {
-                            // ignore: use_build_context_synchronously
                             Navigator.of(context).pushNamedAndRemoveUntil(
                               AppRoutes.login,
                               (_) => false,
@@ -806,7 +799,7 @@ class _SettingsInfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = false;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -847,7 +840,7 @@ class _SettingsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = false;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return InkWell(
       onTap: onTap,
@@ -912,7 +905,7 @@ class _SettingsToggleTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = false;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -972,7 +965,7 @@ class _ThemeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = false;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return InkWell(
       onTap: onTap,
