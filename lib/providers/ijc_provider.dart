@@ -98,7 +98,9 @@ class IjcProvider with ChangeNotifier {
         body['custom_interval_days'] = customIntervalDays;
       }
       await _api.joinIjcGroup(body);
+      _error = null;
       await loadGroups();
+      notifyListeners();
       return true;
     } catch (e) {
       _error = 'Failed to join pocket: $e';

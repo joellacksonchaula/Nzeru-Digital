@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../config/app_colors.dart';
+import '../../config/app_routes.dart';
 import '../../models/user_settings.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/savings_provider.dart';
@@ -634,6 +635,57 @@ class _SettingsScreenState extends State<SettingsScreen>
                       onTap: () {},
                     ),
                   ],
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Logout
+              _SettingsSectionCard(
+                isDarkMode: isDarkMode,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.tonal(
+                    onPressed: () async {
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: const Text('Logout'),
+                          content: const Text('Are you sure you want to logout?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx, false),
+                              child: const Text('Cancel'),
+                            ),
+                            FilledButton(
+                              onPressed: () => Navigator.pop(ctx, true),
+                              child: const Text('Logout'),
+                            ),
+                          ],
+                        ),
+                      );
+                        // ignore: use_build_context_synchronously
+                        if (confirm == true && mounted) {
+                          // ignore: use_build_context_synchronously
+                          final authProvider = context.read<AuthProvider>();
+                          await authProvider.logout();
+                          if (mounted) {
+                            // ignore: use_build_context_synchronously
+                            Navigator.of(context).pushNamedAndRemoveUntil(
+                              AppRoutes.login,
+                              (_) => false,
+                            );
+                          }
+                        }
+                      },
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.error.withAlpha(20),
+                      foregroundColor: AppColors.error,
+                    ),
+                    child: Text(
+                      'Logout',
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
