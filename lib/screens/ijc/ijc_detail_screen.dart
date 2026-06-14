@@ -45,11 +45,44 @@ class IjcDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Pocket ID ${group.ijcId}', style: GoogleFonts.poppins(color: AppColors.textSecondary)),
-            const SizedBox(height: 12),
-            Text(
-              CurrencyUtil.format(group.effectiveTotalAmount),
-              style: GoogleFonts.poppins(fontSize: 32, fontWeight: FontWeight.w800, color: AppColors.primaryTiffanyDark),
+            // Hero summary card
+            Container(
+              decoration: BoxDecoration(
+                color: AppColors.cardSurface,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: const [BoxShadow(color: Color.fromRGBO(0,0,0,0.12), blurRadius: 14, offset: Offset(0,8))],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                    child: Column(children: [Container(height: 6, color: AppColors.primaryTiffany), Container(height: 4, color: AppColors.accentRed)]),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Row(children: [
+                        Container(width: 56, height: 56, decoration: BoxDecoration(color: AppColors.primaryTiffanyLight, borderRadius: BorderRadius.circular(12)), child: const Icon(Icons.credit_card_rounded, color: Colors.white)),
+                        const SizedBox(width: 12),
+                        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(group.name, style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w800)), const SizedBox(height: 4), Text('Pocket ID ${group.ijcId}', style: GoogleFonts.poppins(color: AppColors.textSecondary))])),
+                        const SizedBox(width: 8),
+                        Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), decoration: BoxDecoration(color: group.cashOutAvailable ? AppColors.success.withAlpha(24) : AppColors.error.withAlpha(24), borderRadius: BorderRadius.circular(14)), child: Text(group.cashOutAvailable ? 'Active' : 'Locked', style: GoogleFonts.poppins(color: group.cashOutAvailable ? AppColors.success : AppColors.error, fontWeight: FontWeight.w700))),
+                      ]),
+                      const SizedBox(height: 12),
+                      Text('Total balance', style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textSecondary)),
+                      const SizedBox(height: 6),
+                      Text(CurrencyUtil.format(group.effectiveTotalAmount), style: GoogleFonts.poppins(fontSize: 28, fontWeight: FontWeight.w800, color: AppColors.primaryTiffanyDark)),
+                      const SizedBox(height: 12),
+                      ClipRRect(borderRadius: BorderRadius.circular(8), child: LinearProgressIndicator(value: group.progressPercent.clamp(0.0,1.0), minHeight: 10, backgroundColor: AppColors.borderLight, valueColor: AlwaysStoppedAnimation(AppColors.primaryTiffany))),
+                      const SizedBox(height: 8),
+                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('${(group.progressPercent*100).toStringAsFixed(0)}%', style: GoogleFonts.poppins(fontWeight: FontWeight.w700)), Text('${CurrencyUtil.format(group.effectiveTotalAmount)} of ${CurrencyUtil.format(group.goalAmount)}', style: GoogleFonts.poppins(color: AppColors.textSecondary))]),
+                      const SizedBox(height: 8),
+                      Row(children: [Expanded(child: Text('Release amount: ${CurrencyUtil.format(group.releaseAmount)} ${group.cashOutPolicy.toLowerCase()}', style: GoogleFonts.poppins())), Text(group.nextReleaseDate != null ? DateFormat('dd MMM, hh:mm a').format(group.nextReleaseDate!) : 'Next release soon', style: GoogleFonts.poppins(color: AppColors.textSecondary))]),
+                    ]),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 16),
             LayoutBuilder(

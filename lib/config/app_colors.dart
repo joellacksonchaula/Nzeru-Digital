@@ -3,9 +3,13 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
-  static const Color primaryTiffany = Color(0xFF0ABAB5);
-  static const Color primaryTiffanyDark = Color(0xFF078F8C);
-  static const Color primaryTiffanyLight = Color(0xFFCFF7F5);
+  // Tiffany teal (brand) and variants
+  static const Color primaryTiffany = Color(0xFF14B8A6); // #14B8A6
+  static const Color primaryTiffanyDark = Color(0xFF0E8F83);
+  static const Color primaryTiffanyLight = Color(0xFFDFF9F7);
+  
+  // Accent red
+  static const Color accentRed = Color(0xFFFF3B30); // #FF3B30
 
   static const Color background = Color(0xFFF7F8FA);
   static const Color surface = Color(0xFFFFFFFF);

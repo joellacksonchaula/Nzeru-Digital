@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../config/app_colors.dart';
 import '../../config/design_system.dart';
+import 'package:intl/intl.dart';
 import '../../models/ijc_group.dart';
 import '../../providers/ijc_provider.dart';
 import '../../utils/currency_util.dart';
@@ -287,65 +288,140 @@ class _IjcCreditCard extends StatelessWidget {
       ),
       child: Container(
         margin: const EdgeInsets.only(bottom: 0),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
           color: AppColors.cardSurface,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           boxShadow: DesignSystem.creditCardShadows,
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              group.name,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
+            // Decorative double lines stretching full width
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+              child: Column(
+                children: [
+                  Container(height: 6, color: AppColors.primaryTiffany),
+                  Container(height: 4, color: AppColors.accentRed),
+                ],
               ),
             ),
-            const SizedBox(height: 6),
-            Text(
-              CurrencyUtil.format(group.effectiveTotalAmount),
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Top row: icon, name, description, menu
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(
-                        'Release amount',
-                        style: GoogleFonts.poppins(
-                          fontSize: 11,
-                          color: AppColors.textSecondary,
+                      Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryTiffanyLight,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(Icons.credit_card_rounded, color: Colors.white),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(group.name, style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w700)),
+                            const SizedBox(height: 4),
+                            Text('Pocket ID ${group.ijcId}', style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textSecondary)),
+                          ],
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        CurrencyUtil.format(group.releaseAmount),
-                        style: GoogleFonts.poppins(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.success,
-                        ),
-                      ),
+                      IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert_rounded)),
                     ],
                   ),
-                ),
-                _LockStatus(
-                  locked: !group.cashOutAvailable,
-                  status: group.cashOutAvailable ? 'Released' : 'Locked',
-                ),
-              ],
+                  const SizedBox(height: 12),
+
+                  // Balance label and amount
+                  Text('Balance', style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textSecondary)),
+                  const SizedBox(height: 6),
+                  Text(CurrencyUtil.format(group.effectiveTotalAmount), style: GoogleFonts.poppins(fontSize: 26, fontWeight: FontWeight.w800, color: AppColors.primaryTiffany)),
+                  const SizedBox(height: 12),
+
+                  // Progress
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Funding Progress', style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textSecondary)),
+                            const SizedBox(height: 8),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: LinearProgressIndicator(
+                                value: group.progressPercent.clamp(0.0, 1.0),
+                                minHeight: 10,
+                                backgroundColor: AppColors.borderLight,
+                                valueColor: AlwaysStoppedAnimation(AppColors.primaryTiffany),
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text('${CurrencyUtil.format(group.effectiveTotalAmount)} of ${CurrencyUtil.format(group.goalAmount)}', style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textSecondary)),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Text('${(group.progressPercent * 100).toStringAsFixed(0)}%', style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Stats two columns
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppColors.surfaceLight,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(children: [Icon(Icons.flag_rounded, size: 18, color: AppColors.textSecondary), const SizedBox(width: 8), Text('Target Amount', style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textSecondary))]),
+                              const SizedBox(height: 8),
+                              Text(CurrencyUtil.format(group.goalAmount), style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
+                            ],
+                          ),
+                        ),
+                        Container(width: 1, height: 38, color: AppColors.border),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(children: [Icon(Icons.calendar_today, size: 18, color: AppColors.textSecondary), const SizedBox(width: 8), Text('Release Amount', style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textSecondary))]),
+                              const SizedBox(height: 8),
+                              Text('${CurrencyUtil.format(group.releaseAmount)} ${group.cashOutPolicy.toLowerCase()}', style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Next release row
+                  Row(
+                    children: [
+                      Icon(Icons.calendar_month_outlined, color: AppColors.primaryTiffany),
+                      const SizedBox(width: 8),
+                      Expanded(child: Text('Next release: ${group.nextReleaseDate != null ? DateFormat('dd MMM, hh:mm a').format(group.nextReleaseDate!) : 'Soon'}', style: GoogleFonts.poppins())),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.chevron_right),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),

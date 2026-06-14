@@ -7,7 +7,6 @@ import '../../config/app_routes.dart';
 import '../../models/user_settings.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/savings_provider.dart';
-import '../../widgets/dashboard_kit.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -277,6 +276,31 @@ class _SettingsScreenState extends State<SettingsScreen>
                       onChanged: (value) => _saveSettings(
                         settings.copyWith(biometricLoginEnabled: value),
                       ),
+                    ),
+                    const SizedBox(height: 12),
+                    _SettingsTile(
+                      title: 'Logout',
+                      subtitle: 'Sign out of your account',
+                      trailing: const Icon(Icons.logout_rounded),
+                      onTap: () async {
+                        final confirm = await showDialog<bool>(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            title: const Text('Logout'),
+                            content: const Text('Are you sure you want to logout?'),
+                            actions: [
+                              TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                              FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Logout')),
+                            ],
+                          ),
+                        );
+                        // ignore: use_build_context_synchronously
+                        if (confirm == true && mounted) {
+                          final auth = context.read<AuthProvider>();
+                          await auth.logout();
+                          if (mounted) Navigator.of(context).pushNamedAndRemoveUntil(AppRoutes.login, (_) => false);
+                        }
+                      },
                     ),
                   ],
                 ),
@@ -923,7 +947,7 @@ class _SettingsToggleTile extends StatelessWidget {
         Switch.adaptive(
           value: value,
           onChanged: onChanged,
-          activeColor: AppColors.abyssalTeal,
+          activeThumbColor: AppColors.abyssalTeal,
           inactiveThumbColor: isDarkMode
               ? AppColors.darkTextMuted
               : AppColors.textMuted,
