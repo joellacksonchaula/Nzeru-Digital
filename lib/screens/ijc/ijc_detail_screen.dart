@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:intl/intl.dart';
 
 import '../../config/app_colors.dart';
 import '../../models/ijc_group.dart';
 import '../../providers/ijc_provider.dart';
+import '../../screens/ijc/ijc_deposit_screen.dart';
 import '../../utils/currency_util.dart';
 
 class IjcDetailScreen extends StatelessWidget {
@@ -18,6 +21,24 @@ class IjcDetailScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(group.name, style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
+        actions: [
+          PopupMenuButton<String>(
+            itemBuilder: (context) => [
+              const PopupMenuItem(value: 'share', child: Text('Share Pocket')),
+              const PopupMenuItem(value: 'copy', child: Text('Copy Pocket ID')),
+            ],
+            onSelected: (value) {
+              final code = group.joinCode.isNotEmpty ? group.joinCode : group.ijcId;
+              if (value == 'share') {
+                SharePlus.instance.share(ShareParams(text: 'Join my Nzeru Pocket: $code'));
+              } else {
+                Clipboard.setData(ClipboardData(text: code));
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Pocket code copied')));
+              }
+            },
+            icon: const Icon(Icons.more_vert_rounded),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 28),
@@ -72,11 +93,33 @@ class IjcDetailScreen extends StatelessWidget {
                     SizedBox(
                       width: isWide ? (constraints.maxWidth - 10) / 2 : double.infinity,
                       child: FilledButton(
-                        onPressed: () => _openAmountDialog(context, isDeposit: true),
+                        onPressed: () {
+                          if (group.pocketType == 'SELF') {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => IjcDepositScreen(group: group),
+                              ),
+                            );
+                          } else {
+                            _showSponsoredCodeDialog(context, group);
+                          }
+                        },
                         style: FilledButton.styleFrom(backgroundColor: AppColors.primaryTiffany),
-                        child: const Text('Add funds'),
+                        child: Text(group.pocketType == 'SELF' ? 'Add Funds' : 'Generate Pocket Code'),
                       ),
                     ),
+                    if (group.pocketType == 'SPONSORED')
+                      SizedBox(
+                        width: isWide ? (constraints.maxWidth - 10) / 2 : double.infinity,
+                        child: OutlinedButton(
+                          onPressed: () {
+                            final code = group.joinCode.isNotEmpty ? group.joinCode : group.ijcId;
+                            SharePlus.instance.share(ShareParams(text: 'Join my Nzeru Pocket: $code'));
+                          },
+                          child: const Text('Share Pocket Code'),
+                        ),
+                      ),
                     if (group.canWithdraw)
                       SizedBox(
                         width: isWide ? (constraints.maxWidth - 10) / 2 : double.infinity,
@@ -94,14 +137,66 @@ class IjcDetailScreen extends StatelessWidget {
               Text('Recent activity', style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
               const SizedBox(height: 8),
               ...group.transactions.map((t) => ListTile(
-                    leading: Icon(t.isDeposit? Icons.arrow_downward: Icons.arrow_upward, color: t.isDeposit? AppColors.success: AppColors.error),
-                    title: Text(t.userName),
-                    subtitle: Text(DateFormat('dd MMM yyyy').format(t.createdAt)),
-                    trailing: Text('${t.isDeposit? '+' : '-'}${CurrencyUtil.format(t.amount)}', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, color: t.isDeposit? AppColors.success: AppColors.error)),
-                  ))
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    tileColor: AppColors.cardSurface,
+                    leading: Container(
+                      decoration: BoxDecoration(
+                        color: (t.isDeposit ? AppColors.success : AppColors.error).withAlpha(24),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.all(10),
+                      child: Icon(
+                        t.isDeposit ? Icons.arrow_downward : Icons.arrow_upward,
+                        color: t.isDeposit ? AppColors.success : AppColors.error,
+                        size: 20,
+                      ),
+                    ),
+                    title: Text(t.userName, style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+                    subtitle: Text(DateFormat('dd MMM yyyy').format(t.createdAt), style: GoogleFonts.poppins(color: AppColors.textSecondary)),
+                    trailing: Text(
+                      '${t.isDeposit ? '+' : '-'}${CurrencyUtil.format(t.amount)}',
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.w700, color: t.isDeposit ? AppColors.success : AppColors.error),
+                    ),
+                  )),
             ]
           ],
         ),
+      ),
+    );
+  }
+
+  void _showSponsoredCodeDialog(BuildContext context, IjcGroup group) {
+    final code = group.joinCode.isNotEmpty ? group.joinCode : group.ijcId;
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Pocket Code'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Use this code to share your pocket with sponsors:'),
+            const SizedBox(height: 16),
+            SelectableText(code, style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 18)),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: code));
+              Navigator.pop(ctx);
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Pocket code copied')));
+            },
+            child: const Text('Copy'),
+          ),
+          FilledButton(
+            onPressed: () {
+              SharePlus.instance.share(ShareParams(text: 'Join my Nzeru Pocket: $code'));
+              Navigator.pop(ctx);
+            },
+            child: const Text('Share'),
+          ),
+        ],
       ),
     );
   }
@@ -153,7 +248,7 @@ class IjcDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
-                    value: policy,
+                    initialValue: policy,
                     decoration: const InputDecoration(
                       labelText: 'Release frequency',
                       prefixIcon: Icon(Icons.event_repeat_rounded),

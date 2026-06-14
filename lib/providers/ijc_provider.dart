@@ -60,10 +60,10 @@ class IjcProvider with ChangeNotifier {
       final createdId = response['id'] is int
           ? response['id'] as int
           : int.tryParse(response['id']?.toString() ?? '');
-      if (createdId != null) {
+      if (createdId != null && _groups.isNotEmpty) {
         return _groups.firstWhere(
           (group) => group.id == createdId,
-          orElse: () => _groups.isNotEmpty ? _groups.last : null,
+          orElse: () => _groups.last,
         );
       }
       return _groups.isNotEmpty ? _groups.last : null;

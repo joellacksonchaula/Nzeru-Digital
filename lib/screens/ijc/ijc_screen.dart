@@ -113,91 +113,104 @@ class _IjcScreenState extends State<IjcScreen> {
 
   Future<void> _showCreateDialog(BuildContext context) async {
     final nameController = TextEditingController();
-    var pocketType = 'SPONSORED';
-    var policy = 'DAILY';
+    var pocketType = '';
     try {
-      await showDialog<void>(
+      await showModalBottomSheet<void>(
         context: context,
-        builder: (dialogContext) => StatefulBuilder(
-          builder: (context, setDialogState) => AlertDialog(
-            title: const Text('Create Nzeru Pocket'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
+        isScrollControlled: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        builder: (bottomSheetContext) {
+          return StatefulBuilder(
+            builder: (context, setState) {
+              return Padding(
+                padding: EdgeInsets.only(
+                  left: 24,
+                  right: 24,
+                  top: 24,
+                  bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Expanded(
-                      child: RadioListTile<String>(
-                        title: const Text('Sponsored Pocket'),
-                        value: 'SPONSORED',
-                        groupValue: pocketType,
-                        contentPadding: EdgeInsets.zero,
-                        onChanged: (value) {
-                          if (value != null) setDialogState(() => pocketType = value);
-                        },
+                    Center(
+                      child: Container(
+                        width: 48,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: AppColors.textSecondary.withAlpha(80),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
                       ),
                     ),
-                    Expanded(
-                      child: RadioListTile<String>(
-                        title: const Text('Self Pocket'),
-                        value: 'SELF',
-                        groupValue: pocketType,
-                        contentPadding: EdgeInsets.zero,
-                        onChanged: (value) {
-                          if (value != null) setDialogState(() => pocketType = value);
-                        },
-                      ),
+                    const SizedBox(height: 18),
+                    Text(
+                      pocketType.isEmpty ? 'Create Pocket' : 'Pocket Name',
+                      style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w700),
+                      textAlign: TextAlign.center,
                     ),
+                    const SizedBox(height: 18),
+                    if (pocketType.isEmpty) ...[
+                      _PocketTypeOption(
+                        label: 'Sponsored Pocket',
+                        description: 'Create a pocket for sponsors to fund.',
+                        icon: Icons.handshake_rounded,
+                        onTap: () => setState(() => pocketType = 'SPONSORED'),
+                      ),
+                      const SizedBox(height: 12),
+                      _PocketTypeOption(
+                        label: 'Self Pocket',
+                        description: 'Create a personal pocket and add funds now.',
+                        icon: Icons.person_rounded,
+                        onTap: () => setState(() => pocketType = 'SELF'),
+                      ),
+                    ] else ...[
+                      TextField(
+                        controller: nameController,
+                        decoration: InputDecoration(
+                          labelText: 'Pocket name',
+                          hintText: 'Holiday Savings',
+                          prefixIcon: const Icon(Icons.credit_score_rounded),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      FilledButton(
+                        onPressed: () async {
+                          final name = nameController.text.trim();
+                          if (name.isEmpty) {
+                            _snack(context, 'Enter a pocket name.');
+                            return;
+                          }
+                          final createdGroup = await context.read<IjcProvider>().createGroup(
+                            name: name,
+                            pocketType: pocketType,
+                          );
+                          if (!context.mounted) return;
+                          if (createdGroup == null) {
+                            _snack(context, context.read<IjcProvider>().error ?? 'Failed to create pocket.');
+                            return;
+                          }
+                          Navigator.pop(bottomSheetContext);
+                          _snack(context, 'Pocket created.');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => IjcDetailScreen(group: createdGroup),
+                            ),
+                          );
+                        },
+                        child: const Text('Create Pocket'),
+                      ),
+                    ],
                   ],
                 ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Pocket name',
-                    prefixIcon: Icon(Icons.credit_score_rounded),
-                  ),
-                ),
-                const SizedBox(height: 12),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(dialogContext),
-                child: const Text('Cancel'),
-              ),
-              FilledButton(
-                onPressed: () async {
-                  final name = nameController.text.trim();
-                  if (name.isEmpty) {
-                    _snack(context, 'Enter a pocket name.');
-                    return;
-                  }
-                  final createdGroup = await context.read<IjcProvider>().createGroup(
-                    name: name,
-                    pocketType: pocketType,
-                  );
-                  if (!context.mounted) return;
-                  Navigator.pop(dialogContext);
-                  if (createdGroup != null) {
-                    _snack(context, 'Pocket created.');
-                    if (pocketType == 'SELF') {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => IjcDetailScreen(group: createdGroup),
-                        ),
-                      );
-                    }
-                  } else {
-                    _snack(context, context.read<IjcProvider>().error ?? 'Failed to create pocket.');
-                  }
-                },
-                child: const Text('Create Pocket'),
-              ),
-            ],
-          ),
-        ),
+              );
+            },
+          );
+        },
       );
     } finally {
       nameController.dispose();
@@ -333,6 +346,59 @@ class _IjcCreditCard extends StatelessWidget {
                   status: group.cashOutAvailable ? 'Released' : 'Locked',
                 ),
               ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PocketTypeOption extends StatelessWidget {
+  final String label;
+  final String description;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _PocketTypeOption({
+    required this.label,
+    required this.description,
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(18),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.cardSurface,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: AppColors.border),
+        ),
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: AppColors.primaryTiffanyLight,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: const EdgeInsets.all(12),
+              child: Icon(icon, color: AppColors.primaryTiffanyDark, size: 22),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(label, style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w700)),
+                  const SizedBox(height: 4),
+                  Text(description, style: GoogleFonts.poppins(fontSize: 13, color: AppColors.textSecondary)),
+                ],
+              ),
             ),
           ],
         ),

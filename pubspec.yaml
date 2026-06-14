@@ -21,6 +21,7 @@ dependencies:
   shimmer: any
   path_provider: ^2.1.1
   shared_preferences: any
+  share_plus: any
 
 dev_dependencies:
   flutter_test:
