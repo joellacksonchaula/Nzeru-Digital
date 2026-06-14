@@ -39,6 +39,14 @@ class IjcProvider with ChangeNotifier {
     int? customIntervalDays,
   }) async {
     try {
+      // Client-side validation for SELF pockets to avoid server errors
+      if (pocketType == 'SELF') {
+        if (totalAmount == null || releaseAmount == null || totalAmount <= 0 || releaseAmount <= 0) {
+          _error = 'Self pockets require total and release amounts.';
+          notifyListeners();
+          return false;
+        }
+      }
       final body = <String, dynamic>{
         'name': name,
         'pocket_type': pocketType,
@@ -74,6 +82,8 @@ class IjcProvider with ChangeNotifier {
   }) async {
     try {
       final body = <String, dynamic>{'code': code};
+      // Normalize join code to uppercase to match backend storage
+      body['code'] = code.trim().toUpperCase();
       if (totalAmount != null) {
         body['total_amount'] = totalAmount.toStringAsFixed(2);
       }

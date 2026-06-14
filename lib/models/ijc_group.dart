@@ -145,7 +145,7 @@ class IjcGroup {
   factory IjcGroup.fromJson(Map<String, dynamic> json) {
     return IjcGroup(
       id: _parseInt(json['id']),
-      name: (json['name'] ?? 'Joint Savings').toString(),
+      name: (json['name'] ?? 'Pocket').toString(),
       ijcId: (json['ijc_id'] ?? '').toString(),
       joinCode: (json['join_code'] ?? '').toString(),
       pocketType: (json['pocket_type'] ?? 'SPONSORED').toString(),

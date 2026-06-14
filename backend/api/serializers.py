@@ -282,7 +282,7 @@ class IJCGroupSerializer(serializers.ModelSerializer):
     current_user_role = serializers.SerializerMethodField()
     current_user_status = serializers.SerializerMethodField()
     total_credit_amount = serializers.SerializerMethodField()
-    release_amount = serializers.ReadOnlyField()
+    # allow release_amount to be set on create/update for SELF pockets
     release_frequency = serializers.ReadOnlyField(source='cash_out_policy')
     available_balance = serializers.ReadOnlyField()
     released_balance = serializers.ReadOnlyField(source='available_balance')
@@ -356,7 +356,6 @@ class IJCGroupSerializer(serializers.ModelSerializer):
             'last_cash_out_at',
             'is_active',
             'created_at',
-            'release_amount',
             'release_frequency',
             'available_balance',
             'locked_balance',

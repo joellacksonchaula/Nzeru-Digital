@@ -20,17 +20,10 @@ class BottomNavBar extends StatelessWidget {
         border: Border(
           top: BorderSide(color: AppColors.primaryRed.withValues(alpha: 0.55)),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.10),
-            blurRadius: 24,
-            offset: const Offset(0, -6),
-          ),
-        ],
       ),
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+          padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -60,8 +53,8 @@ class BottomNavBar extends StatelessWidget {
               ),
               Expanded(
                 child: _NavItem(
-                  icon: Icons.groups_2_rounded,
-                  label: 'Joint',
+                  icon: Icons.account_balance_wallet_rounded,
+                  label: 'Pocket',
                   isActive: currentIndex == 3,
                   onTap: () => onTap(3),
                 ),
@@ -107,26 +100,12 @@ class _NavItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(26),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
         decoration: BoxDecoration(
           color: isActive ? AppColors.tiffanyMist : Colors.transparent,
-          borderRadius: BorderRadius.circular(26),
-          border: isActive
-              ? Border.all(color: AppColors.primaryRed)
-              : Border.all(color: Colors.transparent),
-          boxShadow: isActive
-              ? [
-                  BoxShadow(
-                    color: AppColors.faluRed.withValues(alpha: 0.12),
-                    blurRadius: 18,
-                    offset: const Offset(0, 8),
-                  ),
-                ]
-              : null,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,

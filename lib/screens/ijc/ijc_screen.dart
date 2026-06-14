@@ -10,6 +10,7 @@ import '../../providers/ijc_provider.dart';
 import '../../utils/currency_util.dart';
 import '../../widgets/app_logo.dart';
 import '../../widgets/progress_ring.dart';
+import 'ijc_detail_screen.dart';
 
 class IjcScreen extends StatefulWidget {
   const IjcScreen({super.key});
@@ -346,7 +347,14 @@ class _IjcCreditCard extends StatelessWidget {
     final pendingMembers =
         group.members.where((member) => member.status == 'PENDING').toList();
 
-    return Container(
+    return InkWell(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => IjcDetailScreen(group: group),
+        ),
+      ),
+      child: Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -638,7 +646,7 @@ class _IjcCreditCard extends StatelessWidget {
           ],
         ],
       ),
-    );
+    ));
   }
 }
 

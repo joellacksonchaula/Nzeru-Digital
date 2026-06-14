@@ -147,7 +147,6 @@ class _PhoneHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final initial = name.isEmpty ? 'U' : name[0].toUpperCase();
-
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 12, 14, 10),
       decoration: BoxDecoration(
@@ -170,7 +169,17 @@ class _PhoneHeader extends StatelessWidget {
         children: [
           Row(
             children: [
-              const SizedBox(width: 48, height: 48),
+              CircleAvatar(
+                radius: 22,
+                backgroundColor: AppColors.tiffanyBlueLight,
+                child: Text(
+                  initial,
+                  style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 18,
+                      color: AppColors.tiffanyBlueDark),
+                ),
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -190,7 +199,7 @@ class _PhoneHeader extends StatelessWidget {
                     Text(
                       name,
                       style: GoogleFonts.poppins(
-                        fontSize: 30,
+                        fontSize: 18,
                         height: 0.95,
                         fontWeight: FontWeight.w700,
                         color: darkMode
@@ -704,29 +713,16 @@ class _QuickActionsRow extends StatelessWidget {
                 child: Container(
                 height: 72,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.88),
+                  color: Colors.transparent,
                   borderRadius: BorderRadius.circular(18),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.04),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(
-                      width: 30,
-                      height: 30,
-                      child: Center(
-                        child: Icon(
-                          items[i].icon,
-                          size: 18,
-                          color: AppColors.tiffanyBlue,
-                        ),
-                      ),
+                    Icon(
+                      items[i].icon,
+                      size: 22,
+                      color: AppColors.tiffanyBlue,
                     ),
                     const SizedBox(height: 6),
                     Text(
