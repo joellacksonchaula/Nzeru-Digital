@@ -170,7 +170,7 @@ class _PhoneHeader extends StatelessWidget {
         children: [
           Row(
             children: [
-              const AppLogo(size: 48, iconSize: 24),
+              const SizedBox(width: 48, height: 48),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -701,33 +701,31 @@ class _QuickActionsRow extends StatelessWidget {
           Expanded(
             child: GestureDetector(
               onTap: () => Navigator.pushNamed(context, items[i].route),
-              child: Container(
+                child: Container(
                 height: 72,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF8DE8E5),
+                  color: Colors.white.withValues(alpha: 0.88),
                   borderRadius: BorderRadius.circular(18),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF0ABAB5).withValues(alpha: 0.18),
-                      blurRadius: 14,
-                      offset: const Offset(0, 6),
+                      color: Colors.black.withValues(alpha: 0.04),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
                     ),
                   ],
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
+                    SizedBox(
                       width: 30,
                       height: 30,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.28),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(
-                        items[i].icon,
-                        size: 18,
-                        color: const Color(0xFF045452),
+                      child: Center(
+                        child: Icon(
+                          items[i].icon,
+                          size: 18,
+                          color: AppColors.tiffanyBlue,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 6),

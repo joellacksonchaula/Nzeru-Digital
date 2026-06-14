@@ -7,8 +7,8 @@ class AppLogo extends StatelessWidget {
   final bool showText;
 
   const AppLogo({
-    this.size = 32,
-    this.iconSize = 16,
+    this.size = 48,
+    this.iconSize = 24,
     this.showText = false,
     super.key,
   });

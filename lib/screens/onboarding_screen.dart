@@ -64,7 +64,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(left: 24),
-                  child: const AppLogo(size: 44, iconSize: 22, showText: true),
+                  child: const SizedBox(width: 44, height: 44),
                 ),
                 TextButton(
                   onPressed: () =>

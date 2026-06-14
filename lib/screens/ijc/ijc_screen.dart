@@ -36,7 +36,7 @@ class _IjcScreenState extends State<IjcScreen> {
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const AppLogo(size: 34, iconSize: 18),
+            const SizedBox(width: 34, height: 34),
             const SizedBox(width: 12),
             Text(
               'Nzeru Pocket',
