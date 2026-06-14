@@ -793,12 +793,15 @@ class IJCGroupViewSet(viewsets.ModelViewSet):
             # Support parent-provided configuration on initial deposit
             total_amount_input = request.data.get('total_amount')
             release_amount_input = request.data.get('release_amount')
+            cash_out_policy = request.data.get('cash_out_policy')
             if total_amount_input:
                 total_amt = self._parse_amount(total_amount_input, 'total_amount')
                 group.total_amount = total_amt
             if release_amount_input:
                 rel_amt = self._parse_amount(release_amount_input, 'release_amount')
                 group.release_amount = rel_amt
+            if cash_out_policy in ['DAILY', 'WEEKLY', 'MONTHLY', 'CUSTOM']:
+                group.cash_out_policy = cash_out_policy
             if reference:
                 existing = group.transactions.filter(client_reference=reference).first()
                 if existing:
@@ -818,7 +821,7 @@ class IJCGroupViewSet(viewsets.ModelViewSet):
                 group.total_amount = amount
             elif group.balance > amount:
                 group.total_amount += amount
-            group.save(update_fields=['balance', 'goal_amount', 'total_amount', 'release_amount'])
+            group.save(update_fields=['balance', 'goal_amount', 'total_amount', 'release_amount', 'cash_out_policy'])
             membership.total_contributed += amount
             membership.save(update_fields=['total_contributed'])
         Notification.objects.create(

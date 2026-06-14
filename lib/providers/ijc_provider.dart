@@ -30,7 +30,7 @@ class IjcProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> createGroup({
+  Future<IjcGroup?> createGroup({
     required String name,
     required String pocketType,
     double? totalAmount,
@@ -39,14 +39,6 @@ class IjcProvider with ChangeNotifier {
     int? customIntervalDays,
   }) async {
     try {
-      // Client-side validation for SELF pockets to avoid server errors
-      if (pocketType == 'SELF') {
-        if (totalAmount == null || releaseAmount == null || totalAmount <= 0 || releaseAmount <= 0) {
-          _error = 'Self pockets require total and release amounts.';
-          notifyListeners();
-          return false;
-        }
-      }
       final body = <String, dynamic>{
         'name': name,
         'pocket_type': pocketType,
@@ -63,13 +55,22 @@ class IjcProvider with ChangeNotifier {
       if (customIntervalDays != null) {
         body['custom_interval_days'] = customIntervalDays;
       }
-      await _api.createIjcGroup(body);
+      final response = await _api.createIjcGroup(body);
       await loadGroups();
-      return true;
+      final createdId = response['id'] is int
+          ? response['id'] as int
+          : int.tryParse(response['id']?.toString() ?? '');
+      if (createdId != null) {
+        return _groups.firstWhere(
+          (group) => group.id == createdId,
+          orElse: () => _groups.isNotEmpty ? _groups.last : null,
+        );
+      }
+      return _groups.isNotEmpty ? _groups.last : null;
     } catch (e) {
       _error = 'Failed to create pocket: $e';
       notifyListeners();
-      return false;
+      return null;
     }
   }
 
@@ -125,12 +126,18 @@ class IjcProvider with ChangeNotifier {
     required int groupId,
     required double amount,
     String description = '',
+    double? totalAmount,
+    double? releaseAmount,
+    String? cashOutPolicy,
   }) async {
     try {
       await _api.depositIjc(
         groupId: groupId,
         amount: amount,
         description: description,
+        totalAmount: totalAmount,
+        releaseAmount: releaseAmount,
+        cashOutPolicy: cashOutPolicy,
       );
       await loadGroups();
       return true;

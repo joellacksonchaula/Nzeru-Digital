@@ -29,24 +29,31 @@ class ApiService {
   factory ApiService() => _instance;
   ApiService._internal();
 
-  bool get isAuthenticated => _accessToken != null;
+  bool get isAuthenticated => _accessToken?.trim().isNotEmpty == true;
+  bool get canRefresh => _refreshToken?.trim().isNotEmpty == true;
 
   // ─── Token Persistence ──────────────────────────────
 
   /// Call once at startup (in main.dart) to restore any saved session.
   Future<void> loadTokens() async {
     final prefs = await SharedPreferences.getInstance();
-    _accessToken = prefs.getString('access_token');
-    _refreshToken = prefs.getString('refresh_token');
+    final access = prefs.getString('access_token')?.trim();
+    final refresh = prefs.getString('refresh_token')?.trim();
+    _accessToken = access?.isNotEmpty == true ? access : null;
+    _refreshToken = refresh?.isNotEmpty == true ? refresh : null;
   }
 
   Future<void> _saveTokens() async {
     final prefs = await SharedPreferences.getInstance();
-    if (_accessToken != null) {
-      await prefs.setString('access_token', _accessToken!);
+    if (_accessToken?.trim().isNotEmpty == true) {
+      await prefs.setString('access_token', _accessToken!.trim());
+    } else {
+      await prefs.remove('access_token');
     }
-    if (_refreshToken != null) {
-      await prefs.setString('refresh_token', _refreshToken!);
+    if (_refreshToken?.trim().isNotEmpty == true) {
+      await prefs.setString('refresh_token', _refreshToken!.trim());
+    } else {
+      await prefs.remove('refresh_token');
     }
   }
 
@@ -58,11 +65,16 @@ class ApiService {
 
   // ─── Headers ────────────────────────────────────────
 
-  Map<String, String> get _headers => {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    if (_accessToken != null) 'Authorization': 'Bearer $_accessToken',
-  };
+  Map<String, String> get _headers {
+    final headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+    if (_accessToken?.trim().isNotEmpty == true) {
+      headers['Authorization'] = 'Bearer $_accessToken';
+    }
+    return headers;
+  }
 
   // ─── Core HTTP helpers with auto-refresh ────────────
 
@@ -205,8 +217,12 @@ class ApiService {
         requiresAuth: false,
       );
       final data = _handleResponse(response);
-      _accessToken = data['access'];
-      _refreshToken = data['refresh'];
+      _accessToken = (data['access'] as String?)?.trim();
+      _refreshToken = (data['refresh'] as String?)?.trim();
+      if (_accessToken == null || _accessToken!.isEmpty || _refreshToken == null || _refreshToken!.isEmpty) {
+        await logout();
+        throw Exception('Authentication response missing access or refresh token.');
+      }
       await _saveTokens();
       return data;
     } on SocketException catch (e) {
@@ -237,14 +253,20 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        _accessToken = data['access'];
-        if (data.containsKey('refresh')) {
-          _refreshToken = data['refresh'];
+        final access = (data['access'] as String?)?.trim();
+        final refresh = (data['refresh'] as String?)?.trim();
+        if (access == null || access.isEmpty) {
+          await logout();
+          return false;
+        }
+        _accessToken = access;
+        if (refresh?.isNotEmpty == true) {
+          _refreshToken = refresh;
         }
         await _saveTokens();
         return true;
       }
-      // Refresh token expired — clear everything
+      // Refresh token expired or invalid — clear everything
       await logout();
       return false;
     } catch (e) {
@@ -476,6 +498,7 @@ class ApiService {
     String description = '',
     double? totalAmount,
     double? releaseAmount,
+    String? cashOutPolicy,
   }) async {
     final body = {
       'amount': amount.toStringAsFixed(2),
@@ -486,6 +509,9 @@ class ApiService {
     }
     if (releaseAmount != null) {
       body['release_amount'] = releaseAmount.toStringAsFixed(2);
+    }
+    if (cashOutPolicy != null) {
+      body['cash_out_policy'] = cashOutPolicy;
     }
     final response = await _post(
       '/ijc-groups/$groupId/deposit/',

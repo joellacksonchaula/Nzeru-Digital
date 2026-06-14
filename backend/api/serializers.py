@@ -398,8 +398,10 @@ class IJCGroupSerializer(serializers.ModelSerializer):
         pocket_type = attrs.get('pocket_type', getattr(self.instance, 'pocket_type', 'SPONSORED'))
         total_amount = attrs.get('total_amount', getattr(self.instance, 'total_amount', 0))
         release_amount = attrs.get('release_amount', getattr(self.instance, 'release_amount', 0))
-        if pocket_type == 'SELF' and (total_amount <= 0 or release_amount <= 0):
+        # Allow initial SELF pocket creation without amounts; only validate when amounts are explicitly provided.
+        amount_fields_provided = 'total_amount' in attrs or 'release_amount' in attrs
+        if pocket_type == 'SELF' and amount_fields_provided and (total_amount <= 0 or release_amount <= 0):
             raise serializers.ValidationError({
-                'detail': 'Self pockets require total_amount and release_amount.',
+                'detail': 'Self pockets require total_amount and release_amount when specified.',
             })
         return attrs

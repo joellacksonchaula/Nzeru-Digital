@@ -29,22 +29,28 @@ class AuthProvider with ChangeNotifier {
   /// Call this at startup (from SplashScreen) to restore a saved session.
   Future<bool> tryRestoreSession() async {
     await _api.loadTokens();
-    if (!_api.isAuthenticated) return false;
+    if (!_api.isAuthenticated && !_api.canRefresh) return false;
+    if (!_api.isAuthenticated && _api.canRefresh) {
+      final refreshed = await _api.refreshToken();
+      if (!refreshed) return false;
+    }
     try {
       await _fetchCurrentUser();
       _isAuthenticated = _user != null;
       notifyListeners();
       return _isAuthenticated;
     } catch (_) {
-      // Token may be expired; try refresh
-      final refreshed = await _api.refreshToken();
-      if (refreshed) {
-        try {
-          await _fetchCurrentUser();
-          _isAuthenticated = _user != null;
-          notifyListeners();
-          return _isAuthenticated;
-        } catch (_) {}
+      // Token may be invalid or missing; try refresh if possible
+      if (_api.canRefresh) {
+        final refreshed = await _api.refreshToken();
+        if (refreshed) {
+          try {
+            await _fetchCurrentUser();
+            _isAuthenticated = _user != null;
+            notifyListeners();
+            return _isAuthenticated;
+          } catch (_) {}
+        }
       }
       return false;
     }

@@ -31,14 +31,19 @@ class IjcDetailScreen extends StatelessWidget {
               style: GoogleFonts.poppins(fontSize: 32, fontWeight: FontWeight.w800, color: AppColors.primaryTiffanyDark),
             ),
             const SizedBox(height: 16),
-            Row(
-              children: [
-                _StatTile(label: 'Available today', value: CurrencyUtil.format(group.availableBalance)),
-                const SizedBox(width: 10),
-                _StatTile(label: 'Locked balance', value: CurrencyUtil.format(group.lockedBalance)),
-                const SizedBox(width: 10),
-                _StatTile(label: 'Next release', value: group.nextReleaseDate!=null? DateFormat('dd MMM').format(group.nextReleaseDate!):'Soon'),
-              ],
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final tileWidth = constraints.maxWidth >= 760 ? (constraints.maxWidth - 20) / 3 : double.infinity;
+                return Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: [
+                    SizedBox(width: tileWidth, child: _StatTile(label: 'Available today', value: CurrencyUtil.format(group.availableBalance))),
+                    SizedBox(width: tileWidth, child: _StatTile(label: 'Locked balance', value: CurrencyUtil.format(group.lockedBalance))),
+                    SizedBox(width: tileWidth, child: _StatTile(label: 'Next release', value: group.nextReleaseDate != null ? DateFormat('dd MMM').format(group.nextReleaseDate!) : 'Soon')),
+                  ],
+                );
+              },
             ),
             const SizedBox(height: 18),
             Text('Release rules', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 14)),
@@ -56,23 +61,33 @@ class IjcDetailScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 18),
-            Row(
-              children: [
-                Expanded(
-                  child: FilledButton(
-                    onPressed: () => _openAmountDialog(context, isDeposit: true),
-                    style: FilledButton.styleFrom(backgroundColor: AppColors.primaryTiffany),
-                    child: const Text('Add funds'),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                if (group.canWithdraw) Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => _openAmountDialog(context, isDeposit: false),
-                    child: const Text('Withdraw'),
-                  ),
-                ),
-              ],
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final isWide = constraints.maxWidth >= 520;
+                return Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  alignment: WrapAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: isWide ? (constraints.maxWidth - 10) / 2 : double.infinity,
+                      child: FilledButton(
+                        onPressed: () => _openAmountDialog(context, isDeposit: true),
+                        style: FilledButton.styleFrom(backgroundColor: AppColors.primaryTiffany),
+                        child: const Text('Add funds'),
+                      ),
+                    ),
+                    if (group.canWithdraw)
+                      SizedBox(
+                        width: isWide ? (constraints.maxWidth - 10) / 2 : double.infinity,
+                        child: OutlinedButton(
+                          onPressed: () => _openAmountDialog(context, isDeposit: false),
+                          child: const Text('Withdraw'),
+                        ),
+                      ),
+                  ],
+                );
+              },
             ),
             const SizedBox(height: 18),
             if (group.transactions.isNotEmpty) ...[
@@ -94,29 +109,103 @@ class IjcDetailScreen extends StatelessWidget {
   void _openAmountDialog(BuildContext context, {required bool isDeposit}) {
     final amountCtrl = TextEditingController();
     final noteCtrl = TextEditingController();
+    final totalCtrl = TextEditingController();
+    final releaseCtrl = TextEditingController();
+    var policy = group.cashOutPolicy.isNotEmpty ? group.cashOutPolicy : 'WEEKLY';
+    final needsConfig = isDeposit && group.pocketType == 'SELF' && group.releaseAmount <= 0;
     showDialog<void>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(isDeposit? 'Add funds' : 'Withdraw'),
-        content: Column(mainAxisSize: MainAxisSize.min, children: [
-          TextField(controller: amountCtrl, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Amount')),
-          const SizedBox(height: 8),
-          TextField(controller: noteCtrl, decoration: const InputDecoration(labelText: 'Note (optional)')),
-        ],),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-          FilledButton(onPressed: () async {
-            final amount = double.tryParse(amountCtrl.text) ?? 0;
-            if (amount <= 0) return;
-            final provider = context.read<IjcProvider>();
-            Navigator.pop(ctx);
-            if (isDeposit) {
-              await provider.deposit(groupId: group.id, amount: amount, description: noteCtrl.text);
-            } else {
-              await provider.withdraw(groupId: group.id, amount: amount, description: noteCtrl.text);
-            }
-          }, child: const Text('Submit')),
-        ],
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          title: Text(isDeposit ? 'Add funds' : 'Withdraw'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: amountCtrl,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(labelText: 'Amount'),
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: noteCtrl,
+                  decoration: const InputDecoration(labelText: 'Note (optional)'),
+                ),
+                if (needsConfig) ...[
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: totalCtrl,
+                    keyboardType: TextInputType.numberWithOptions(decimal: true),
+                    decoration: const InputDecoration(
+                      labelText: 'Target pocket amount',
+                      prefixText: 'MK ',
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: releaseCtrl,
+                    keyboardType: TextInputType.numberWithOptions(decimal: true),
+                    decoration: const InputDecoration(
+                      labelText: 'Release amount per cycle',
+                      prefixText: 'MK ',
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<String>(
+                    value: policy,
+                    decoration: const InputDecoration(
+                      labelText: 'Release frequency',
+                      prefixIcon: Icon(Icons.event_repeat_rounded),
+                    ),
+                    items: const [
+                      DropdownMenuItem(value: 'DAILY', child: Text('Daily')),
+                      DropdownMenuItem(value: 'WEEKLY', child: Text('Weekly')),
+                      DropdownMenuItem(value: 'MONTHLY', child: Text('Monthly')),
+                      DropdownMenuItem(value: 'CUSTOM', child: Text('Custom')),
+                    ],
+                    onChanged: (value) {
+                      if (value != null) setDialogState(() => policy = value);
+                    },
+                  ),
+                ],
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+            FilledButton(onPressed: () async {
+              final amount = double.tryParse(amountCtrl.text.trim()) ?? 0;
+              if (amount <= 0) return;
+              double? totalAmount;
+              double? releaseAmount;
+              if (needsConfig) {
+                totalAmount = double.tryParse(totalCtrl.text.trim()) ?? 0;
+                releaseAmount = double.tryParse(releaseCtrl.text.trim()) ?? 0;
+                if (totalAmount <= 0 || releaseAmount <= 0) {
+                  return;
+                }
+                if (releaseAmount > totalAmount) {
+                  return;
+                }
+              }
+              final provider = context.read<IjcProvider>();
+              Navigator.pop(ctx);
+              if (isDeposit) {
+                await provider.deposit(
+                  groupId: group.id,
+                  amount: amount,
+                  description: noteCtrl.text.trim(),
+                  totalAmount: totalAmount,
+                  releaseAmount: releaseAmount,
+                  cashOutPolicy: needsConfig ? policy : null,
+                );
+              } else {
+                await provider.withdraw(groupId: group.id, amount: amount, description: noteCtrl.text.trim());
+              }
+            }, child: const Text('Submit')),
+          ],
+        ),
       ),
     );
   }
