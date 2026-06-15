@@ -18,9 +18,20 @@ class IjcDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isLocked = !group.cashOutAvailable;
+    final daysLeft = group.daysUntilCashOut;
+
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F7FA),
       appBar: AppBar(
-        title: Text(group.name, style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        titleSpacing: 0,
+        title: Text(
+          group.name,
+          style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 17, color: Colors.black),
+        ),
+        iconTheme: const IconThemeData(color: Colors.black),
         actions: [
           PopupMenuButton<String>(
             itemBuilder: (context) => [
@@ -33,169 +44,411 @@ class IjcDetailScreen extends StatelessWidget {
                 SharePlus.instance.share(ShareParams(text: 'Join my Nzeru Pocket: $code'));
               } else {
                 Clipboard.setData(ClipboardData(text: code));
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Pocket code copied')));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Pocket code copied')),
+                );
               }
             },
-            icon: const Icon(Icons.more_vert_rounded),
+            icon: const Icon(Icons.more_vert_rounded, color: Colors.black),
           ),
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 28),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Hero summary card
+            // ── Summary Card ──────────────────────────────────
             Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
-                color: AppColors.cardSurface,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: const [BoxShadow(color: Color.fromRGBO(0,0,0,0.12), blurRadius: 14, offset: Offset(0,8))],
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(18),
+                boxShadow: [
+                  BoxShadow(color: Colors.black.withAlpha(10), blurRadius: 12, offset: const Offset(0, 4)),
+                ],
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ClipRRect(
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-                    child: Column(children: [Container(height: 6, color: AppColors.primaryTiffany), Container(height: 4, color: AppColors.accentRed)]),
+                  // Pocket ID row
+                  Row(
+                    children: [
+                      Container(
+                        width: 52,
+                        height: 52,
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryTiffany.withAlpha(24),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(Icons.credit_card_rounded, color: AppColors.primaryTiffany, size: 26),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  'Pocket ID: ${group.ijcId}',
+                                  style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textSecondary),
+                                ),
+                                const SizedBox(width: 6),
+                                GestureDetector(
+                                  onTap: () {
+                                    Clipboard.setData(ClipboardData(text: group.ijcId));
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Pocket ID copied')),
+                                    );
+                                  },
+                                  child: Icon(Icons.copy_rounded, size: 14, color: AppColors.textSecondary),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'Total balance',
+                              style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textSecondary),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Row(children: [
-                        Container(width: 56, height: 56, decoration: BoxDecoration(color: AppColors.primaryTiffanyLight, borderRadius: BorderRadius.circular(12)), child: const Icon(Icons.credit_card_rounded, color: Colors.white)),
-                        const SizedBox(width: 12),
-                        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(group.name, style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w800)), const SizedBox(height: 4), Text('Pocket ID ${group.ijcId}', style: GoogleFonts.poppins(color: AppColors.textSecondary))])),
-                        const SizedBox(width: 8),
-                        Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), decoration: BoxDecoration(color: group.cashOutAvailable ? AppColors.success.withAlpha(24) : AppColors.error.withAlpha(24), borderRadius: BorderRadius.circular(14)), child: Text(group.cashOutAvailable ? 'Active' : 'Locked', style: GoogleFonts.poppins(color: group.cashOutAvailable ? AppColors.success : AppColors.error, fontWeight: FontWeight.w700))),
-                      ]),
-                      const SizedBox(height: 12),
-                      Text('Total balance', style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textSecondary)),
-                      const SizedBox(height: 6),
-                      Text(CurrencyUtil.format(group.effectiveTotalAmount), style: GoogleFonts.poppins(fontSize: 28, fontWeight: FontWeight.w800, color: AppColors.primaryTiffanyDark)),
-                      const SizedBox(height: 12),
-                      ClipRRect(borderRadius: BorderRadius.circular(8), child: LinearProgressIndicator(value: group.progressPercent.clamp(0.0,1.0), minHeight: 10, backgroundColor: AppColors.borderLight, valueColor: AlwaysStoppedAnimation(AppColors.primaryTiffany))),
-                      const SizedBox(height: 8),
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('${(group.progressPercent*100).toStringAsFixed(0)}%', style: GoogleFonts.poppins(fontWeight: FontWeight.w700)), Text('${CurrencyUtil.format(group.effectiveTotalAmount)} of ${CurrencyUtil.format(group.goalAmount)}', style: GoogleFonts.poppins(color: AppColors.textSecondary))]),
-                      const SizedBox(height: 8),
-                      Row(children: [Expanded(child: Text('Release amount: ${CurrencyUtil.format(group.releaseAmount)} ${group.cashOutPolicy.toLowerCase()}', style: GoogleFonts.poppins())), Text(group.nextReleaseDate != null ? DateFormat('dd MMM, hh:mm a').format(group.nextReleaseDate!) : 'Next release soon', style: GoogleFonts.poppins(color: AppColors.textSecondary))]),
-                    ]),
+                  const SizedBox(height: 8),
+                  Text(
+                    CurrencyUtil.format(group.effectiveTotalAmount),
+                    style: GoogleFonts.poppins(
+                      fontSize: 30,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.primaryTiffanyDark,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Release amount: ${CurrencyUtil.format(group.releaseAmount)} ${group.cashOutPolicy.toLowerCase()}',
+                    style: GoogleFonts.poppins(fontSize: 13, color: AppColors.textSecondary),
+                  ),
+                  const SizedBox(height: 14),
+                  // Progress bar
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: LinearProgressIndicator(
+                            value: group.progressPercent.clamp(0.0, 1.0),
+                            minHeight: 8,
+                            backgroundColor: AppColors.borderLight,
+                            valueColor: AlwaysStoppedAnimation(AppColors.primaryTiffany),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        '${(group.progressPercent * 100).toStringAsFixed(0)}%',
+                        style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.textSecondary),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  // Available today badge
+                  Row(
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: AppColors.success,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        '${CurrencyUtil.format(group.availableBalance)} available today',
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.success,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final tileWidth = constraints.maxWidth >= 760 ? (constraints.maxWidth - 20) / 3 : double.infinity;
-                return Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: [
-                    SizedBox(width: tileWidth, child: _StatTile(label: 'Available today', value: CurrencyUtil.format(group.availableBalance))),
-                    SizedBox(width: tileWidth, child: _StatTile(label: 'Locked balance', value: CurrencyUtil.format(group.lockedBalance))),
-                    SizedBox(width: tileWidth, child: _StatTile(label: 'Next release', value: group.nextReleaseDate != null ? DateFormat('dd MMM').format(group.nextReleaseDate!) : 'Soon')),
-                  ],
-                );
-              },
-            ),
-            const SizedBox(height: 18),
-            Text('Release rules', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 14)),
-            const SizedBox(height: 8),
-            Card(
-              color: AppColors.primaryTiffanyLight.withAlpha(180),
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Row(
-                  children: [
-                    Expanded(child: Text('Policy: ${group.cashOutPolicy}')),
-                    Expanded(child: Text('Status: ${group.cashOutAvailable? 'Released' : 'Locked'}')),
-                  ],
+            const SizedBox(height: 14),
+
+            // ── Stat Tiles ────────────────────────────────────
+            Row(
+              children: [
+                Expanded(
+                  child: _StatTile(
+                    label: 'Available today',
+                    value: CurrencyUtil.format(group.availableBalance),
+                    valueColor: AppColors.primaryTiffanyDark,
+                    icon: Icons.arrow_upward_rounded,
+                    iconColor: AppColors.primaryTiffany,
+                  ),
                 ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _StatTile(
+                    label: 'Locked balance',
+                    value: CurrencyUtil.format(group.lockedBalance),
+                    icon: Icons.lock_outline_rounded,
+                    iconColor: AppColors.warning,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _StatTile(
+                    label: 'Next release',
+                    value: group.nextReleaseDate != null
+                        ? DateFormat('dd MMM yyyy').format(group.nextReleaseDate!)
+                        : 'Soon',
+                    subtitle: daysLeft > 0 ? '$daysLeft days left' : null,
+                    icon: Icons.calendar_today_rounded,
+                    iconColor: AppColors.error,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+
+            // ── Release Rules ─────────────────────────────────
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(18),
+                boxShadow: [
+                  BoxShadow(color: Colors.black.withAlpha(8), blurRadius: 10, offset: const Offset(0, 3)),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryTiffany.withAlpha(20),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Icon(Icons.verified_user_rounded, color: AppColors.primaryTiffany, size: 18),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        'Release rules',
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 14),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  Row(
+                    children: [
+                      _RuleCell(label: 'Policy', value: group.cashOutPolicy),
+                      _VerticalDivider(),
+                      _RuleCell(label: 'Release amount', value: CurrencyUtil.format(group.releaseAmount)),
+                      _VerticalDivider(),
+                      _RuleCell(
+                        label: 'Status',
+                        valueWidget: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: isLocked ? AppColors.warning.withAlpha(20) : AppColors.success.withAlpha(20),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                isLocked ? Icons.lock_outline_rounded : Icons.lock_open_rounded,
+                                size: 13,
+                                color: isLocked ? AppColors.warning : AppColors.success,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                isLocked ? 'Locked' : 'Released',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: isLocked ? AppColors.warning : AppColors.success,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (group.nextReleaseDate != null) ...[
+                    const SizedBox(height: 12),
+                    Text(
+                      _releaseRuleDescription(group),
+                      style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textSecondary),
+                    ),
+                  ],
+                ],
               ),
             ),
-            const SizedBox(height: 18),
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final isWide = constraints.maxWidth >= 520;
-                return Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  alignment: WrapAlignment.start,
-                  children: [
-                    SizedBox(
-                      width: isWide ? (constraints.maxWidth - 10) / 2 : double.infinity,
-                      child: FilledButton(
-                        onPressed: () {
-                          if (group.pocketType == 'SELF') {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => IjcDepositScreen(group: group),
-                              ),
-                            );
-                          } else {
-                            _showSponsoredCodeDialog(context, group);
-                          }
-                        },
-                        style: FilledButton.styleFrom(backgroundColor: AppColors.primaryTiffany),
-                        child: Text(group.pocketType == 'SELF' ? 'Add Funds' : 'Generate Pocket Code'),
-                      ),
-                    ),
-                    if (group.pocketType == 'SPONSORED')
-                      SizedBox(
-                        width: isWide ? (constraints.maxWidth - 10) / 2 : double.infinity,
-                        child: OutlinedButton(
-                          onPressed: () {
-                            final code = group.joinCode.isNotEmpty ? group.joinCode : group.ijcId;
-                            SharePlus.instance.share(ShareParams(text: 'Join my Nzeru Pocket: $code'));
-                          },
-                          child: const Text('Share Pocket Code'),
-                        ),
-                      ),
-                    if (group.canWithdraw)
-                      SizedBox(
-                        width: isWide ? (constraints.maxWidth - 10) / 2 : double.infinity,
-                        child: OutlinedButton(
-                          onPressed: () => _openAmountDialog(context, isDeposit: false),
-                          child: const Text('Withdraw'),
-                        ),
-                      ),
-                  ],
-                );
-              },
+            const SizedBox(height: 16),
+
+            // ── Action Button ─────────────────────────────────
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: FilledButton(
+                onPressed: () {
+                  if (group.pocketType == 'SELF') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => IjcDepositScreen(group: group)),
+                    );
+                  } else {
+                    _showSponsoredCodeDialog(context, group);
+                  }
+                },
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.primaryTiffany,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  textStyle: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w700),
+                ),
+                child: Text(group.pocketType == 'SELF' ? 'Add Funds' : 'Generate Pocket Code'),
+              ),
             ),
-            const SizedBox(height: 18),
-            if (group.transactions.isNotEmpty) ...[
-              Text('Recent activity', style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
-              const SizedBox(height: 8),
-              ...group.transactions.map((t) => ListTile(
+            if (group.pocketType == 'SPONSORED') ...[
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: OutlinedButton(
+                  onPressed: () {
+                    final code = group.joinCode.isNotEmpty ? group.joinCode : group.ijcId;
+                    SharePlus.instance.share(ShareParams(text: 'Join my Nzeru Pocket: $code'));
+                  },
+                  style: OutlinedButton.styleFrom(
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                    tileColor: AppColors.cardSurface,
-                    leading: Container(
-                      decoration: BoxDecoration(
-                        color: (t.isDeposit ? AppColors.success : AppColors.error).withAlpha(24),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      padding: const EdgeInsets.all(10),
-                      child: Icon(
-                        t.isDeposit ? Icons.arrow_downward : Icons.arrow_upward,
-                        color: t.isDeposit ? AppColors.success : AppColors.error,
-                        size: 20,
-                      ),
-                    ),
-                    title: Text(t.userName, style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
-                    subtitle: Text(DateFormat('dd MMM yyyy').format(t.createdAt), style: GoogleFonts.poppins(color: AppColors.textSecondary)),
-                    trailing: Text(
-                      '${t.isDeposit ? '+' : '-'}${CurrencyUtil.format(t.amount)}',
-                      style: GoogleFonts.poppins(fontWeight: FontWeight.w700, color: t.isDeposit ? AppColors.success : AppColors.error),
-                    ),
-                  )),
-            ]
+                    side: BorderSide(color: AppColors.primaryTiffany),
+                  ),
+                  child: Text(
+                    'Share Pocket Code',
+                    style: GoogleFonts.poppins(fontWeight: FontWeight.w600, color: AppColors.primaryTiffany),
+                  ),
+                ),
+              ),
+            ],
+            if (group.canWithdraw) ...[
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: OutlinedButton(
+                  onPressed: () => _openAmountDialog(context, isDeposit: false),
+                  style: OutlinedButton.styleFrom(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  ),
+                  child: Text('Withdraw', style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+                ),
+              ),
+            ],
+            const SizedBox(height: 20),
+
+            // ── Recent Activity ───────────────────────────────
+            if (group.transactions.isNotEmpty) ...[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Recent activity', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 15)),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(color: Colors.black.withAlpha(8), blurRadius: 10, offset: const Offset(0, 3)),
+                  ],
+                ),
+                child: Column(
+                  children: group.transactions.asMap().entries.map((entry) {
+                    final i = entry.key;
+                    final t = entry.value;
+                    final isLast = i == group.transactions.length - 1;
+                    return Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: (t.isDeposit ? AppColors.success : AppColors.error).withAlpha(20),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Icon(
+                                  t.isDeposit ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded,
+                                  color: t.isDeposit ? AppColors.success : AppColors.error,
+                                  size: 18,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      t.description.isNotEmpty ? t.description : (t.isDeposit ? 'Pocket funding' : 'Release withdrawal'),
+                                      style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 13),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      DateFormat('dd MMM yyyy • hh:mm a').format(t.createdAt),
+                                      style: GoogleFonts.poppins(fontSize: 11, color: AppColors.textSecondary),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Text(
+                                '${t.isDeposit ? '+' : '-'}${CurrencyUtil.format(t.amount)}',
+                                style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 13,
+                                  color: t.isDeposit ? AppColors.success : AppColors.error,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (!isLast)
+                          Divider(height: 1, indent: 66, color: AppColors.borderLight),
+                      ],
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
           ],
         ),
       ),
     );
+  }
+
+  String _releaseRuleDescription(IjcGroup group) {
+    final policy = group.cashOutPolicy.toLowerCase();
+    final amount = CurrencyUtil.format(group.releaseAmount);
+    if (policy == 'weekly') return 'Every week, $amount will be released to your available balance.';
+    if (policy == 'daily') return 'Every day, $amount will be released to your available balance.';
+    if (policy == 'monthly') return 'Every month, $amount will be released to your available balance.';
+    return '$amount will be released per cycle to your available balance.';
   }
 
   void _showSponsoredCodeDialog(BuildContext context, IjcGroup group) {
@@ -208,7 +461,7 @@ class IjcDetailScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Use this code to share your pocket with sponsors:'),
+            const Text('Use this code to share your pocket with sponsors:'),
             const SizedBox(height: 16),
             SelectableText(code, style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 18)),
           ],
@@ -264,20 +517,14 @@ class IjcDetailScreen extends StatelessWidget {
                   const SizedBox(height: 12),
                   TextField(
                     controller: totalCtrl,
-                    keyboardType: TextInputType.numberWithOptions(decimal: true),
-                    decoration: const InputDecoration(
-                      labelText: 'Target pocket amount',
-                      prefixText: 'MK ',
-                    ),
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    decoration: const InputDecoration(labelText: 'Target pocket amount', prefixText: 'MK '),
                   ),
                   const SizedBox(height: 12),
                   TextField(
                     controller: releaseCtrl,
-                    keyboardType: TextInputType.numberWithOptions(decimal: true),
-                    decoration: const InputDecoration(
-                      labelText: 'Release amount per cycle',
-                      prefixText: 'MK ',
-                    ),
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    decoration: const InputDecoration(labelText: 'Release amount per cycle', prefixText: 'MK '),
                   ),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
@@ -302,36 +549,35 @@ class IjcDetailScreen extends StatelessWidget {
           ),
           actions: [
             TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-            FilledButton(onPressed: () async {
-              final amount = double.tryParse(amountCtrl.text.trim()) ?? 0;
-              if (amount <= 0) return;
-              double? totalAmount;
-              double? releaseAmount;
-              if (needsConfig) {
-                totalAmount = double.tryParse(totalCtrl.text.trim()) ?? 0;
-                releaseAmount = double.tryParse(releaseCtrl.text.trim()) ?? 0;
-                if (totalAmount <= 0 || releaseAmount <= 0) {
-                  return;
+            FilledButton(
+              onPressed: () async {
+                final amount = double.tryParse(amountCtrl.text.trim()) ?? 0;
+                if (amount <= 0) return;
+                double? totalAmount;
+                double? releaseAmount;
+                if (needsConfig) {
+                  totalAmount = double.tryParse(totalCtrl.text.trim()) ?? 0;
+                  releaseAmount = double.tryParse(releaseCtrl.text.trim()) ?? 0;
+                  if (totalAmount <= 0 || releaseAmount <= 0) return;
+                  if (releaseAmount > totalAmount) return;
                 }
-                if (releaseAmount > totalAmount) {
-                  return;
+                final provider = context.read<IjcProvider>();
+                Navigator.pop(ctx);
+                if (isDeposit) {
+                  await provider.deposit(
+                    groupId: group.id,
+                    amount: amount,
+                    description: noteCtrl.text.trim(),
+                    totalAmount: totalAmount,
+                    releaseAmount: releaseAmount,
+                    cashOutPolicy: needsConfig ? policy : null,
+                  );
+                } else {
+                  await provider.withdraw(groupId: group.id, amount: amount, description: noteCtrl.text.trim());
                 }
-              }
-              final provider = context.read<IjcProvider>();
-              Navigator.pop(ctx);
-              if (isDeposit) {
-                await provider.deposit(
-                  groupId: group.id,
-                  amount: amount,
-                  description: noteCtrl.text.trim(),
-                  totalAmount: totalAmount,
-                  releaseAmount: releaseAmount,
-                  cashOutPolicy: needsConfig ? policy : null,
-                );
-              } else {
-                await provider.withdraw(groupId: group.id, amount: amount, description: noteCtrl.text.trim());
-              }
-            }, child: const Text('Submit')),
+              },
+              child: const Text('Submit'),
+            ),
           ],
         ),
       ),
@@ -339,27 +585,91 @@ class IjcDetailScreen extends StatelessWidget {
   }
 }
 
+// ── Helper Widgets ─────────────────────────────────────────────
+
 class _StatTile extends StatelessWidget {
   final String label;
   final String value;
+  final String? subtitle;
+  final Color? valueColor;
+  final IconData icon;
+  final Color iconColor;
 
-  const _StatTile({required this.label, required this.value});
+  const _StatTile({
+    required this.label,
+    required this.value,
+    this.subtitle,
+    this.valueColor,
+    required this.icon,
+    required this.iconColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withAlpha(8), blurRadius: 8, offset: const Offset(0, 2)),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: GoogleFonts.poppins(fontSize: 10, color: AppColors.textSecondary)),
+          const SizedBox(height: 6),
+          Text(
+            value,
+            style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w700, color: valueColor ?? Colors.black87),
+          ),
+          if (subtitle != null) ...[
+            const SizedBox(height: 2),
+            Text(subtitle!, style: GoogleFonts.poppins(fontSize: 10, color: AppColors.textSecondary)),
+          ],
+          const SizedBox(height: 8),
+          Container(
+            width: 30,
+            height: 30,
+            decoration: BoxDecoration(
+              color: iconColor.withAlpha(20),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, size: 16, color: iconColor),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RuleCell extends StatelessWidget {
+  final String label;
+  final String? value;
+  final Widget? valueWidget;
+
+  const _RuleCell({required this.label, this.value, this.valueWidget});
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.88),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
           Text(label, style: GoogleFonts.poppins(fontSize: 11, color: AppColors.textSecondary)),
-          const SizedBox(height: 6),
-          Text(value, style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
-        ]),
+          const SizedBox(height: 4),
+          valueWidget ??
+              Text(value ?? '', style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w700)),
+        ],
       ),
     );
+  }
+}
+
+class _VerticalDivider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(width: 1, height: 36, color: AppColors.borderLight, margin: const EdgeInsets.symmetric(horizontal: 8));
   }
 }

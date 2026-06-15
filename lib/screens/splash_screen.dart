@@ -50,7 +50,7 @@ class _SplashScreenState extends State<SplashScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
             // Logo with JPEG image
-            const AppLogo(size: 100, iconSize: 48)
+            const AppLogo(size: 150, iconSize: 72)
                 .animate()
                 .scale(
                   begin: const Offset(0.5, 0.5),
@@ -74,11 +74,11 @@ class _SplashScreenState extends State<SplashScreen> {
                 .slideY(begin: 0.3, end: 0, duration: 600.ms),
             const SizedBox(height: 10),
             Text(
-              'DIGITAL FINANCIAL VAULT',
+              'Nzeru Digital Settings',
               style: GoogleFonts.poppins(
-                fontSize: 12,
+                fontSize: 13,
                 color: AppColors.textMuted,
-                letterSpacing: 4,
+                letterSpacing: 2,
               ),
             ).animate().fadeIn(delay: 800.ms, duration: 800.ms),
             const SizedBox(height: 60),

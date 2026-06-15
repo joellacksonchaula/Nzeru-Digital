@@ -307,7 +307,7 @@ class _IjcCreditCard extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -316,35 +316,35 @@ class _IjcCreditCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Container(
-                        width: 48,
-                        height: 48,
+                        width: 40,
+                        height: 40,
                         decoration: BoxDecoration(
                           color: AppColors.primaryTiffanyLight,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        child: const Icon(Icons.credit_card_rounded, color: Colors.white),
+                        child: const Icon(Icons.credit_card_rounded, color: Colors.white, size: 20),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 10),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(group.name, style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w700)),
-                            const SizedBox(height: 4),
-                            Text('Pocket ID ${group.ijcId}', style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textSecondary)),
+                            Text(group.name, style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w700)),
+                            const SizedBox(height: 2),
+                            Text('Pocket ID ${group.ijcId}', style: GoogleFonts.poppins(fontSize: 11, color: AppColors.textSecondary)),
                           ],
                         ),
                       ),
-                      IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert_rounded)),
+                      IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert_rounded), constraints: const BoxConstraints(), padding: EdgeInsets.zero),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 8),
 
                   // Balance label and amount
-                  Text('Balance', style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textSecondary)),
-                  const SizedBox(height: 6),
-                  Text(CurrencyUtil.format(group.effectiveTotalAmount), style: GoogleFonts.poppins(fontSize: 26, fontWeight: FontWeight.w800, color: AppColors.primaryTiffany)),
-                  const SizedBox(height: 12),
+                  Text('Balance', style: GoogleFonts.poppins(fontSize: 11, color: AppColors.textSecondary)),
+                  const SizedBox(height: 2),
+                  Text(CurrencyUtil.format(group.effectiveTotalAmount), style: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.primaryTiffany)),
+                  const SizedBox(height: 8),
 
                   // Progress
                   Row(
@@ -353,31 +353,35 @@ class _IjcCreditCard extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Funding Progress', style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textSecondary)),
-                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('Funding Progress', style: GoogleFonts.poppins(fontSize: 11, color: AppColors.textSecondary)),
+                                Text('${(group.progressPercent * 100).toStringAsFixed(0)}%', style: GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w700)),
+                              ],
+                            ),
+                            const SizedBox(height: 4),
                             ClipRRect(
                               borderRadius: BorderRadius.circular(8),
                               child: LinearProgressIndicator(
                                 value: group.progressPercent.clamp(0.0, 1.0),
-                                minHeight: 10,
+                                minHeight: 6,
                                 backgroundColor: AppColors.borderLight,
                                 valueColor: AlwaysStoppedAnimation(AppColors.primaryTiffany),
                               ),
                             ),
-                            const SizedBox(height: 6),
-                            Text('${CurrencyUtil.format(group.effectiveTotalAmount)} of ${CurrencyUtil.format(group.goalAmount)}', style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textSecondary)),
+                            const SizedBox(height: 4),
+                            Text('${CurrencyUtil.format(group.effectiveTotalAmount)} of ${CurrencyUtil.format(group.goalAmount)}', style: GoogleFonts.poppins(fontSize: 11, color: AppColors.textSecondary)),
                           ],
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      Text('${(group.progressPercent * 100).toStringAsFixed(0)}%', style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 8),
 
                   // Stats two columns
                   Container(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     decoration: BoxDecoration(
                       color: AppColors.surfaceLight,
                       borderRadius: BorderRadius.circular(12),
@@ -388,36 +392,37 @@ class _IjcCreditCard extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(children: [Icon(Icons.flag_rounded, size: 18, color: AppColors.textSecondary), const SizedBox(width: 8), Text('Target Amount', style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textSecondary))]),
-                              const SizedBox(height: 8),
-                              Text(CurrencyUtil.format(group.goalAmount), style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
+                              Row(children: [Icon(Icons.flag_rounded, size: 14, color: AppColors.textSecondary), const SizedBox(width: 4), Text('Target', style: GoogleFonts.poppins(fontSize: 11, color: AppColors.textSecondary))]),
+                              const SizedBox(height: 4),
+                              Text(CurrencyUtil.format(group.goalAmount), style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w700)),
                             ],
                           ),
                         ),
-                        Container(width: 1, height: 38, color: AppColors.border),
+                        Container(width: 1, height: 26, color: AppColors.border),
+                        const SizedBox(width: 12),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(children: [Icon(Icons.calendar_today, size: 18, color: AppColors.textSecondary), const SizedBox(width: 8), Text('Release Amount', style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textSecondary))]),
-                              const SizedBox(height: 8),
-                              Text('${CurrencyUtil.format(group.releaseAmount)} ${group.cashOutPolicy.toLowerCase()}', style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
+                              Row(children: [Icon(Icons.calendar_today, size: 14, color: AppColors.textSecondary), const SizedBox(width: 4), Text('Release', style: GoogleFonts.poppins(fontSize: 11, color: AppColors.textSecondary))]),
+                              const SizedBox(height: 4),
+                              Text('${CurrencyUtil.format(group.releaseAmount)} ${group.cashOutPolicy.toLowerCase()}', style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w700)),
                             ],
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 8),
 
                   // Next release row
                   Row(
                     children: [
-                      Icon(Icons.calendar_month_outlined, color: AppColors.primaryTiffany),
-                      const SizedBox(width: 8),
-                      Expanded(child: Text('Next release: ${group.nextReleaseDate != null ? DateFormat('dd MMM, hh:mm a').format(group.nextReleaseDate!) : 'Soon'}', style: GoogleFonts.poppins())),
-                      const SizedBox(width: 8),
-                      const Icon(Icons.chevron_right),
+                      Icon(Icons.calendar_month_outlined, color: AppColors.primaryTiffany, size: 18),
+                      const SizedBox(width: 6),
+                      Expanded(child: Text('Next release: ${group.nextReleaseDate != null ? DateFormat('dd MMM, hh:mm a').format(group.nextReleaseDate!) : 'Soon'}', style: GoogleFonts.poppins(fontSize: 11))),
+                      const SizedBox(width: 6),
+                      const Icon(Icons.chevron_right, size: 18),
                     ],
                   ),
                 ],
