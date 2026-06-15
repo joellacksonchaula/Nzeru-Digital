@@ -19,7 +19,6 @@ class IjcDepositScreen extends StatefulWidget {
 class _IjcDepositScreenState extends State<IjcDepositScreen> {
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
-  final TextEditingController _targetAmountController = TextEditingController();
   final TextEditingController _releaseAmountController = TextEditingController();
   String _policy = 'WEEKLY';
   bool _isSubmitting = false;
@@ -34,7 +33,6 @@ class _IjcDepositScreenState extends State<IjcDepositScreen> {
   void dispose() {
     _amountController.dispose();
     _noteController.dispose();
-    _targetAmountController.dispose();
     _releaseAmountController.dispose();
     super.dispose();
   }
@@ -48,18 +46,12 @@ class _IjcDepositScreenState extends State<IjcDepositScreen> {
       return;
     }
 
-    double? totalAmount;
     double? releaseAmount;
 
     if (_needsConfig) {
-      totalAmount = double.tryParse(_targetAmountController.text.trim()) ?? 0;
       releaseAmount = double.tryParse(_releaseAmountController.text.trim()) ?? 0;
-      if (totalAmount <= 0 || releaseAmount <= 0) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Enter target and release amounts.')));
-        return;
-      }
-      if (releaseAmount > totalAmount) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Release amount must be less than target.')));
+      if (releaseAmount <= 0) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Enter a valid release amount.')));
         return;
       }
     }
@@ -71,7 +63,7 @@ class _IjcDepositScreenState extends State<IjcDepositScreen> {
       groupId: widget.group.id,
       amount: amount,
       description: _noteController.text.trim(),
-      totalAmount: totalAmount,
+      totalAmount: null,
       releaseAmount: releaseAmount,
       cashOutPolicy: _needsConfig ? _policy : null,
     );
@@ -132,15 +124,6 @@ class _IjcDepositScreenState extends State<IjcDepositScreen> {
             if (_needsConfig) ...[
               const SizedBox(height: 18),
               Text('Configure release plan', style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
-              const SizedBox(height: 12),
-              TextField(
-                controller: _targetAmountController,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: const InputDecoration(
-                  labelText: 'Target pocket amount',
-                  prefixText: 'MK ',
-                ),
-              ),
               const SizedBox(height: 12),
               TextField(
                 controller: _releaseAmountController,

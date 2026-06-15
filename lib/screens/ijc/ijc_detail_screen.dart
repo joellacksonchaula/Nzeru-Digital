@@ -18,6 +18,11 @@ class IjcDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<IjcProvider>();
+    final group = provider.groups.firstWhere(
+      (g) => g.id == this.group.id,
+      orElse: () => this.group,
+    );
     final isLocked = !group.cashOutAvailable;
     final daysLeft = group.daysUntilCashOut;
 
@@ -490,7 +495,6 @@ class IjcDetailScreen extends StatelessWidget {
   void _openAmountDialog(BuildContext context, {required bool isDeposit}) {
     final amountCtrl = TextEditingController();
     final noteCtrl = TextEditingController();
-    final totalCtrl = TextEditingController();
     final releaseCtrl = TextEditingController();
     var policy = group.cashOutPolicy.isNotEmpty ? group.cashOutPolicy : 'WEEKLY';
     final needsConfig = isDeposit && group.pocketType == 'SELF' && group.releaseAmount <= 0;
@@ -514,12 +518,6 @@ class IjcDetailScreen extends StatelessWidget {
                   decoration: const InputDecoration(labelText: 'Note (optional)'),
                 ),
                 if (needsConfig) ...[
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: totalCtrl,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    decoration: const InputDecoration(labelText: 'Target pocket amount', prefixText: 'MK '),
-                  ),
                   const SizedBox(height: 12),
                   TextField(
                     controller: releaseCtrl,
@@ -553,13 +551,10 @@ class IjcDetailScreen extends StatelessWidget {
               onPressed: () async {
                 final amount = double.tryParse(amountCtrl.text.trim()) ?? 0;
                 if (amount <= 0) return;
-                double? totalAmount;
                 double? releaseAmount;
                 if (needsConfig) {
-                  totalAmount = double.tryParse(totalCtrl.text.trim()) ?? 0;
                   releaseAmount = double.tryParse(releaseCtrl.text.trim()) ?? 0;
-                  if (totalAmount <= 0 || releaseAmount <= 0) return;
-                  if (releaseAmount > totalAmount) return;
+                  if (releaseAmount <= 0) return;
                 }
                 final provider = context.read<IjcProvider>();
                 Navigator.pop(ctx);
@@ -568,7 +563,7 @@ class IjcDetailScreen extends StatelessWidget {
                     groupId: group.id,
                     amount: amount,
                     description: noteCtrl.text.trim(),
-                    totalAmount: totalAmount,
+                    totalAmount: null,
                     releaseAmount: releaseAmount,
                     cashOutPolicy: needsConfig ? policy : null,
                   );
