@@ -120,17 +120,69 @@ class IjcDetailScreen extends StatelessWidget {
                           ],
                         ),
                       ),
+                      // ── Pocket type badge ──
+                      _PocketTypeBadge(group.pocketType),
                     ],
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    CurrencyUtil.format(group.effectiveTotalAmount),
-                    style: GoogleFonts.poppins(
-                      fontSize: 30,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.primaryTiffanyDark,
-                    ),
-                  ),
+                  // ── Balance display: "MK 45,000 of 50,000" ──
+                  Builder(builder: (context) {
+                    final total = group.effectiveTotalAmount;
+                    final remaining = group.lockedBalance + group.availableBalance;
+                    final isZero = remaining <= 0;
+
+                    // Format number with commas, no decimals for cleaner look
+                    String _fmt(double v) {
+                      final intPart = v.toInt().toString().replaceAllMapped(
+                        RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
+                        (m) => '${m[0]},',
+                      );
+                      return intPart;
+                    }
+
+                    return RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'MK ',
+                            style: GoogleFonts.poppins(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.primaryTiffanyDark,
+                            ),
+                          ),
+                          TextSpan(
+                            text: isZero ? '00' : _fmt(remaining),
+                            style: GoogleFonts.poppins(
+                              fontSize: 30,
+                              fontWeight: FontWeight.w800,
+                              color: isZero
+                                  ? AppColors.textSecondary
+                                  : AppColors.primaryTiffanyDark,
+                            ),
+                          ),
+                          if (!isZero && total > 0) ...<InlineSpan>[
+                            TextSpan(
+                              text: ' of ',
+                              style: GoogleFonts.poppins(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: AppColors.textSecondary.withAlpha(150),
+                              ),
+                            ),
+                            TextSpan(
+                              text: _fmt(total),
+                              style: GoogleFonts.poppins(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.textSecondary.withAlpha(150),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    );
+                  }),
                   const SizedBox(height: 4),
                   Text(
                     'Release amount: ${CurrencyUtil.format(group.releaseAmount)} ${group.cashOutPolicy.toLowerCase()}',
@@ -498,8 +550,11 @@ class IjcDetailScreen extends StatelessWidget {
     final releaseCtrl = TextEditingController();
     var policy = group.cashOutPolicy.isNotEmpty ? group.cashOutPolicy : 'WEEKLY';
     final needsConfig = isDeposit && group.pocketType == 'SELF' && group.releaseAmount <= 0;
+    var isSubmitting = false;
+
     showDialog<void>(
       context: context,
+      barrierDismissible: false, // Prevent dismissing while submitting
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
           title: Text(isDeposit ? 'Add funds' : 'Withdraw'),
@@ -509,12 +564,14 @@ class IjcDetailScreen extends StatelessWidget {
               children: [
                 TextField(
                   controller: amountCtrl,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(labelText: 'Amount'),
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  enabled: !isSubmitting,
+                  decoration: const InputDecoration(labelText: 'Amount', prefixText: 'MK '),
                 ),
                 const SizedBox(height: 8),
                 TextField(
                   controller: noteCtrl,
+                  enabled: !isSubmitting,
                   decoration: const InputDecoration(labelText: 'Note (optional)'),
                 ),
                 if (needsConfig) ...[
@@ -522,6 +579,7 @@ class IjcDetailScreen extends StatelessWidget {
                   TextField(
                     controller: releaseCtrl,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    enabled: !isSubmitting,
                     decoration: const InputDecoration(labelText: 'Release amount per cycle', prefixText: 'MK '),
                   ),
                   const SizedBox(height: 12),
@@ -537,41 +595,95 @@ class IjcDetailScreen extends StatelessWidget {
                       DropdownMenuItem(value: 'MONTHLY', child: Text('Monthly')),
                       DropdownMenuItem(value: 'CUSTOM', child: Text('Custom')),
                     ],
-                    onChanged: (value) {
-                      if (value != null) setDialogState(() => policy = value);
-                    },
+                    onChanged: isSubmitting
+                        ? null
+                        : (value) {
+                            if (value != null) setDialogState(() => policy = value);
+                          },
                   ),
                 ],
               ],
             ),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+            TextButton(
+              onPressed: isSubmitting ? null : () => Navigator.pop(ctx),
+              child: const Text('Cancel'),
+            ),
             FilledButton(
-              onPressed: () async {
-                final amount = double.tryParse(amountCtrl.text.trim()) ?? 0;
-                if (amount <= 0) return;
-                double? releaseAmount;
-                if (needsConfig) {
-                  releaseAmount = double.tryParse(releaseCtrl.text.trim()) ?? 0;
-                  if (releaseAmount <= 0) return;
-                }
-                final provider = context.read<IjcProvider>();
-                Navigator.pop(ctx);
-                if (isDeposit) {
-                  await provider.deposit(
-                    groupId: group.id,
-                    amount: amount,
-                    description: noteCtrl.text.trim(),
-                    totalAmount: null,
-                    releaseAmount: releaseAmount,
-                    cashOutPolicy: needsConfig ? policy : null,
-                  );
-                } else {
-                  await provider.withdraw(groupId: group.id, amount: amount, description: noteCtrl.text.trim());
-                }
-              },
-              child: const Text('Submit'),
+              onPressed: isSubmitting
+                  ? null
+                  : () async {
+                      final amount = double.tryParse(amountCtrl.text.trim()) ?? 0;
+                      if (amount <= 0) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Enter a valid amount.')),
+                        );
+                        return;
+                      }
+                      double? releaseAmount;
+                      if (needsConfig) {
+                        releaseAmount = double.tryParse(releaseCtrl.text.trim()) ?? 0;
+                        if (releaseAmount <= 0) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Enter a valid release amount.')),
+                          );
+                          return;
+                        }
+                        if (releaseAmount > amount) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Release amount cannot be greater than the deposit amount.')),
+                          );
+                          return;
+                        }
+                      }
+
+                      setDialogState(() => isSubmitting = true);
+                      final provider = context.read<IjcProvider>();
+                      bool success;
+                      if (isDeposit) {
+                        success = await provider.deposit(
+                          groupId: group.id,
+                          amount: amount,
+                          description: noteCtrl.text.trim(),
+                          totalAmount: null,
+                          releaseAmount: releaseAmount,
+                          cashOutPolicy: needsConfig ? policy : null,
+                        );
+                      } else {
+                        success = await provider.withdraw(
+                          groupId: group.id,
+                          amount: amount,
+                          description: noteCtrl.text.trim(),
+                        );
+                      }
+
+                      if (success) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(isDeposit ? 'Funds added successfully.' : 'Withdrawal completed.')),
+                          );
+                          Navigator.pop(ctx);
+                        }
+                      } else {
+                        setDialogState(() => isSubmitting = false);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(provider.error ?? 'Transaction failed.')),
+                          );
+                        }
+                      }
+                    },
+              child: isSubmitting
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation(Colors.white),
+                      ),
+                    )
+                  : const Text('Submit'),
             ),
           ],
         ),
@@ -666,5 +778,46 @@ class _VerticalDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(width: 1, height: 36, color: AppColors.borderLight, margin: const EdgeInsets.symmetric(horizontal: 8));
+  }
+}
+
+// ── Pocket type badge ──────────────────────────────────────────────────────
+class _PocketTypeBadge extends StatelessWidget {
+  final String pocketType;
+  const _PocketTypeBadge(this.pocketType);
+
+  @override
+  Widget build(BuildContext context) {
+    final isSelf = pocketType == 'SELF';
+    final bg = isSelf
+        ? const Color(0xFF2EC4B6).withAlpha(28)
+        : const Color(0xFF8B5CF6).withAlpha(28);
+    final border = isSelf ? const Color(0xFF2EC4B6) : const Color(0xFF8B5CF6);
+    final icon = isSelf ? Icons.person_rounded : Icons.handshake_rounded;
+    final label = isSelf ? 'Self' : 'Sponsored';
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: border.withAlpha(120), width: 1),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 12, color: border),
+          const SizedBox(width: 5),
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: border,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

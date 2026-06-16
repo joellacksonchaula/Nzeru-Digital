@@ -54,6 +54,10 @@ class _IjcDepositScreenState extends State<IjcDepositScreen> {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Enter a valid release amount.')));
         return;
       }
+      if (releaseAmount > amount) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Release amount cannot be greater than the deposit amount.')));
+        return;
+      }
     }
 
     if (!mounted) return;

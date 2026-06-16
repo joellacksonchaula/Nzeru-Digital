@@ -334,6 +334,8 @@ class _IjcCreditCard extends StatelessWidget {
                           ],
                         ),
                       ),
+                      // ── Pocket type badge ──
+                      _PocketTypeBadge(group.pocketType),
                     ],
                   ),
                   const SizedBox(height: 6),
@@ -346,7 +348,59 @@ class _IjcCreditCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text('Balance', style: GoogleFonts.poppins(fontSize: 10, color: AppColors.textSecondary)),
-                          Text(CurrencyUtil.format(group.effectiveTotalAmount), style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.primaryTiffany)),
+                          Builder(builder: (context) {
+                            final total = group.effectiveTotalAmount;
+                            final remaining = group.lockedBalance + group.availableBalance;
+                            final isZero = remaining <= 0;
+                            String _fmt(double v) {
+                              return v.toInt().toString().replaceAllMapped(
+                                RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
+                                (m) => '${m[0]},',
+                              );
+                            }
+                            return RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'MK ',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w800,
+                                      color: AppColors.primaryTiffany,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: isZero ? '00' : _fmt(remaining),
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w800,
+                                      color: isZero
+                                          ? AppColors.textSecondary
+                                          : AppColors.primaryTiffany,
+                                    ),
+                                  ),
+                                  if (!isZero && total > 0) ...<InlineSpan>[
+                                    TextSpan(
+                                      text: ' of ',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w400,
+                                        color: AppColors.textSecondary.withAlpha(150),
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: _fmt(total),
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w500,
+                                        color: AppColors.textSecondary.withAlpha(150),
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            );
+                          }),
                         ],
                       ),
                       // Availability Status Button
@@ -469,6 +523,47 @@ class _IjcCreditCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// ── Pocket type badge ─────────────────────────────────────────────────────
+class _PocketTypeBadge extends StatelessWidget {
+  final String pocketType;
+  const _PocketTypeBadge(this.pocketType);
+
+  @override
+  Widget build(BuildContext context) {
+    final isSelf = pocketType == 'SELF';
+    final bg = isSelf
+        ? const Color(0xFF2EC4B6).withAlpha(28)
+        : const Color(0xFF8B5CF6).withAlpha(28);
+    final border = isSelf ? const Color(0xFF2EC4B6) : const Color(0xFF8B5CF6);
+    final icon = isSelf ? Icons.person_rounded : Icons.handshake_rounded;
+    final label = isSelf ? 'Self' : 'Sponsored';
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: border.withAlpha(120), width: 1),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 10, color: border),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontSize: 9,
+              fontWeight: FontWeight.w700,
+              color: border,
+            ),
+          ),
+        ],
       ),
     );
   }
