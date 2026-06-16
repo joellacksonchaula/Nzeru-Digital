@@ -41,7 +41,11 @@ class _LoginScreenState extends State<LoginScreen> {
               width: double.infinity,
               padding: const EdgeInsets.fromLTRB(24, 22, 24, 26),
               decoration: const BoxDecoration(
-                color: AppColors.faluRed,
+                gradient: LinearGradient(
+                  colors: [Color(0xFF14B8A6), Color(0xFF0E8F83)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(28),
                   bottomRight: Radius.circular(28),
@@ -156,7 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   style: GoogleFonts.poppins(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,
-                                    color: AppColors.faluRed,
+                                    color: AppColors.primaryTiffanyDark,
                                   ),
                                 ),
                               ),

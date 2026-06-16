@@ -302,7 +302,7 @@ class _IjcCreditCard extends StatelessWidget {
               child: Column(
                 children: [
                   Container(height: 6, color: AppColors.primaryTiffany),
-                  Container(height: 4, color: AppColors.accentRed),
+                  Container(height: 4, color: AppColors.primaryTiffanyDark),
                 ],
               ),
             ),
@@ -352,7 +352,7 @@ class _IjcCreditCard extends StatelessWidget {
                             final total = group.effectiveTotalAmount;
                             final remaining = group.lockedBalance + group.availableBalance;
                             final isZero = remaining <= 0;
-                            String _fmt(double v) {
+                            String fmt(double v) {
                               return v.toInt().toString().replaceAllMapped(
                                 RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
                                 (m) => '${m[0]},',
@@ -370,7 +370,7 @@ class _IjcCreditCard extends StatelessWidget {
                                     ),
                                   ),
                                   TextSpan(
-                                    text: isZero ? '00' : _fmt(remaining),
+                                    text: isZero ? '00' : fmt(remaining),
                                     style: GoogleFonts.poppins(
                                       fontSize: 18,
                                       fontWeight: FontWeight.w800,
@@ -389,7 +389,7 @@ class _IjcCreditCard extends StatelessWidget {
                                       ),
                                     ),
                                     TextSpan(
-                                      text: _fmt(total),
+                                      text: fmt(total),
                                       style: GoogleFonts.poppins(
                                         fontSize: 10,
                                         fontWeight: FontWeight.w500,

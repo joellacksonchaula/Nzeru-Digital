@@ -113,7 +113,7 @@ class _LoanEligibilityScreenState extends State<LoanEligibilityScreen> {
                               )
                             : null,
                         style: FilledButton.styleFrom(
-                          backgroundColor: AppColors.faluRed,
+                          backgroundColor: AppColors.primaryTiffany,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(
                             horizontal: 16,
@@ -245,7 +245,7 @@ class _LoanEligibilityScreenState extends State<LoanEligibilityScreen> {
                             child: LinearProgressIndicator(
                               value: activeCredit.repaymentProgress,
                               minHeight: 12,
-                              backgroundColor: AppColors.faluMist,
+                              backgroundColor: AppColors.primaryTiffanyLight,
                               color: AppColors.loadingGreen,
                             ),
                           ),

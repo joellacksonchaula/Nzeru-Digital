@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import '../config/app_colors.dart';
@@ -45,53 +44,35 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Stack(
         children: [
           const DashboardBackdrop(darkMode: false),
+
+          // Centred logo — logo only, no text
           Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-            // Logo with JPEG image
-            const AppLogo(size: 150, iconSize: 72)
+            child: AppLogo(size: 220, iconSize: 110)
                 .animate()
                 .scale(
-                  begin: const Offset(0.5, 0.5),
+                  begin: const Offset(0.4, 0.4),
                   end: const Offset(1, 1),
-                  duration: 800.ms,
+                  duration: 900.ms,
                   curve: Curves.elasticOut,
                 )
-                .fadeIn(duration: 600.ms),
-            const SizedBox(height: 30),
-            Text(
-              'NZELU',
-              style: GoogleFonts.poppins(
-                fontSize: 28,
-                fontWeight: FontWeight.w700,
-                color: AppColors.tiffanyBlue,
-                letterSpacing: 6,
-              ),
-            )
-                .animate()
-                .fadeIn(delay: 400.ms, duration: 800.ms)
-                .slideY(begin: 0.3, end: 0, duration: 600.ms),
-            const SizedBox(height: 10),
-            Text(
-              'Nzeru Digital Settings',
-              style: GoogleFonts.poppins(
-                fontSize: 13,
-                color: AppColors.textMuted,
-                letterSpacing: 2,
-              ),
-            ).animate().fadeIn(delay: 800.ms, duration: 800.ms),
-            const SizedBox(height: 60),
-                SizedBox(
-                  width: 30,
-                  height: 30,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    color: AppColors.loadingRed,
-                    backgroundColor: AppColors.tiffanyMist,
-                  ),
-                ).animate().fadeIn(delay: 1200.ms, duration: 600.ms),
-              ],
+                .fadeIn(duration: 700.ms),
+          ),
+
+          // Subtle loading spinner pinned to the bottom
+          Positioned(
+            bottom: 56,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: SizedBox(
+                width: 26,
+                height: 26,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  color: AppColors.primaryTiffany,
+                  backgroundColor: AppColors.primaryTiffanyLight,
+                ),
+              ).animate().fadeIn(delay: 1000.ms, duration: 600.ms),
             ),
           ),
         ],

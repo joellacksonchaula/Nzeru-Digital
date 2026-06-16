@@ -8,8 +8,8 @@ class AppColors {
   static const Color primaryTiffanyDark = Color(0xFF0E8F83);
   static const Color primaryTiffanyLight = Color(0xFFDFF9F7);
   
-  // Accent red
-  static const Color accentRed = Color(0xFFFF3B30); // #FF3B30
+  // Accent — remapped to teal so legacy references get brand colour
+  static const Color accentRed = primaryTiffany;
 
   static const Color background = Color(0xFFF7F8FA);
   static const Color surface = Color(0xFFFFFFFF);
@@ -32,10 +32,10 @@ class AppColors {
   static const Color warning = Color(0xFFF59E0B);
   static const Color info = primaryTiffany;
   static const Color error = Color(0xFFEF4444);
-  static const Color loadingRed = Color(0xFFEF4444);
+  static const Color loadingRed = primaryTiffany;
   static const Color loadingGreen = Color(0xFF22C55E);
-  static const Color faluRed = Color(0xFFEF4444);
-  static const Color faluMist = Color(0xFFFEE2E2);
+  static const Color faluRed = primaryTiffany;      // legacy alias → teal
+  static const Color faluMist = primaryTiffanyLight; // legacy alias → teal light
   static const Color actionRed = Color(0xFFDC2626);
   static const Color darkSurfaceAlt = Color(0xFF172133);
 

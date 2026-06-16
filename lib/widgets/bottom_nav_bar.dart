@@ -16,10 +16,17 @@ class BottomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.92),
+        color: Colors.white,
         border: Border(
-          top: BorderSide(color: AppColors.primaryRed.withValues(alpha: 0.55)),
+          top: BorderSide(color: AppColors.primaryTiffany.withAlpha(50)),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(8),
+            blurRadius: 12,
+            offset: const Offset(0, -3),
+          ),
+        ],
       ),
       child: SafeArea(
         child: Padding(
@@ -112,7 +119,7 @@ class _NavItem extends StatelessWidget {
           children: [
             Icon(
               icon,
-              color: isActive ? AppColors.faluRed : const Color(0xFF8E8374),
+              color: isActive ? AppColors.primaryTiffany : const Color(0xFF9AACB8),
               size: 22,
             ),
             const SizedBox(height: 4),
@@ -121,7 +128,7 @@ class _NavItem extends StatelessWidget {
               style: GoogleFonts.poppins(
                 fontSize: 9,
                 fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                color: isActive ? AppColors.faluRed : const Color(0xFF6F665C),
+                color: isActive ? AppColors.primaryTiffany : const Color(0xFF6F7D85),
               ),
             ),
           ],

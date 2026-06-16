@@ -472,7 +472,7 @@ class DashboardSavingsPlanCard extends StatelessWidget {
                         CircularProgressIndicator(
                           value: plan.progressPercent,
                           strokeWidth: 7,
-                          backgroundColor: AppColors.faluMist,
+                          backgroundColor: AppColors.primaryTiffanyLight,
                           valueColor: AlwaysStoppedAnimation<Color>(
                             plan.progressPercent >= 0.5
                                 ? AppColors.loadingGreen
@@ -525,7 +525,7 @@ class DashboardSavingsPlanCard extends StatelessWidget {
                 child: LinearProgressIndicator(
                   value: plan.progressPercent,
                   minHeight: 9,
-                  backgroundColor: AppColors.faluMist,
+                  backgroundColor: AppColors.primaryTiffanyLight,
                   color: plan.progressPercent >= 0.5
                       ? AppColors.loadingGreen
                       : AppColors.loadingRed,

@@ -82,7 +82,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   children: [
                     const Icon(
                       Icons.account_balance_wallet_rounded,
-                      color: AppColors.primaryRed,
+                      color: AppColors.primaryTiffany,
                       size: 44,
                     ),
                     const SizedBox(height: 18),

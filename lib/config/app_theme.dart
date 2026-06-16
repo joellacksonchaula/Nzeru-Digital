@@ -23,7 +23,7 @@ class AppTheme {
         onError: Colors.white,
         outline: AppColors.border,
       ),
-      scaffoldBackgroundColor: AppColors.background,
+      scaffoldBackgroundColor: const Color(0xFFF5F7FA),
       primaryColor: AppColors.primaryRed,
       useMaterial3: true,
     );
@@ -184,12 +184,12 @@ class AppTheme {
       switchTheme: SwitchThemeData(
         thumbColor: MaterialStateProperty.resolveWith(
           (states) => states.contains(MaterialState.selected)
-              ? AppColors.primaryRed
+              ? AppColors.primaryTiffany
               : AppColors.textMuted,
         ),
         trackColor: MaterialStateProperty.resolveWith(
           (states) => states.contains(MaterialState.selected)
-              ? AppColors.primaryRed.withAlpha(60)
+              ? AppColors.primaryTiffany.withAlpha(60)
               : AppColors.border,
         ),
       ),

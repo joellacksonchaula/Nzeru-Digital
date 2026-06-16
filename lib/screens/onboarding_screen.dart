@@ -99,16 +99,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             shape: BoxShape.circle,
                             gradient: const LinearGradient(
                               colors: [
-                                AppColors.tiffanyBlueLight,
-                                AppColors.tiffanyBlue,
-                                AppColors.faluRed,
+                                AppColors.primaryTiffanyLight,
+                                AppColors.primaryTiffany,
+                                AppColors.primaryTiffanyDark,
                               ],
                               stops: [0.0, 0.5, 1.0],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),
                             border: Border.all(
-                              color: AppColors.primaryRed,
+                              color: AppColors.primaryTiffany,
                               width: 2,
                             ),
                           ),
@@ -170,18 +170,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   height: 8,
                   decoration: BoxDecoration(
                     color: _currentPage == i
-                        ? (i.isEven
-                            ? AppColors.loadingRed
-                            : AppColors.loadingGreen)
+                        ? AppColors.primaryTiffany
                         : AppColors.textMuted.withAlpha(60),
                     borderRadius: BorderRadius.circular(4),
                     boxShadow: _currentPage == i
                         ? [
                             BoxShadow(
-                              color: (i.isEven
-                                      ? AppColors.loadingRed
-                                      : AppColors.loadingGreen)
-                                  .withAlpha(60),
+                              color: AppColors.primaryTiffany.withAlpha(60),
                               blurRadius: 8,
                             ),
                           ]
