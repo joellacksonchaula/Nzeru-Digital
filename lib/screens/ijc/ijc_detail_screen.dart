@@ -36,22 +36,31 @@ class IjcDetailScreen extends StatelessWidget {
           group.name,
           style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 17, color: Colors.black),
         ),
-        iconTheme: const IconThemeData(color: Colors.black),
         actions: [
           PopupMenuButton<String>(
             itemBuilder: (context) => [
               const PopupMenuItem(value: 'share', child: Text('Share Pocket')),
               const PopupMenuItem(value: 'copy', child: Text('Copy Pocket ID')),
+              if (group.isOwner && group.balance <= 0)
+                const PopupMenuItem(
+                  value: 'delete',
+                  child: Text(
+                    'Delete Pocket',
+                    style: TextStyle(color: Colors.red, fontWeight: FontWeight.w500),
+                  ),
+                ),
             ],
             onSelected: (value) {
               final code = group.joinCode.isNotEmpty ? group.joinCode : group.ijcId;
               if (value == 'share') {
                 SharePlus.instance.share(ShareParams(text: 'Join my Nzeru Pocket: $code'));
-              } else {
+              } else if (value == 'copy') {
                 Clipboard.setData(ClipboardData(text: code));
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Pocket code copied')),
                 );
+              } else if (value == 'delete') {
+                _confirmDeletePocket(context, group);
               }
             },
             icon: const Icon(Icons.more_vert_rounded, color: Colors.black),
@@ -356,63 +365,164 @@ class IjcDetailScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // ── Action Button ─────────────────────────────────
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: FilledButton(
-                onPressed: () {
-                  if (group.pocketType == 'SELF') {
-                    Navigator.push(
+            // ── Action Buttons (role-aware) ─────────────────────
+            // ── SELF pocket: owner adds funds directly ──────────
+            if (group.pocketType == 'SELF') ...[
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: FilledButton(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => IjcDepositScreen(group: group)),
+                  ),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppColors.primaryTiffany,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    textStyle: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w700),
+                  ),
+                  child: const Text('Add Funds'),
+                ),
+              ),
+              if (group.canWithdraw) ...[
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: OutlinedButton(
+                    onPressed: () => _openAmountDialog(context, isDeposit: false),
+                    style: OutlinedButton.styleFrom(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    ),
+                    child: Text('Withdraw', style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+                  ),
+                ),
+              ],
+            ],
+
+            // ── SPONSORED pocket: role-based buttons ────────────
+            if (group.pocketType == 'SPONSORED') ...[
+              // SPONSOR (CONTROLLER): can fund the pocket + share/generate code
+              if (group.isSponsor) ...[
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: FilledButton(
+                    onPressed: () => Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => IjcDepositScreen(group: group)),
-                    );
-                  } else {
-                    _showSponsoredCodeDialog(context, group);
-                  }
-                },
-                style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.primaryTiffany,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                  textStyle: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w700),
-                ),
-                child: Text(group.pocketType == 'SELF' ? 'Add Funds' : 'Generate Pocket Code'),
-              ),
-            ),
-            if (group.pocketType == 'SPONSORED') ...[
-              const SizedBox(height: 10),
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: OutlinedButton(
-                  onPressed: () {
-                    final code = group.joinCode.isNotEmpty ? group.joinCode : group.ijcId;
-                    SharePlus.instance.share(ShareParams(text: 'Join my Nzeru Pocket: $code'));
-                  },
-                  style: OutlinedButton.styleFrom(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                    side: BorderSide(color: AppColors.primaryTiffany),
-                  ),
-                  child: Text(
-                    'Share Pocket Code',
-                    style: GoogleFonts.poppins(fontWeight: FontWeight.w600, color: AppColors.primaryTiffany),
+                    ),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.primaryTiffany,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      textStyle: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w700),
+                    ),
+                    child: const Text('Fund Pocket'),
                   ),
                 ),
-              ),
-            ],
-            if (group.canWithdraw) ...[
-              const SizedBox(height: 10),
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: OutlinedButton(
-                  onPressed: () => _openAmountDialog(context, isDeposit: false),
-                  style: OutlinedButton.styleFrom(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: OutlinedButton(
+                    onPressed: () {
+                      final code = group.joinCode.isNotEmpty ? group.joinCode : group.ijcId;
+                      SharePlus.instance.share(ShareParams(text: 'Join my Nzeru Pocket: $code'));
+                    },
+                    style: OutlinedButton.styleFrom(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      side: BorderSide(color: AppColors.primaryTiffany),
+                    ),
+                    child: Text(
+                      'Share Pocket Code',
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.w600, color: AppColors.primaryTiffany),
+                    ),
                   ),
-                  child: Text('Withdraw', style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
                 ),
-              ),
+              ],
+
+              // OWNER (USER): can only withdraw available funds — cannot fund their own sponsored pocket
+              if (group.isOwner) ...[
+                // Show pocket code generation only if no sponsor is linked yet
+                if (!group.isSponsor && group.controllerName.isEmpty) ...[
+                  SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: FilledButton(
+                      onPressed: () => _showSponsoredCodeDialog(context, group),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: AppColors.primaryTiffany,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        textStyle: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w700),
+                      ),
+                      child: const Text('Generate Pocket Code'),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: OutlinedButton(
+                      onPressed: () {
+                        final code = group.joinCode.isNotEmpty ? group.joinCode : group.ijcId;
+                        SharePlus.instance.share(ShareParams(text: 'Join my Nzeru Pocket: $code'));
+                      },
+                      style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        side: BorderSide(color: AppColors.primaryTiffany),
+                      ),
+                      child: Text(
+                        'Share Pocket Code',
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.w600, color: AppColors.primaryTiffany),
+                      ),
+                    ),
+                  ),
+                ],
+                // Withdraw button — shown only when funds are available
+                if (group.canWithdraw) ...[
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: FilledButton(
+                      onPressed: () => _openAmountDialog(context, isDeposit: false),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: AppColors.success,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        textStyle: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w700),
+                      ),
+                      child: Text('Withdraw ${CurrencyUtil.format(group.availableBalance)}'),
+                    ),
+                  ),
+                ],
+                // If no funds are available and sponsor is linked, show a locked info banner
+                if (!group.canWithdraw && group.controllerName.isNotEmpty) ...[
+                  const SizedBox(height: 10),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: AppColors.warning.withAlpha(20),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: AppColors.warning.withAlpha(60)),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.lock_outline_rounded, color: AppColors.warning, size: 18),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            group.isPaused
+                                ? 'Pocket is paused by your sponsor.'
+                                : 'Funds are locked. Next release: ${group.nextReleaseDate != null ? DateFormat('dd MMM yyyy').format(group.nextReleaseDate!) : 'soon'}.',
+                            style: GoogleFonts.poppins(fontSize: 12, color: AppColors.warning, fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ],
             ],
             const SizedBox(height: 20),
 
@@ -684,6 +794,74 @@ class IjcDetailScreen extends StatelessWidget {
                       ),
                     )
                   : const Text('Submit'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _confirmDeletePocket(BuildContext context, IjcGroup group) {
+    var isDeleting = false;
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          title: Text(
+            'Delete Pocket',
+            style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 18),
+          ),
+          content: Text(
+            'Are you sure you want to delete the pocket "${group.name}"? This action cannot be undone.',
+            style: GoogleFonts.poppins(fontSize: 14),
+          ),
+          actions: [
+            TextButton(
+              onPressed: isDeleting ? null : () => Navigator.pop(ctx),
+              child: Text(
+                'Cancel',
+                style: GoogleFonts.poppins(fontWeight: FontWeight.w600, color: Colors.grey),
+              ),
+            ),
+            TextButton(
+              onPressed: isDeleting
+                  ? null
+                  : () async {
+                      setDialogState(() => isDeleting = true);
+                      final provider = context.read<IjcProvider>();
+                      final ok = await provider.deleteGroup(group.id);
+                      if (ctx.mounted) {
+                        Navigator.pop(ctx); // Close dialog
+                      }
+                      if (ok) {
+                        if (context.mounted) {
+                          Navigator.pop(context); // Go back from details page to listing page
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Pocket "${group.name}" deleted successfully.')),
+                          );
+                        }
+                      } else {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(provider.error ?? 'Failed to delete pocket.')),
+                          );
+                        }
+                      }
+                    },
+              child: isDeleting
+                  ? const SizedBox(
+                      height: 18,
+                      width: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation(Colors.red),
+                      ),
+                    )
+                  : Text(
+                      'Delete',
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.w700, color: Colors.red),
+                    ),
             ),
           ],
         ),

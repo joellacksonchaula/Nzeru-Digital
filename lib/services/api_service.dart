@@ -535,6 +535,23 @@ class ApiService {
     return _handleResponse(response);
   }
 
+  Future<void> deleteIjcGroup(int groupId) async {
+    var response = await http
+        .delete(Uri.parse('$baseUrl/ijc-groups/$groupId/'), headers: _headers)
+        .timeout(const Duration(seconds: 30));
+    if (response.statusCode == 401) {
+      final refreshed = await refreshToken();
+      if (refreshed) {
+        response = await http
+            .delete(Uri.parse('$baseUrl/ijc-groups/$groupId/'), headers: _headers)
+            .timeout(const Duration(seconds: 30));
+      }
+    }
+    if (response.statusCode != 204) {
+      throw ApiException(response.statusCode, response.body);
+    }
+  }
+
   // ─── Reports ───────────────────────────────────────────
 
   Future<Map<String, dynamic>> getFinancialReport() async {

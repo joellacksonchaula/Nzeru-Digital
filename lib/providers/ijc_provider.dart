@@ -169,4 +169,18 @@ class IjcProvider with ChangeNotifier {
       return false;
     }
   }
+
+  Future<bool> deleteGroup(int groupId) async {
+    try {
+      await _api.deleteIjcGroup(groupId);
+      _groups.removeWhere((g) => g.id == groupId);
+      _error = null;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = 'Failed to delete pocket: $e';
+      notifyListeners();
+      return false;
+    }
+  }
 }

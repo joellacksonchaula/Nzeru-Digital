@@ -133,11 +133,18 @@ class IjcGroup {
     required this.transactions,
   });
 
-  bool get isController => currentUserRole == 'CONTROLLER';
-  bool get isUser => currentUserRole == 'USER' || currentUserRole == 'OWNER';
-  bool get canWithdraw => isUser && isApproved && availableBalance > 0 && !isPaused;
-  bool get isOwner => isController;
+  // Role helpers
+  // Backend assigns role='USER' to the pocket owner (the person who created it)
+  // and role='CONTROLLER' to the sponsor (the person who joined via pocket code)
+  bool get isOwner => currentUserRole == 'USER' || currentUserRole == 'OWNER';
+  bool get isSponsor => currentUserRole == 'CONTROLLER';
   bool get isApproved => currentUserStatus == 'APPROVED';
+
+  // The owner can withdraw from their available balance
+  bool get canWithdraw => isOwner && isApproved && availableBalance > 0 && !isPaused;
+  // The sponsor (controller) and owner can both deposit
+  bool get canDeposit => isApproved && !isPaused;
+
   double get effectiveTotalAmount => totalAmount > 0 ? totalAmount : goalAmount;
   double get dailyRemaining =>
       dailyLimit <= 0 ? availableBalance : (dailyLimit - dailySpent).clamp(0, availableBalance).toDouble();
