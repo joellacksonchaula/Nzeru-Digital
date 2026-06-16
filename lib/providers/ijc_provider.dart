@@ -170,6 +170,19 @@ class IjcProvider with ChangeNotifier {
     }
   }
 
+  Future<bool> updatePocketPolicy(int groupId, Map<String, dynamic> fields) async {
+    try {
+      await _api.updateIjcGroup(groupId, fields);
+      await loadGroups();
+      _error = null;
+      return true;
+    } catch (e) {
+      _error = 'Failed to update pocket settings: $e';
+      notifyListeners();
+      return false;
+    }
+  }
+
   Future<bool> deleteGroup(int groupId) async {
     try {
       await _api.deleteIjcGroup(groupId);

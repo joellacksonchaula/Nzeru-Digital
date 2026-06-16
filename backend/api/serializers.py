@@ -1,4 +1,4 @@
-﻿from rest_framework import serializers
+from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.utils import timezone
@@ -319,6 +319,8 @@ class IJCGroupSerializer(serializers.ModelSerializer):
             'release_amount',
             'is_paused',
             'release_frequency',
+            'cash_out_policy',
+            'custom_interval_days',
             'locked_balance',
             'last_cash_out_at',
             'daily_limit',

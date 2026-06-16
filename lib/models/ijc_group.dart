@@ -73,6 +73,7 @@ class IjcGroup {
   final double lockedBalance;
   final double releasedBalance;
   final String cashOutPolicy;
+  final int customIntervalDays;
   final double dailyLimit;
   final double weeklyLimit;
   final double monthlyLimit;
@@ -111,6 +112,7 @@ class IjcGroup {
     required this.lockedBalance,
     required this.releasedBalance,
     required this.cashOutPolicy,
+    required this.customIntervalDays,
     required this.dailyLimit,
     required this.weeklyLimit,
     required this.monthlyLimit,
@@ -167,6 +169,7 @@ class IjcGroup {
       lockedBalance: _parseDouble(json['locked_balance']),
       releasedBalance: _parseDouble(json['released_balance']),
       cashOutPolicy: (json['cash_out_policy'] ?? 'WEEKLY').toString(),
+      customIntervalDays: _parseInt(json['custom_interval_days']),
       dailyLimit: _parseDouble(json['daily_limit']),
       weeklyLimit: _parseDouble(json['weekly_limit']),
       monthlyLimit: _parseDouble(json['monthly_limit']),

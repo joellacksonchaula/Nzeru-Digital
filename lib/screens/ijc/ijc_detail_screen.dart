@@ -130,7 +130,7 @@ class IjcDetailScreen extends StatelessWidget {
                         ),
                       ),
                       // ── Pocket type badge ──
-                      _PocketTypeBadge(group.pocketType),
+                      _PocketTypeBadge(group.pocketType, isSponsor: group.isSponsor),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -141,7 +141,7 @@ class IjcDetailScreen extends StatelessWidget {
                     final isZero = remaining <= 0;
 
                     // Format number with commas, no decimals for cleaner look
-                    String _fmt(double v) {
+                    String fmt(double v) {
                       final intPart = v.toInt().toString().replaceAllMapped(
                         RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
                         (m) => '${m[0]},',
@@ -161,7 +161,7 @@ class IjcDetailScreen extends StatelessWidget {
                             ),
                           ),
                           TextSpan(
-                            text: isZero ? '00' : _fmt(remaining),
+                            text: isZero ? '00' : fmt(remaining),
                             style: GoogleFonts.poppins(
                               fontSize: 30,
                               fontWeight: FontWeight.w800,
@@ -180,7 +180,7 @@ class IjcDetailScreen extends StatelessWidget {
                               ),
                             ),
                             TextSpan(
-                              text: _fmt(total),
+                              text: fmt(total),
                               style: GoogleFonts.poppins(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
@@ -525,6 +525,13 @@ class IjcDetailScreen extends StatelessWidget {
               ],
             ],
             const SizedBox(height: 20),
+
+            // ── Sponsor Policy Settings ───────────────────────
+            // Only the sponsor (CONTROLLER) can see and edit these
+            if (group.pocketType == 'SPONSORED' && group.isSponsor) ...[
+              _SponsorPolicyPanel(group: group),
+              const SizedBox(height: 20),
+            ],
 
             // ── Recent Activity ───────────────────────────────
             if (group.transactions.isNotEmpty) ...[
@@ -872,6 +879,331 @@ class IjcDetailScreen extends StatelessWidget {
 
 // ── Helper Widgets ─────────────────────────────────────────────
 
+// ── Sponsor Policy Panel ────────────────────────────────────────────────────
+class _SponsorPolicyPanel extends StatefulWidget {
+  final IjcGroup group;
+  const _SponsorPolicyPanel({required this.group});
+
+  @override
+  State<_SponsorPolicyPanel> createState() => _SponsorPolicyPanelState();
+}
+
+class _SponsorPolicyPanelState extends State<_SponsorPolicyPanel> {
+  late TextEditingController _releaseAmountCtrl;
+  late TextEditingController _dailyLimitCtrl;
+  late TextEditingController _weeklyLimitCtrl;
+  late TextEditingController _monthlyLimitCtrl;
+  late TextEditingController _customIntervalDaysCtrl;
+  late String _frequency;
+  late bool _allowRollover;
+  bool _saving = false;
+  bool _expanded = true;
+
+  static const List<String> _frequencies = ['DAILY', 'WEEKLY', 'MONTHLY', 'CUSTOM'];
+
+  @override
+  void initState() {
+    super.initState();
+    final g = widget.group;
+    _releaseAmountCtrl = TextEditingController(text: g.releaseAmount > 0 ? g.releaseAmount.toStringAsFixed(0) : '');
+    _dailyLimitCtrl = TextEditingController(text: g.dailyLimit > 0 ? g.dailyLimit.toStringAsFixed(0) : '');
+    _weeklyLimitCtrl = TextEditingController(text: g.weeklyLimit > 0 ? g.weeklyLimit.toStringAsFixed(0) : '');
+    _monthlyLimitCtrl = TextEditingController(text: g.monthlyLimit > 0 ? g.monthlyLimit.toStringAsFixed(0) : '');
+    _customIntervalDaysCtrl = TextEditingController(text: g.customIntervalDays > 0 ? g.customIntervalDays.toString() : '');
+    _frequency = _frequencies.contains(g.cashOutPolicy) ? g.cashOutPolicy : 'WEEKLY';
+    _allowRollover = g.allowRollover;
+  }
+
+  @override
+  void dispose() {
+    _releaseAmountCtrl.dispose();
+    _dailyLimitCtrl.dispose();
+    _weeklyLimitCtrl.dispose();
+    _monthlyLimitCtrl.dispose();
+    _customIntervalDaysCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _save() async {
+    setState(() => _saving = true);
+    final provider = context.read<IjcProvider>();
+    final ok = await provider.updatePocketPolicy(widget.group.id, {
+      'release_amount': double.tryParse(_releaseAmountCtrl.text) ?? 0,
+      'cash_out_policy': _frequency,
+      if (_frequency == 'CUSTOM') 'custom_interval_days': int.tryParse(_customIntervalDaysCtrl.text) ?? 1,
+      'daily_limit': double.tryParse(_dailyLimitCtrl.text) ?? 0,
+      'weekly_limit': double.tryParse(_weeklyLimitCtrl.text) ?? 0,
+      'monthly_limit': double.tryParse(_monthlyLimitCtrl.text) ?? 0,
+      'allow_rollover': _allowRollover,
+    });
+    setState(() => _saving = false);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(ok ? 'Pocket settings saved.' : provider.error ?? 'Failed to save settings.')),
+      );
+    }
+  }
+
+  Future<void> _togglePause() async {
+    setState(() => _saving = true);
+    final provider = context.read<IjcProvider>();
+    final ok = await provider.updatePocketPolicy(widget.group.id, {
+      'is_paused': !widget.group.isPaused,
+    });
+    setState(() => _saving = false);
+    if (mounted && !ok) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(provider.error ?? 'Action failed.')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final g = context.watch<IjcProvider>().groups.firstWhere(
+      (x) => x.id == widget.group.id,
+      orElse: () => widget.group,
+    );
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [BoxShadow(color: Colors.black.withAlpha(8), blurRadius: 10, offset: const Offset(0, 3))],
+      ),
+      child: Column(
+        children: [
+          // Header row
+          InkWell(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
+            onTap: () => setState(() => _expanded = !_expanded),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              child: Row(
+                children: [
+                  Container(
+                    width: 34,
+                    height: 34,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF8B5CF6).withAlpha(24),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(Icons.tune_rounded, color: Color(0xFF8B5CF6), size: 18),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Pocket Settings',
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 14),
+                    ),
+                  ),
+                  // Pause / Resume chip
+                  GestureDetector(
+                    onTap: _saving ? null : _togglePause,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: g.isPaused
+                            ? AppColors.success.withAlpha(24)
+                            : AppColors.error.withAlpha(24),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: g.isPaused ? AppColors.success.withAlpha(100) : AppColors.error.withAlpha(100),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            g.isPaused ? Icons.play_arrow_rounded : Icons.pause_rounded,
+                            size: 13,
+                            color: g.isPaused ? AppColors.success : AppColors.error,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            g.isPaused ? 'Resume' : 'Pause',
+                            style: GoogleFonts.poppins(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: g.isPaused ? AppColors.success : AppColors.error,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Icon(
+                    _expanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
+                    color: AppColors.textSecondary,
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Collapsible body
+          if (_expanded) ...[
+            Divider(height: 1, color: AppColors.borderLight),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Release Amount
+                  Text('Release Amount (MK)', style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
+                  const SizedBox(height: 6),
+                  TextField(
+                    controller: _releaseAmountCtrl,
+                    keyboardType: TextInputType.number,
+                    style: GoogleFonts.poppins(fontSize: 14),
+                    decoration: InputDecoration(
+                      hintText: 'e.g. 5000',
+                      prefixText: 'MK ',
+                      prefixStyle: GoogleFonts.poppins(fontSize: 13, color: AppColors.textSecondary),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: AppColors.borderLight)),
+                      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: AppColors.primaryTiffany, width: 1.5)),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+
+                  // Release Frequency
+                  Text('Release Frequency', style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: _frequencies.map((f) {
+                      final active = _frequency == f;
+                      return SizedBox(
+                        width: 75,
+                        child: GestureDetector(
+                          onTap: () => setState(() => _frequency = f),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            padding: const EdgeInsets.symmetric(vertical: 9),
+                            decoration: BoxDecoration(
+                              color: active ? AppColors.primaryTiffany : Colors.transparent,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: active ? AppColors.primaryTiffany : AppColors.borderLight),
+                            ),
+                            child: Text(
+                              f[0] + f.substring(1).toLowerCase(),
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.poppins(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: active ? Colors.white : AppColors.textSecondary,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                  if (_frequency == 'CUSTOM') ...[
+                    const SizedBox(height: 14),
+                    Text('Custom Interval (Days)', style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
+                    const SizedBox(height: 6),
+                    TextField(
+                      controller: _customIntervalDaysCtrl,
+                      keyboardType: TextInputType.number,
+                      style: GoogleFonts.poppins(fontSize: 14),
+                      decoration: InputDecoration(
+                        hintText: 'e.g. 15',
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: AppColors.borderLight)),
+                        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: AppColors.primaryTiffany, width: 1.5)),
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 14),
+
+                  // Spending Limits
+                  Text('Spending Limits (MK)', style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(child: _limitField('Daily', _dailyLimitCtrl)),
+                      const SizedBox(width: 8),
+                      Expanded(child: _limitField('Weekly', _weeklyLimitCtrl)),
+                      const SizedBox(width: 8),
+                      Expanded(child: _limitField('Monthly', _monthlyLimitCtrl)),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+
+                  // Allow Rollover
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Allow Rollover', style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600)),
+                            Text('Unspent balance carries to next period', style: GoogleFonts.poppins(fontSize: 11, color: AppColors.textSecondary)),
+                          ],
+                        ),
+                      ),
+                      Switch.adaptive(
+                        value: _allowRollover,
+                        activeThumbColor: AppColors.primaryTiffany,
+                        activeTrackColor: AppColors.primaryTiffany.withAlpha(150),
+                        onChanged: (v) => setState(() => _allowRollover = v),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Save button
+                  SizedBox(
+                    width: double.infinity,
+                    height: 46,
+                    child: FilledButton(
+                      onPressed: _saving ? null : _save,
+                      style: FilledButton.styleFrom(
+                        backgroundColor: const Color(0xFF8B5CF6),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        textStyle: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w700),
+                      ),
+                      child: _saving
+                          ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation(Colors.white)))
+                          : const Text('Save Settings'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _limitField(String label, TextEditingController ctrl) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: GoogleFonts.poppins(fontSize: 11, color: AppColors.textSecondary, fontWeight: FontWeight.w500)),
+        const SizedBox(height: 4),
+        TextField(
+          controller: ctrl,
+          keyboardType: TextInputType.number,
+          style: GoogleFonts.poppins(fontSize: 13),
+          decoration: InputDecoration(
+            hintText: '0',
+            hintStyle: GoogleFonts.poppins(fontSize: 12, color: Colors.grey),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: AppColors.borderLight)),
+            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: AppColors.primaryTiffany, width: 1.5)),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _StatTile extends StatelessWidget {
   final String label;
   final String value;
@@ -962,7 +1294,8 @@ class _VerticalDivider extends StatelessWidget {
 // ── Pocket type badge ──────────────────────────────────────────────────────
 class _PocketTypeBadge extends StatelessWidget {
   final String pocketType;
-  const _PocketTypeBadge(this.pocketType);
+  final bool isSponsor;
+  const _PocketTypeBadge(this.pocketType, {this.isSponsor = false});
 
   @override
   Widget build(BuildContext context) {
@@ -972,7 +1305,8 @@ class _PocketTypeBadge extends StatelessWidget {
         : const Color(0xFF8B5CF6).withAlpha(28);
     final border = isSelf ? const Color(0xFF2EC4B6) : const Color(0xFF8B5CF6);
     final icon = isSelf ? Icons.person_rounded : Icons.handshake_rounded;
-    final label = isSelf ? 'Self' : 'Sponsored';
+    // Sponsor sees "Sponsor", owner sees "Sponsored"
+    final label = isSelf ? 'Self' : (isSponsor ? 'Sponsor' : 'Sponsored');
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),

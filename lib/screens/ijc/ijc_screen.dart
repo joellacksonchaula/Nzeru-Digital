@@ -335,7 +335,7 @@ class _IjcCreditCard extends StatelessWidget {
                         ),
                       ),
                       // ── Pocket type badge ──
-                      _PocketTypeBadge(group.pocketType),
+                      _PocketTypeBadge(group.pocketType, isSponsor: group.isSponsor),
                     ],
                   ),
                   const SizedBox(height: 6),
@@ -531,7 +531,8 @@ class _IjcCreditCard extends StatelessWidget {
 // ── Pocket type badge ─────────────────────────────────────────────────────
 class _PocketTypeBadge extends StatelessWidget {
   final String pocketType;
-  const _PocketTypeBadge(this.pocketType);
+  final bool isSponsor;
+  const _PocketTypeBadge(this.pocketType, {this.isSponsor = false});
 
   @override
   Widget build(BuildContext context) {
@@ -541,7 +542,8 @@ class _PocketTypeBadge extends StatelessWidget {
         : const Color(0xFF8B5CF6).withAlpha(28);
     final border = isSelf ? const Color(0xFF2EC4B6) : const Color(0xFF8B5CF6);
     final icon = isSelf ? Icons.person_rounded : Icons.handshake_rounded;
-    final label = isSelf ? 'Self' : 'Sponsored';
+    // Sponsor sees "Sponsor", owner sees "Sponsored"
+    final label = isSelf ? 'Self' : (isSponsor ? 'Sponsor' : 'Sponsored');
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),

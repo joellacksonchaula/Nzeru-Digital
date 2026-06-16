@@ -535,6 +535,30 @@ class ApiService {
     return _handleResponse(response);
   }
 
+  Future<Map<String, dynamic>> updateIjcGroup(int groupId, Map<String, dynamic> fields) async {
+    final response = await http
+        .patch(
+          Uri.parse('$baseUrl/ijc-groups/$groupId/'),
+          headers: {..._headers, 'Content-Type': 'application/json'},
+          body: jsonEncode(fields),
+        )
+        .timeout(const Duration(seconds: 30));
+    if (response.statusCode == 401) {
+      final refreshed = await refreshToken();
+      if (refreshed) {
+        final retried = await http
+            .patch(
+              Uri.parse('$baseUrl/ijc-groups/$groupId/'),
+              headers: {..._headers, 'Content-Type': 'application/json'},
+              body: jsonEncode(fields),
+            )
+            .timeout(const Duration(seconds: 30));
+        return _handleResponse(retried);
+      }
+    }
+    return _handleResponse(response);
+  }
+
   Future<void> deleteIjcGroup(int groupId) async {
     var response = await http
         .delete(Uri.parse('$baseUrl/ijc-groups/$groupId/'), headers: _headers)

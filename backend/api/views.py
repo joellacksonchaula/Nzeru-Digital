@@ -817,10 +817,13 @@ class IJCGroupViewSet(viewsets.ModelViewSet):
             group.balance += amount
             # Keep legacy goal_amount in sync for backwards compatibility
             group.goal_amount += amount
-            if group.total_amount <= 0:
-                group.total_amount = amount
-            elif group.balance > amount:
-                group.total_amount += amount
+            if total_amount_input:
+                group.total_amount = self._parse_amount(total_amount_input, 'total_amount')
+            else:
+                if group.total_amount > 0:
+                    group.total_amount += amount
+                else:
+                    group.total_amount = amount
             group.save(update_fields=['balance', 'goal_amount', 'total_amount', 'release_amount', 'cash_out_policy'])
             membership.total_contributed += amount
             membership.save(update_fields=['total_contributed'])
