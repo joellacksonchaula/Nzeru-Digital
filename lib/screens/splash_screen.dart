@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import '../config/app_colors.dart';
 import '../config/app_routes.dart';
 import '../providers/auth_provider.dart';
-import '../widgets/dashboard_kit.dart';
 import '../widgets/app_logo.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -24,7 +23,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _checkAuthAndNavigate() async {
     final futures = await Future.wait([
       context.read<AuthProvider>().tryRestoreSession(),
-      Future.delayed(const Duration(seconds: 2)),
+      Future.delayed(const Duration(seconds: 3)),
     ]);
 
     if (!mounted) return;
@@ -40,14 +39,12 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.white,
       body: Stack(
         children: [
-          const DashboardBackdrop(darkMode: false),
-
           // Centred logo — logo only, no text
           Center(
-            child: AppLogo(size: 220, iconSize: 110)
+            child: AppLogo(size: 280, iconSize: 140)
                 .animate()
                 .scale(
                   begin: const Offset(0.4, 0.4),
